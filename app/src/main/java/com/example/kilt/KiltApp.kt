@@ -8,6 +8,9 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,8 +32,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.kilt.navigation.BottomNavigationItem
-import com.example.kilt.navigation.NavPath
 import com.example.kilt.navigation.BottomNavigationScreen
 import com.example.kilt.navigation.Screen
 import com.example.kilt.screens.blog.BlogPage
@@ -52,8 +53,7 @@ fun KiltApp() {
                 BottomNavigationBar(navController)
             }
         },
-        modifier = Modifier.fillMaxSize(),
-        containerColor = Color.White
+        modifier = Modifier.padding(bottom = 0.dp),
     ) { innerPadding ->
         NavHost(
             navController = navController,
@@ -81,20 +81,21 @@ fun BottomNavigationBar(navController: NavHostController) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    Box {
+    Column {
         NavigationBar(
             modifier = Modifier
-                .height(105.dp)
-                .border(border = BorderStroke(width = 2.dp, color = Color(0xffCCD2E3))),
+                .height(65.dp)
+                .fillMaxWidth()
+                .border(border = BorderStroke(width = 1.dp, color = Color(0xffCCD2E3))),
             containerColor = Color.White,
-            tonalElevation = 20.dp
+            windowInsets = WindowInsets(bottom = 0, top = 0)
         ) {
             screens.forEach { screen ->
                 val selected = currentRoute == screen.route
                 Box(
                     modifier = Modifier
                         .weight(1f)
-                        .fillMaxHeight()
+                        .fillMaxWidth()
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null
@@ -110,44 +111,20 @@ fun BottomNavigationBar(navController: NavHostController) {
                         painter = if (selected) screen.selectedIcon() else screen.unselectedIcon(),
                         contentDescription = screen.route,
                         modifier = Modifier
-                            .size(if (selected) 105.dp else 100.dp)
+                            .fillMaxWidth()
+                            .size(if (selected) 65.dp else 60.dp)
                             .animateContentSize(),
                         contentScale = ContentScale.Crop
                     )
                 }
             }
         }
-        Box(
+        Spacer(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(10.dp)
-                .align(Alignment.BottomCenter)
+                .height(45.dp)
                 .background(Color.Black)
         )
     }
 }
 
-fun bottomNavigationItems(): List<BottomNavigationItem> {
-    return listOf(
-        BottomNavigationItem(
-            title = NavPath.HOME.name,
-            selectedIcon = R.drawable.unselected_home_icon,
-            unselectedIcon = R.drawable.unselected_home_icon,
-        ),
-        BottomNavigationItem(
-            title = NavPath.SEARCH.name,
-            selectedIcon = R.drawable.unselected_search_icon,
-            unselectedIcon = R.drawable.unselected_search_icon,
-        ),
-        BottomNavigationItem(
-            title = NavPath.FAVORITES.name,
-            selectedIcon = R.drawable.unselected_favorite_icon,
-            unselectedIcon = R.drawable.unselected_favorite_icon,
-        ),
-        BottomNavigationItem(
-            title = NavPath.PROFILE.name,
-            selectedIcon = R.drawable.unselected_profile_icon,
-            unselectedIcon = R.drawable.unselected_profile_icon,
-        ),
-    )
-}

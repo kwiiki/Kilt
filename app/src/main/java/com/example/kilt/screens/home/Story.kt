@@ -134,7 +134,7 @@ fun StoryPreviews(stories: List<String>, viewedStories: List<Boolean>, onStoryCl
             val borderColor = if (viewedStories[index]) Color.Gray else Color.Blue
             Box(
                 modifier = Modifier
-                    .padding(vertical = 16.dp)
+                    .padding(vertical = 8.dp)
                     .height(102.dp)
                     .width(81.dp)
                     .clip(RectangleShape)
