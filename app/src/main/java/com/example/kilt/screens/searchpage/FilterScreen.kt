@@ -1,4 +1,4 @@
-package com.example.kilt.screens.saleandrent
+package com.example.kilt.screens.searchpage
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

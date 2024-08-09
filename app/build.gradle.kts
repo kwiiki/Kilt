@@ -78,4 +78,7 @@ dependencies {
     implementation (libs.androidx.preference.ktx)
 
     implementation (libs.material3)
+
+    implementation (libs.androidx.constraintlayout.compose)
+
 }

@@ -11,8 +11,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -39,7 +37,8 @@ import com.example.kilt.screens.blog.News
 import com.example.kilt.screens.favorite.Favorite
 import com.example.kilt.screens.home.HomePage
 import com.example.kilt.screens.profile.ProfileScreen
-import com.example.kilt.screens.saleandrent.SaleAndRent
+import com.example.kilt.screens.searchpage.homedetails.HomeDetailsScreen
+import com.example.kilt.screens.searchpage.SearchPage
 
 
 @Composable
@@ -49,7 +48,7 @@ fun KiltApp() {
     val currentRoute = navBackStackEntry?.destination?.route
     Scaffold(
         bottomBar = {
-            if (currentRoute != "BlogPage" && currentRoute!= "News") {
+            if (currentRoute != "BlogPage" && currentRoute!= "News" && currentRoute != "HomeDetails") {
                 BottomNavigationBar(navController)
             }
         },
@@ -61,11 +60,12 @@ fun KiltApp() {
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(BottomNavigationScreen.HomePage.route) { HomePage(navController) }
-            composable(BottomNavigationScreen.SaleAndRent.route) { SaleAndRent() }
+            composable(BottomNavigationScreen.SaleAndRent.route) { SearchPage(navController) }
             composable(BottomNavigationScreen.Favorites.route) { Favorite() }
             composable(BottomNavigationScreen.Profile.route) { ProfileScreen() }
             composable(Screen.BlogPage.route) { BlogPage(navController) }
             composable(Screen.News.route){ News(navController)}
+            composable(Screen.HomeDetails.route){ HomeDetailsScreen() }
         }
     }
 }
@@ -125,6 +125,7 @@ fun BottomNavigationBar(navController: NavHostController) {
                 .height(45.dp)
                 .background(Color.Black)
         )
+
     }
 }
 

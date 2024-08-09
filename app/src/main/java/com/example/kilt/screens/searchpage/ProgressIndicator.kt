@@ -1,4 +1,4 @@
-package com.example.kilt.screens.saleandrent
+package com.example.kilt.screens.searchpage
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
