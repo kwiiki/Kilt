@@ -128,7 +128,19 @@ fun HomeDetailsScreen() {
                         modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
                     )
                     InfoSection()
+
+                    Text(
+                        text = "О Доме",
+                        color = Color.Black,
+                        fontWeight = FontWeight.W700,
+                        fontSize = 22.sp,
+                        modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
+                    )
+
+                    InfoHomeSection()
+
                     Spacer(modifier = Modifier.height(110.dp))
+
 
 
                 }

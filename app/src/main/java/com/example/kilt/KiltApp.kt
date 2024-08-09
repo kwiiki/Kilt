@@ -34,7 +34,7 @@ import com.example.kilt.navigation.BottomNavigationScreen
 import com.example.kilt.navigation.Screen
 import com.example.kilt.screens.blog.BlogPage
 import com.example.kilt.screens.blog.News
-import com.example.kilt.screens.favorite.Favorite
+import com.example.kilt.screens.favorite.FavoritesScreen
 import com.example.kilt.screens.home.HomePage
 import com.example.kilt.screens.profile.ProfileScreen
 import com.example.kilt.screens.searchpage.homedetails.HomeDetailsScreen
@@ -61,7 +61,7 @@ fun KiltApp() {
         ) {
             composable(BottomNavigationScreen.HomePage.route) { HomePage(navController) }
             composable(BottomNavigationScreen.SaleAndRent.route) { SearchPage(navController) }
-            composable(BottomNavigationScreen.Favorites.route) { Favorite() }
+            composable(BottomNavigationScreen.Favorites.route) { FavoritesScreen(navController) }
             composable(BottomNavigationScreen.Profile.route) { ProfileScreen() }
             composable(Screen.BlogPage.route) { BlogPage(navController) }
             composable(Screen.News.route){ News(navController)}

@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.kilt.screens.profile.ProfileScreen
 import com.example.kilt.screens.searchpage.homedetails.HomeDetailsScreen
 import com.example.kilt.screens.searchpage.homedetails.InfoSection
 
@@ -28,8 +29,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-//                KiltApp()
-            HomeDetailsScreen()
+                KiltApp()
+//            HomeDetailsScreen()
+//            ProfileScreen()
         }
     }
 }
