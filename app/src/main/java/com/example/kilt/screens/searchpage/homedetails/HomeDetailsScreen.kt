@@ -29,6 +29,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import com.example.kilt.R
 import com.example.kilt.data.Home
 import com.example.kilt.screens.searchpage.IconText
@@ -41,12 +42,11 @@ fun HomeDetailsScreen() {
     val scaffoldState = rememberBottomSheetScaffoldState()
     val home: Home = Home(0, 555555, 3, 54, 3, 10, "Абая 33", homeImg = R.drawable.kv1)
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxSize().padding(bottom = 0.dp)) {
         BottomSheetScaffold(
             sheetContainerColor = Color(0xffffffff),
-
             scaffoldState = scaffoldState,
-            sheetPeekHeight = 235.dp,
+            sheetPeekHeight = 215.dp,
             sheetContent = {
                 Column(
                     modifier = Modifier
@@ -140,12 +140,7 @@ fun HomeDetailsScreen() {
                     InfoHomeSection()
 
                     Spacer(modifier = Modifier.height(110.dp))
-
-
-
                 }
-
-
             }
         ) { innerPadding ->
             // ImageSlider
@@ -153,6 +148,7 @@ fun HomeDetailsScreen() {
 
 
         }
-        BottomDetails()
+        BottomDetails(modifier = Modifier.zIndex(1f))
+
     }
 }

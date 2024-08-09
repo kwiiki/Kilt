@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,14 +18,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.kilt.screens.searchpage.GradientButton
 import com.example.kilt.screens.searchpage.WhatsAppGradientButton
 import com.example.kilt.screens.searchpage.gradient
 
 @Composable
-fun BottomDetails() {
-    Box(modifier = Modifier.fillMaxSize()) {
+fun BottomDetails(modifier: Modifier) {
+    Box(modifier = modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -58,15 +58,19 @@ fun BottomDetails() {
                         modifier = Modifier.weight(1f)
                     )
                 }
+                Spacer(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
+                        .background(Color.Black)
+                )
             }
-
-            // Черная полоса под NavigationBar
-            Spacer(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp)
-                    .background(Color.Black)
-            )
         }
+
     }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun PreviewBottomDetails(){
 }

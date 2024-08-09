@@ -20,6 +20,7 @@ android {
         }
     }
 
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -80,5 +81,7 @@ dependencies {
     implementation (libs.material3)
 
     implementation (libs.androidx.constraintlayout.compose)
+
+
 
 }

@@ -37,8 +37,9 @@ import com.example.kilt.screens.blog.News
 import com.example.kilt.screens.favorite.FavoritesScreen
 import com.example.kilt.screens.home.HomePage
 import com.example.kilt.screens.profile.ProfileScreen
-import com.example.kilt.screens.searchpage.homedetails.HomeDetailsScreen
 import com.example.kilt.screens.searchpage.SearchPage
+import com.example.kilt.screens.searchpage.homedetails.BottomDetails
+import com.example.kilt.screens.searchpage.homedetails.HomeDetailsScreen
 
 
 @Composable
@@ -46,10 +47,25 @@ fun KiltApp() {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
+
+    val bottomBarRoutes = listOf(
+        BottomNavigationScreen.HomePage.route,
+        BottomNavigationScreen.SaleAndRent.route,
+        BottomNavigationScreen.Favorites.route,
+        BottomNavigationScreen.Profile.route
+    )
+
     Scaffold(
         bottomBar = {
-            if (currentRoute != "BlogPage" && currentRoute!= "News" && currentRoute != "HomeDetails") {
+            if (currentRoute in bottomBarRoutes) {
                 BottomNavigationBar(navController)
+            } else {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(42.dp)
+                        .background(Color.Black)
+                )
             }
         },
         modifier = Modifier.padding(bottom = 0.dp),
@@ -64,8 +80,8 @@ fun KiltApp() {
             composable(BottomNavigationScreen.Favorites.route) { FavoritesScreen(navController) }
             composable(BottomNavigationScreen.Profile.route) { ProfileScreen() }
             composable(Screen.BlogPage.route) { BlogPage(navController) }
-            composable(Screen.News.route){ News(navController)}
-            composable(Screen.HomeDetails.route){ HomeDetailsScreen() }
+            composable(Screen.News.route) { News(navController) }
+            composable(Screen.HomeDetails.route) { HomeDetailsScreen() }
         }
     }
 }
