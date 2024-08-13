@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -38,7 +39,6 @@ import com.example.kilt.screens.favorite.FavoritesScreen
 import com.example.kilt.screens.home.HomePage
 import com.example.kilt.screens.profile.ProfileScreen
 import com.example.kilt.screens.searchpage.SearchPage
-import com.example.kilt.screens.searchpage.homedetails.BottomDetails
 import com.example.kilt.screens.searchpage.homedetails.HomeDetailsScreen
 
 
@@ -144,4 +144,3 @@ fun BottomNavigationBar(navController: NavHostController) {
 
     }
 }
-

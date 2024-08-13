@@ -72,7 +72,6 @@ fun InstagramStory(
                 )
             }
 
-        // Display the current image
         AsyncImage(
             model = images[currentStep.value],
             contentDescription = "Story Image",
@@ -80,7 +79,6 @@ fun InstagramStory(
             modifier = imageModifier
         )
 
-        // Progress indicator
         InstagramProgressIndicator(
             modifier = Modifier
                 .fillMaxWidth()

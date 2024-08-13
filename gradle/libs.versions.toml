@@ -13,6 +13,14 @@ material3 = "1.2.1"
 navigationCompose = "2.7.7"
 coilCompose = "2.3.0"
 preferenceKtx = "1.2.1"
+converterMoshi = "2.9.0"
+gsonVersion = "2.10.1"
+okhttp = "4.12.0"
+loggingInterceptor = "4.12.0"
+retrofit = "2.9.0"
+gson = "2.8.9"
+okhttp3 = "4.10.0"
+
 
 
 [libraries]
@@ -38,6 +46,14 @@ androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
+
+
+com-squareup-retrofit2 = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
+json-converter = {group="com.squareup.retrofit2",name ="converter-gson",version.ref = "retrofit"}
+converter-moshi = { module = "com.squareup.retrofit2:converter-moshi", version.ref = "converterMoshi" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gsonVersion" }
+okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "loggingInterceptor" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

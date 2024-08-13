@@ -1,5 +1,6 @@
 package com.example.kilt.screens.searchpage
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -22,6 +23,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -33,15 +36,27 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.kilt.R
-import com.example.kilt.data.Home
+import com.example.kilt.viewmodels.HomeSaleViewModel
+import com.example.myapplication.data.HomeSale
 
 val gradient = Brush.verticalGradient(
     colors = listOf(Color(0xFF3244E4), Color(0xFF1B278F))
 )
+
 @Composable
-fun PropertyItem(home: Home, navController: NavHostController) {
+fun PropertyItem(homeSale: HomeSale?, navController: NavHostController) {
+    val homeSaleViewModel: HomeSaleViewModel = viewModel()
+    val topListings by homeSaleViewModel.topListings
+
+
+    LaunchedEffect(Unit) {
+        homeSaleViewModel.loadHomesale()
+    }
+    Log.d("PropertyItem", "topListings: $topListings")
+
 
     Card(
         shape = RoundedCornerShape(16.dp),
@@ -55,7 +70,7 @@ fun PropertyItem(home: Home, navController: NavHostController) {
         Column(modifier = Modifier.background(Color(0xffFFFFFF))) {
             Box {
                 Image(
-                    painter = painterResource(id = home.homeImg),
+                    painter = painterResource(id = R.drawable.kv1),
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -82,12 +97,11 @@ fun PropertyItem(home: Home, navController: NavHostController) {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Chip(text = "Собственник")
-//                Chip(text = "Хорошая цена")
-//                Chip(text = "С отделкой")
             }
 
+            Log.d("w1", "PropertyItem: ${homeSale?.listing?.price}")
             Text(
-                text = "${home.price} ₸",
+                text = "${homeSale?.listing?.price.toString()} ₸",
                 style = MaterialTheme.typography.bodySmall,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.W700,
@@ -97,24 +111,36 @@ fun PropertyItem(home: Home, navController: NavHostController) {
             Row(
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
             ) {
-                IconText(
-                    icon = ImageVector.vectorResource(id = R.drawable.group_icon),
-                    text = "${home.roomCount} комн"
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-                IconText(
-                    icon = ImageVector.vectorResource(id = R.drawable.room_icon),
-                    text = "${home.homeArea} м²"
-                )
-                Spacer(modifier = Modifier.width(10.dp))
-                IconText(
-                    icon = ImageVector.vectorResource(id = R.drawable.building_icon),
-                    text = "${home.roomCount}/${home.homeMaxFloor}"
-                )
+                topListings.forEach { item ->
+                    when (item.trim()) { // обьязательно нужен трим
+                        "num_rooms" -> {
+                            IconText(
+                                icon = ImageVector.vectorResource(id = R.drawable.group_icon),
+                                text = "${homeSale?.listing?.num_rooms} комн"
+                            )
+                            Spacer(modifier = Modifier.width(12.dp))
+                        }
+                        "area" -> {
+                            IconText(
+                                icon = ImageVector.vectorResource(id = R.drawable.room_icon),
+                                text = "${homeSale?.listing?.area} м²"
+                            )
+                            Spacer(modifier = Modifier.width(10.dp))
+                        }
+                        "floor" -> {
+                            IconText(
+                                icon = ImageVector.vectorResource(id = R.drawable.building_icon),
+                                text = "${homeSale?.listing?.floor}/${homeSale?.listing?.num_floors}"
+                            )
+                            Spacer(modifier = Modifier.width(10.dp))
+                        }
+                        else -> Log.d("PropertyItem", "Unexpected item in topListings: $item")
+                    }
+                }
             }
 
             Text(
-                text = home.address,
+                text = homeSale?.listing?.address_string.toString(),
                 style = MaterialTheme.typography.labelSmall,
                 color = Color(0xff6B6D79),
                 fontSize = 14.sp,
@@ -146,6 +172,7 @@ fun PropertyItem(home: Home, navController: NavHostController) {
         }
     }
 }
+
 
 @Composable
 fun Chip(text: String) {

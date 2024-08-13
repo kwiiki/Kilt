@@ -83,5 +83,13 @@ dependencies {
     implementation (libs.androidx.constraintlayout.compose)
 
 
+    implementation(libs.com.squareup.retrofit2)
+    implementation(libs.json.converter)
+    implementation(libs.gson)
+    implementation(libs.logging.interceptor)
+    implementation(libs.okhttp)
+    implementation (libs.converter.moshi)
+
+
 
 }
