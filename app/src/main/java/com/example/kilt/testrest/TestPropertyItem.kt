@@ -1,4 +1,4 @@
-package com.example.kilt.screens.searchpage
+package com.example.kilt.testrest
 
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -39,15 +39,19 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.kilt.R
-import com.example.kilt.data.Home
+import com.example.kilt.screens.searchpage.Chip
+import com.example.kilt.screens.searchpage.GradientButton
+import com.example.kilt.screens.searchpage.IconText
+import com.example.kilt.screens.searchpage.WhatsAppGradientButton
 import com.example.kilt.viewmodels.HomeSaleViewModel
+import com.example.myapplication.data.HomeSale
 
 val gradient = Brush.verticalGradient(
     colors = listOf(Color(0xFF3244E4), Color(0xFF1B278F))
 )
 
 @Composable
-fun PropertyItem(home: Home, navController: NavHostController) {
+fun TestPropertyItem(homeSale: HomeSale?, navController: NavHostController) {
     val homeSaleViewModel: HomeSaleViewModel = viewModel()
     val topListings by homeSaleViewModel.topListings
 
@@ -99,8 +103,9 @@ fun PropertyItem(home: Home, navController: NavHostController) {
                 Chip(text = "Собственник")
             }
 
+            Log.d("w1", "PropertyItem: ${homeSale?.listing?.price}")
             Text(
-                text = "${home.price} ₸",
+                text = "${homeSale?.listing?.price.toString()} ₸",
                 style = MaterialTheme.typography.bodySmall,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.W700,
@@ -115,21 +120,21 @@ fun PropertyItem(home: Home, navController: NavHostController) {
                         "num_rooms" -> {
                             IconText(
                                 icon = ImageVector.vectorResource(id = R.drawable.group_icon),
-                                text = "${home.roomCount} комн"
+                                text = "${homeSale?.listing?.num_rooms} комн"
                             )
                             Spacer(modifier = Modifier.width(12.dp))
                         }
                         "area" -> {
                             IconText(
                                 icon = ImageVector.vectorResource(id = R.drawable.room_icon),
-                                text = "${home.homeArea} м²"
+                                text = "${homeSale?.listing?.area} м²"
                             )
                             Spacer(modifier = Modifier.width(10.dp))
                         }
                         "floor" -> {
                             IconText(
                                 icon = ImageVector.vectorResource(id = R.drawable.building_icon),
-                                text = "${home.homeFloor}/${home.homeMaxFloor}"
+                                text = "${homeSale?.listing?.floor}/${homeSale?.listing?.num_floors}"
                             )
                             Spacer(modifier = Modifier.width(10.dp))
                         }
@@ -139,7 +144,7 @@ fun PropertyItem(home: Home, navController: NavHostController) {
             }
 
             Text(
-                text = home.address,
+                text = homeSale?.listing?.address_string.toString(),
                 style = MaterialTheme.typography.labelSmall,
                 color = Color(0xff6B6D79),
                 fontSize = 14.sp,
@@ -173,40 +178,3 @@ fun PropertyItem(home: Home, navController: NavHostController) {
 }
 
 
-@Composable
-fun Chip(text: String) {
-    Card(
-        onClick = { /*TODO*/ },
-        elevation = CardDefaults.cardElevation(4.dp),
-        shape = RoundedCornerShape(8.dp),
-
-        ) {
-        Row(
-            modifier = Modifier
-                .background(Color(0xFFFFFFFF), shape = RoundedCornerShape(8.dp))
-                .padding(horizontal = 8.dp, vertical = 4.dp)
-        ) {
-            Image(
-                imageVector = ImageVector.vectorResource(id = R.drawable.chield_check_fill),
-                contentDescription = null,
-                modifier = Modifier
-            )
-            Spacer(modifier = Modifier.width(4.dp))
-            Text(text = text, color = Color(0xFF56B375))
-        }
-    }
-
-}
-
-@Composable
-fun IconText(icon: ImageVector, text: String) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            modifier = Modifier
-        )
-        Spacer(modifier = Modifier.width(4.dp))
-        Text(text = text, fontSize = 14.sp, color = Color(0xff6B6D79))
-    }
-}

@@ -17,11 +17,18 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.kilt.R
+import com.example.kilt.data.Home
 import com.example.kilt.viewmodels.HomeSaleViewModel
 import com.example.myapplication.data.HomeSale
 
 
-val homeList = listOf<HomeSale>()
+val homeList = listOf<Home>(
+    Home(0,555555,3,54,3,10,"Абая 33", homeImg = R.drawable.kv1),
+    Home(1,120000,1,24,1,20,"Момышулы 43", homeImg = R.drawable.kv1),
+    Home(1,34000,1,24,1,5,"Саина 123", homeImg = R.drawable.kv1),
+    Home(1,544000,2,33,3,8,"Момышулы 3а", homeImg = R.drawable.kv1),
+)
 
 @Composable
 fun SearchPage(navController: NavHostController) {
@@ -41,14 +48,9 @@ fun SearchPage(navController: NavHostController) {
         LazyColumn {
             items(homeList) { home ->
                 PropertyItem(home, navController)
-
             }
         }
-
-
     }
-
-
 }
 
 @Composable

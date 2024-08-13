@@ -25,7 +25,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -81,7 +80,7 @@ fun KiltApp() {
             composable(BottomNavigationScreen.Profile.route) { ProfileScreen() }
             composable(Screen.BlogPage.route) { BlogPage(navController) }
             composable(Screen.News.route) { News(navController) }
-            composable(Screen.HomeDetails.route) { HomeDetailsScreen() }
+            composable(Screen.HomeDetails.route) { HomeDetailsScreen(navController) }
         }
     }
 }

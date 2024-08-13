@@ -44,17 +44,17 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
 
-//            KiltApp()
+            KiltApp()
 //            HomeDetailsScreen()
 //            ProfileScreen()
 //            val navController = rememberNavController()
 //           SearchPage(navController = navController)
 //            HomeDetailsScreen()Pr
-            val homeSaleViewModel: HomeSaleViewModel = viewModel()
-            val homeSale by homeSaleViewModel.homeSale // Получаем значение из MutableState
-            val navController = rememberNavController()
-
-            PropertyItem(homeSale = homeSale, navController = navController)
+//            val homeSaleViewModel: HomeSaleViewModel = viewModel()
+//            val homeSale by homeSaleViewModel.homeSale
+//            val navController = rememberNavController()
+//
+//            PropertyItem(homeSale = homeSale, navController = navController)
         }
     }
 }
