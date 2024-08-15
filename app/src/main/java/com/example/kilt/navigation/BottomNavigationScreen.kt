@@ -10,26 +10,26 @@ sealed class BottomNavigationScreen(
     val selectedIcon: @Composable () -> Painter
 ) {
     data object Profile : BottomNavigationScreen(
-        route = "profile",
+        route = NavPath.PROFILE.name,
         unselectedIcon = { painterResource(id = R.drawable.unselected_profile_icon) },
         selectedIcon = { painterResource(id = R.drawable.selected_profile_icon) }
     )
 
     data object HomePage : BottomNavigationScreen(
-        route = "homePage",
+        route = NavPath.HOME.name,
         unselectedIcon = { painterResource(id = R.drawable.unselected_home_icon) },
         selectedIcon = { painterResource(id = R.drawable.home_selected_icon) }
 
     )
 
     data object Favorites : BottomNavigationScreen(
-        route = "favorites",
+        route = NavPath.FAVORITES.name,
         unselectedIcon = { painterResource(id = R.drawable.unselected_favorite_icon) },
         selectedIcon = { painterResource(id = R.drawable.selected_favorite_icon) }
     )
 
     data object SaleAndRent : BottomNavigationScreen(
-        route = "saleAndRent",
+        route = NavPath.SEARCH.name,
         unselectedIcon = { painterResource(id = R.drawable.unselected_search_icon) },
         selectedIcon = { painterResource(id = R.drawable.selected_search_icon) }
     )

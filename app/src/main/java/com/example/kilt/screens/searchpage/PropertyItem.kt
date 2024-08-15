@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -38,8 +39,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
 import com.example.kilt.R
 import com.example.kilt.data.Home
+import com.example.kilt.utills.imageCdnUrl
 import com.example.kilt.viewmodels.HomeSaleViewModel
 
 val gradient = Brush.verticalGradient(
@@ -50,6 +53,7 @@ val gradient = Brush.verticalGradient(
 fun PropertyItem(home: Home, navController: NavHostController) {
     val homeSaleViewModel: HomeSaleViewModel = viewModel()
     val topListings by homeSaleViewModel.topListings
+    val homeSale by homeSaleViewModel.homeSale
 
 
     LaunchedEffect(Unit) {
@@ -69,13 +73,11 @@ fun PropertyItem(home: Home, navController: NavHostController) {
     ) {
         Column(modifier = Modifier.background(Color(0xffFFFFFF))) {
             Box {
-                Image(
-                    painter = painterResource(id = R.drawable.kv1),
+                AsyncImage(
+                    model = "${imageCdnUrl}${homeSale?.listing?.first_image}",
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(150.dp)
+                    modifier = Modifier.height(150.dp)
                 )
                 IconButton(
                     onClick = { /* TODO: Handle favorite click */ },
@@ -100,7 +102,7 @@ fun PropertyItem(home: Home, navController: NavHostController) {
             }
 
             Text(
-                text = "${home.price} ₸",
+                text = "${homeSale?.listing?.price} ₸",
                 style = MaterialTheme.typography.bodySmall,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.W700,
@@ -115,21 +117,21 @@ fun PropertyItem(home: Home, navController: NavHostController) {
                         "num_rooms" -> {
                             IconText(
                                 icon = ImageVector.vectorResource(id = R.drawable.group_icon),
-                                text = "${home.roomCount} комн"
+                                text = "${homeSale?.listing?.num_rooms} комн"
                             )
                             Spacer(modifier = Modifier.width(12.dp))
                         }
                         "area" -> {
                             IconText(
                                 icon = ImageVector.vectorResource(id = R.drawable.room_icon),
-                                text = "${home.homeArea} м²"
+                                text = "${homeSale?.listing?.area} м²"
                             )
                             Spacer(modifier = Modifier.width(10.dp))
                         }
                         "floor" -> {
                             IconText(
                                 icon = ImageVector.vectorResource(id = R.drawable.building_icon),
-                                text = "${home.homeFloor}/${home.homeMaxFloor}"
+                                text = "${homeSale?.listing?.floor}/${homeSale?.listing?.num_floors}"
                             )
                             Spacer(modifier = Modifier.width(10.dp))
                         }
@@ -139,7 +141,7 @@ fun PropertyItem(home: Home, navController: NavHostController) {
             }
 
             Text(
-                text = home.address,
+                text = homeSale?.listing?.address_string.toString(),
                 style = MaterialTheme.typography.labelSmall,
                 color = Color(0xff6B6D79),
                 fontSize = 14.sp,

@@ -57,7 +57,11 @@ fun HomeDetailsScreen(navController: NavHostController) {
         homeSaleViewModel.loadHomesale()
     }
 
-    Box(modifier = Modifier.fillMaxSize().padding(bottom = 0.dp)) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = 0.dp)
+    ) {
         BottomSheetScaffold(
             sheetContainerColor = Color(0xffffffff),
             scaffoldState = scaffoldState,
@@ -88,25 +92,31 @@ fun HomeDetailsScreen(navController: NavHostController) {
                                     "num_rooms" -> {
                                         IconText(
                                             icon = ImageVector.vectorResource(id = R.drawable.group_icon),
-                                            text = "${home.roomCount} комн"
+                                            text = "${homeSale?.listing?.num_rooms} комн"
                                         )
                                         Spacer(modifier = Modifier.width(12.dp))
                                     }
+
                                     "area" -> {
                                         IconText(
                                             icon = ImageVector.vectorResource(id = R.drawable.room_icon),
-                                            text = "${home.homeArea} м²"
+                                            text = "${homeSale?.listing?.area} м²"
                                         )
                                         Spacer(modifier = Modifier.width(10.dp))
                                     }
+
                                     "floor" -> {
                                         IconText(
                                             icon = ImageVector.vectorResource(id = R.drawable.building_icon),
-                                            text = "${home.homeFloor}/${home.homeMaxFloor}"
+                                            text = "${homeSale?.listing?.floor}/${homeSale?.listing?.num_floors}"
                                         )
                                         Spacer(modifier = Modifier.width(10.dp))
                                     }
-                                    else -> Log.d("PropertyItem", "Unexpected item in topListings: $item")
+
+                                    else -> Log.d(
+                                        "PropertyItem",
+                                        "Unexpected item in topListings: $item"
+                                    )
                                 }
                             }
                         }
@@ -146,7 +156,14 @@ fun HomeDetailsScreen(navController: NavHostController) {
                             fontSize = 22.sp,
                             modifier = Modifier.padding(horizontal = 16.dp)
                         )
-                        ApartmentDescription()
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = homeSale?.listing?.description.toString(),
+                            fontSize = 16.sp,
+                            color = Color(0xff566982),
+                            modifier = Modifier.padding(horizontal = 16.dp)
+                        )
+
                         Text(
                             text = "Информация",
                             color = Color.Black,
@@ -154,8 +171,9 @@ fun HomeDetailsScreen(navController: NavHostController) {
                             fontSize = 22.sp,
                             modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
                         )
-                        InfoSection()
+                        InfoSection(homeSaleViewModel)
 
+                        Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = "О Доме",
                             color = Color.Black,
@@ -164,7 +182,7 @@ fun HomeDetailsScreen(navController: NavHostController) {
                             modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
                         )
 
-                        InfoHomeSection()
+                        InfoHomeSection(homeSaleViewModel)
 
                         Spacer(modifier = Modifier.height(110.dp))
                     }

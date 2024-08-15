@@ -37,13 +37,13 @@ fun InstagramProgressIndicator(
             }
 
             LinearProgressIndicator(
-                color = selectedColor,
-                trackColor = unSelectedColor,
-                progress = stepProgress,
+                progress = { stepProgress },
                 modifier = Modifier
                     .weight(1f)
                     .padding(2.dp)
-                    .height(10.dp)
+                    .height(3.dp),
+                color = selectedColor,
+                trackColor = unSelectedColor,
             )
         }
     }

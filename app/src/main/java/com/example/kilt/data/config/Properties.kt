@@ -1,6 +1,6 @@
 package com.example.kilt.data.config
 
-data class XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX(
+data class Properties(
     val createdAt: String,
     val id: Int,
     val label_ru: String,

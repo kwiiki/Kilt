@@ -1,12 +1,12 @@
 package com.example.kilt.screens.searchpage.homedetails
 
-import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
@@ -41,7 +41,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -50,6 +50,8 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.kilt.R
 import com.example.kilt.data.config.Image
+import com.example.kilt.navigation.NavPath
+import com.example.kilt.utills.imageCdnUrl
 import com.example.kilt.viewmodels.HomeSaleViewModel
 import kotlinx.coroutines.delay
 import kotlin.math.absoluteValue
@@ -59,21 +61,20 @@ import kotlin.math.roundToInt
 fun ImageSlider(
     modifier: Modifier,
     onFullScreenToggle: (Boolean) -> Unit,
-    navController: NavHostController
+    navController: NavHostController,
 ) {
     val homeSaleViewModel: HomeSaleViewModel = viewModel()
     val homeSale by homeSaleViewModel.homeSale
     homeSaleViewModel.loadHomesale()
     val listing = homeSale?.listing
     val imageList = listing?.images ?: emptyList()
-    Log.d("wwwww", "ImageSlider: ${imageList.toString()}")
 
     var selectedImage by remember { mutableStateOf<Image?>(null) }
     val listState = rememberLazyListState()
 
     if (selectedImage != null) {
         FullScreenPhotoScreen(
-            photoUrl = "https://kilt-cdn.kz/${selectedImage!!.link}",
+            photoUrl = "${imageCdnUrl}${selectedImage!!.link}",
             onClose = {
                 selectedImage = null
                 onFullScreenToggle(false)
@@ -84,7 +85,7 @@ fun ImageSlider(
         PhotosScreen(
             images = imageList,
             onPhotoClick = { selectedImage = it },
-            onBackClick = { /* Handle back click */ },
+            onBackClick = { navController.navigate(NavPath.SEARCH.name) },
             onFavoriteClick = { /* Handle favorite click */ },
             listState = listState
         )
@@ -111,6 +112,28 @@ fun PhotosScreen(
                     modifier = Modifier.size(50.dp)
                 )
             }
+//            if (images.isEmpty()) {
+//                Box(
+//                    modifier = Modifier.fillMaxSize(),
+//                    contentAlignment = Alignment.TopCenter
+//                ) {
+//                    Image(
+//                        painter = painterResource(id = R.drawable.image_empty),
+//                        contentDescription = null,
+//                        modifier = Modifier.fillMaxSize()
+//                    )
+//                    Box(
+//                        modifier = Modifier.fillMaxSize(),
+//                        contentAlignment = Alignment.Center
+//                    ) {
+//                        Icon(
+//                            imageVector = ImageVector.vectorResource(id = R.drawable.camera_icon),
+//                            contentDescription = null,
+//                            tint = Color.White
+//                        )
+//                    }
+//                }
+//            }
         } else {
             LazyColumn(state = listState) {
                 items(images) { image ->
@@ -152,7 +175,7 @@ fun PhotosScreen(
 
 @Composable
 fun PhotoItem(image: Image, onPhotoClick: (Image) -> Unit) {
-    val photoUrl = "https://kilt-cdn.kz/${image.link}"
+    val photoUrl = "${imageCdnUrl}${image.link}"
 
     val scaleFactor = 620f / image.width.toFloat()
     val adjustedHeight = image.height.toFloat() * scaleFactor

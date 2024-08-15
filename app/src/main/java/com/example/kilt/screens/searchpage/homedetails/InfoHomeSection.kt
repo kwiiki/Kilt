@@ -1,17 +1,20 @@
 package com.example.kilt.screens.searchpage.homedetails
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import com.example.kilt.viewmodels.HomeSaleViewModel
 
 @Composable
-fun InfoHomeSection() {
+fun InfoHomeSection(homeSaleViewModel: HomeSaleViewModel) {
+    val homeSale by homeSaleViewModel.homeSale
+    homeSaleViewModel.loadHomesale()
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxWidth()
@@ -27,7 +30,6 @@ fun InfoHomeSection() {
             }
         ) {
             DetailItemRight(label = "Год постройки")
-            DetailItemRight(label = "Тип строения")
 
         }
 
@@ -39,7 +41,6 @@ fun InfoHomeSection() {
             }
         ) {
             DetailItemLeft(value = "1981")
-            DetailItemLeft(value = "Кирпич")
 
         }
     }

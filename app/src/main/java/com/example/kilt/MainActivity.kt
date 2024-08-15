@@ -43,13 +43,14 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val navController = rememberNavController()
 
-            KiltApp()
+//            KiltApp()
 //            HomeDetailsScreen()
 //            ProfileScreen()
 //            val navController = rememberNavController()
 //           SearchPage(navController = navController)
-//            HomeDetailsScreen()Pr
+            HomeDetailsScreen(navController)
 //            val homeSaleViewModel: HomeSaleViewModel = viewModel()
 //            val homeSale by homeSaleViewModel.homeSale
 //            val navController = rememberNavController()
@@ -59,6 +60,11 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+
+//@Composable
+//fun CalculatorUI(){
+//
+//}
 
 
 

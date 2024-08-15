@@ -24,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.kilt.navigation.NavPath
 
 
 @Composable
@@ -37,7 +38,7 @@ fun SearchAnnouncementButton(navController: NavHostController) {
 
     Row(modifier = Modifier.fillMaxWidth()) {
         OutlinedButton(
-            onClick = { navController.navigate("saleAndRent")},
+            onClick = { navController.navigate(NavPath.SEARCH.name)},
             contentPadding = PaddingValues(0.dp),
             colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.Transparent),
             shape = RoundedCornerShape(12.dp),
