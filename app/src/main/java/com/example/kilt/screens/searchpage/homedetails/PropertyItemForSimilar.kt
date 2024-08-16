@@ -1,7 +1,6 @@
-package com.example.kilt.testrest
+package com.example.kilt.screens.searchpage.homedetails
 
 import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -31,29 +30,32 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
 import com.example.kilt.R
+import com.example.kilt.data.Home
 import com.example.kilt.screens.searchpage.Chip
 import com.example.kilt.screens.searchpage.GradientButton
 import com.example.kilt.screens.searchpage.IconText
 import com.example.kilt.screens.searchpage.WhatsAppGradientButton
+import com.example.kilt.utills.imageCdnUrl
 import com.example.kilt.viewmodels.HomeSaleViewModel
-import com.example.myapplication.data.HomeSale
+
 
 val gradient = Brush.verticalGradient(
     colors = listOf(Color(0xFF3244E4), Color(0xFF1B278F))
 )
 
 @Composable
-fun TestPropertyItem(homeSale: HomeSale?, navController: NavHostController) {
+fun PropertyItemForSimilar(home: Home, navController: NavHostController) {
     val homeSaleViewModel: HomeSaleViewModel = viewModel()
     val topListings by homeSaleViewModel.topListings
+    val homeSale by homeSaleViewModel.homeSale
 
 
     LaunchedEffect(Unit) {
@@ -65,21 +67,19 @@ fun TestPropertyItem(homeSale: HomeSale?, navController: NavHostController) {
     Card(
         shape = RoundedCornerShape(16.dp),
         modifier = Modifier
-            .padding(vertical = 8.dp)
-            .fillMaxWidth()
+            .padding(horizontal = 8.dp)
+            .width(250.dp)
             .background(Color(0xffFFFFFF))
             .clickable { navController.navigate("HomeDetails") },
         elevation = CardDefaults.cardElevation(15.dp)
     ) {
         Column(modifier = Modifier.background(Color(0xffFFFFFF))) {
             Box {
-                Image(
-                    painter = painterResource(id = R.drawable.kv1),
+                AsyncImage(
+                    model = "$imageCdnUrl${homeSale?.listing?.first_image}",
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(150.dp)
+                    modifier = Modifier.height(120.dp)
                 )
                 IconButton(
                     onClick = { /* TODO: Handle favorite click */ },
@@ -96,24 +96,23 @@ fun TestPropertyItem(homeSale: HomeSale?, navController: NavHostController) {
 
             Row(
                 modifier = Modifier
-                    .padding(8.dp)
+                    .padding(horizontal = 8.dp)
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Chip(text = "Собственник")
             }
 
-            Log.d("w1", "PropertyItem: ${homeSale?.listing?.price}")
             Text(
-                text = "${homeSale?.listing?.price.toString()} ₸",
+                text = "${homeSale?.listing?.price} ₸",
                 style = MaterialTheme.typography.bodySmall,
-                fontSize = 24.sp,
+                fontSize = 20.sp,
                 fontWeight = FontWeight.W700,
-                modifier = Modifier.padding(horizontal = 8.dp, vertical = 5.dp)
+                modifier = Modifier.padding(horizontal = 8.dp).padding(bottom = 3.dp)
             )
 
             Row(
-                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                modifier = Modifier.padding(horizontal = 8.dp)
             ) {
                 topListings.forEach { item ->
                     when (item.trim()) { // обьязательно нужен трим
@@ -152,29 +151,6 @@ fun TestPropertyItem(homeSale: HomeSale?, navController: NavHostController) {
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
             )
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                GradientButton(
-                    text = "Позвонить",
-                    textColor = Color.White,
-                    gradient = gradient,
-                    onClick = { /* TODO: Handle click */ },
-                    modifier = Modifier.weight(1f)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                WhatsAppGradientButton(
-                    text = "Написать",
-                    onClick = { /* TODO: Handle click */ },
-                    modifier = Modifier.weight(1f)
-                )
-            }
         }
     }
 }
-
-

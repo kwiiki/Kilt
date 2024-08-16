@@ -6,7 +6,6 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
@@ -41,7 +40,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -65,7 +64,7 @@ fun ImageSlider(
 ) {
     val homeSaleViewModel: HomeSaleViewModel = viewModel()
     val homeSale by homeSaleViewModel.homeSale
-    homeSaleViewModel.loadHomesale()
+    homeSaleViewModel.loadHomeSale()
     val listing = homeSale?.listing
     val imageList = listing?.images ?: emptyList()
 
@@ -176,13 +175,14 @@ fun PhotosScreen(
 @Composable
 fun PhotoItem(image: Image, onPhotoClick: (Image) -> Unit) {
     val photoUrl = "${imageCdnUrl}${image.link}"
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp.dp.value
 
-    val scaleFactor = 620f / image.width.toFloat()
+    val scaleFactor = screenWidth / image.width.toFloat()
     val adjustedHeight = image.height.toFloat() * scaleFactor
 
     Box(
         modifier = Modifier
-            .width(620.dp)
             .padding(vertical = 4.dp)
             .height(adjustedHeight.dp)
             .clickable { onPhotoClick(image) }
@@ -190,8 +190,8 @@ fun PhotoItem(image: Image, onPhotoClick: (Image) -> Unit) {
         AsyncImage(
             model = photoUrl,
             contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
+            contentScale = ContentScale.FillBounds,
+            modifier = Modifier.height(adjustedHeight.dp).width(500.dp)
         )
     }
 }

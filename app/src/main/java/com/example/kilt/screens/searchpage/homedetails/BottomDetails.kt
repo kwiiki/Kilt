@@ -26,7 +26,7 @@ import com.example.kilt.screens.searchpage.gradient
 
 @Composable
 fun BottomDetails(modifier: Modifier) {
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize().background(Color.Transparent)) {
         Column(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -58,12 +58,7 @@ fun BottomDetails(modifier: Modifier) {
                         modifier = Modifier.weight(1f)
                     )
                 }
-                Spacer(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp)
-                        .background(Color.Black)
-                )
+
             }
         }
 

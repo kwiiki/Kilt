@@ -12,19 +12,26 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -38,23 +45,30 @@ import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.kilt.R
-import com.example.kilt.data.Home
 import com.example.kilt.screens.searchpage.IconText
+import com.example.kilt.screens.searchpage.homeList
 import com.example.kilt.viewmodels.HomeSaleViewModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeDetailsScreen(navController: NavHostController) {
     val scrollState = rememberScrollState()
     val scaffoldState = rememberBottomSheetScaffoldState()
-    val home: Home = Home(0, 555555, 3, 54, 3, 10, "Абая 33", homeImg = R.drawable.kv1)
     var isFullScreenPhotoVisible by remember { mutableStateOf(false) }
     val homeSaleViewModel: HomeSaleViewModel = viewModel()
     val homeSale by homeSaleViewModel.homeSale
-    homeSaleViewModel.loadHomesale()
+    homeSaleViewModel.loadHomeSale()
     val topListings by homeSaleViewModel.topListings
+
+    var openBottomSheet by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+    val bottomSheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
+    )
+
     LaunchedEffect(Unit) {
-        homeSaleViewModel.loadHomesale()
+        homeSaleViewModel.loadHomeSale()
     }
 
     Box(
@@ -62,16 +76,38 @@ fun HomeDetailsScreen(navController: NavHostController) {
             .fillMaxSize()
             .padding(bottom = 0.dp)
     ) {
+        if (openBottomSheet) {
+            ModalBottomSheet(
+                sheetState = bottomSheetState,
+                onDismissRequest = { openBottomSheet = false },
+                dragHandle = {
+                    Column(
+                        modifier = Modifier.fillMaxWidth().height(50.dp).background(Color.White),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        BottomSheetDefaults.DragHandle(color = Color(0xff010101))
+                    }
+                }
+            ) {
+                BottomSheetContent(homeSale?.listing?.price.toString(),
+                    onHideButtonClick = {
+                        scope.launch { bottomSheetState.hide() }.invokeOnCompletion {
+                            if (!bottomSheetState.isVisible) openBottomSheet = false
+                        }
+                    }
+                )
+            }
+        }
         BottomSheetScaffold(
             sheetContainerColor = Color(0xffffffff),
             scaffoldState = scaffoldState,
-            sheetPeekHeight = if (isFullScreenPhotoVisible) 0.dp else 215.dp,
+            sheetPeekHeight = if (isFullScreenPhotoVisible) 0.dp else 180.dp,
             sheetContent = {
                 if (!isFullScreenPhotoVisible) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(630.dp)
+                            .height(600.dp)
                             .padding(horizontal = 8.dp)
                             .background(Color(0xffffffff))
                             .verticalScroll(scrollState),
@@ -134,7 +170,7 @@ fun HomeDetailsScreen(navController: NavHostController) {
                                 .height(2.dp)
                                 .background(Color(0xffDBDFE4))
                         )
-                        Calculator()
+                        Calculator(onClick = { openBottomSheet = true })
 
                         Spacer(
                             modifier = Modifier
@@ -174,15 +210,35 @@ fun HomeDetailsScreen(navController: NavHostController) {
                         InfoSection(homeSaleViewModel)
 
                         Spacer(modifier = Modifier.height(8.dp))
+
+                        val builtYear = homeSaleViewModel.homeSale.value?.listing?.built_year
+                        if (builtYear != null && builtYear != 0) {
+                            Text(
+                                text = "О Доме",
+                                color = Color.Black,
+                                fontWeight = FontWeight.W700,
+                                fontSize = 22.sp,
+                                modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
+                            )
+                            InfoHomeSection(homeSaleViewModel)
+                        }
+
                         Text(
-                            text = "О Доме",
+                            text = "Похожие",
                             color = Color.Black,
                             fontWeight = FontWeight.W700,
                             fontSize = 22.sp,
                             modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
                         )
+                        Row {
 
-                        InfoHomeSection(homeSaleViewModel)
+                            LazyRow(modifier = Modifier.padding(horizontal = 8.dp)) {
+                                items(homeList) { home ->
+                                    PropertyItemForSimilar(home, navController)
+                                }
+                            }
+                        }
+
 
                         Spacer(modifier = Modifier.height(110.dp))
                     }
@@ -201,5 +257,8 @@ fun HomeDetailsScreen(navController: NavHostController) {
         if (!isFullScreenPhotoVisible) {
             BottomDetails(modifier = Modifier.zIndex(1f))
         }
+
     }
 }
+
+

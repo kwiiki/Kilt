@@ -5,7 +5,7 @@ import com.example.myapplication.data.HomeSale
 import retrofit2.http.GET
 
 interface ApiService {
-    @GET("listings/517779")
+    @GET("listings/520923")
     suspend fun getHomeSale(): HomeSale
 
     @GET("listings/config")

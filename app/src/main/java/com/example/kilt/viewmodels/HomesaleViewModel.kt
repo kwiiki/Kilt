@@ -19,7 +19,7 @@ class HomeSaleViewModel : ViewModel() {
     var topListings = mutableStateOf<List<String>>(emptyList())
         private set
 
-    fun loadHomesale() {
+    fun loadHomeSale() {
         viewModelScope.launch {
             try {
                 homeSale.value = repository.fetchHomeSale()
@@ -31,7 +31,6 @@ class HomeSaleViewModel : ViewModel() {
 
 
                 updateTopListings()
-                Log.d("ww22", "loadConfig: ${updateTopListings()}")
             } catch (e: Exception) {
                 // Обработка ошибок
             }
@@ -52,5 +51,6 @@ class HomeSaleViewModel : ViewModel() {
             topListings.value = topValues.distinct()
         }
         Log.d("HomeSaleViewModel", "updateTopListings: ${topListings.value}")
+        Log.d("HomeSaleViewModel1", "updateTopListings: ${homeSaleValue}")
     }
 }
