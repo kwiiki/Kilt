@@ -295,10 +295,15 @@ fun InputField(
             BasicTextField(
                 value = textFieldValue,
                 onValueChange = { newValue ->
+                    // Filter to allow only digits, excluding '0' as the first character
                     val digitsOnly = newValue.filter { it.isDigit() }
-                    textFieldValue = digitsOnly
-                    if (label == "Первоначальный взнос" || digitsOnly.isNotEmpty()) {
+                    if (digitsOnly.isNotEmpty() && digitsOnly != "0") {
+                        val formattedValue = formatNumber(digitsOnly)
+                        textFieldValue = formattedValue
                         onValueChange(digitsOnly)
+                    } else if (digitsOnly.isEmpty()) {
+                        textFieldValue = ""
+                        onValueChange("")
                     }
                 },
                 textStyle = TextStyle(
@@ -338,6 +343,15 @@ fun InputField(
                 )
             }
         }
+    }
+}
+
+fun formatNumber(number: String): String {
+    val digitsOnly = number.filter { it.isDigit() }
+    return if (digitsOnly.isNotEmpty()) {
+        digitsOnly.reversed().chunked(3).joinToString(" ").reversed()
+    } else {
+        ""
     }
 }
 

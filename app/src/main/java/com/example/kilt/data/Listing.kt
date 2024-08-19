@@ -1,30 +1,60 @@
 package com.example.kilt.data
 
+import com.example.kilt.Range
 import com.example.kilt.data.config.Image
 
 data class Listing(
+    val deal_type: Int,
+    val listing_type: Int,
+    val property_type: Int,
+    val num_rooms: Int,
+    val price: String,
+    val status:Int,
+//    val lat: Range = Range(from = 43.10124413065566, to = 43.452700157683296),
+//    val lng: Range = Range(from = 76.7887978084845, to = 77.05866487884856),
+    val first_image: String,
+    val num_floors: Int,
+    val floor: Int,
+    val area: Int = 0,
     val address_string: String,
-    val area: Int,
+    val description: String,
+    val built_year: Int,
+    val images: List<Image>,
+    val designation: String,
+    val where_located: Int,
+    val line_of_houses: Int,
+    val ceiling_height: Double,
+    val furniture: Int,
+
+
+
+
+
+
+
+
+
+//    val address_string: String,
+//
 //    val balcony: Any,
 //    val balcony_glass: Any,
 //    val bathroom: Any,
 //    val bathroom_inside: Any,
-    val built_year: Int,
+//
 //    val business_condition: Any,
 //    val business_entrance: Any,
 //    val business_parking: Any,
-    val ceiling_height: Double,
-    val city: Any,
+//    val ceiling_height: Double,
+//    val city: Any,
 //    val communications: Any,
 //    val condition: Any,
 //    val construction_type: Any,
 //    val conveniences: Any,
-    val createdAt: String,
+//    val createdAt: String,
 //    val dacha_array: Any,
-    val deal_type: Int,
 //    val dedicated_power: Any,
-    val description: String,
-    val designation: String,
+//
+//
 //    val district: Any,
 //    val divisibility: Any,
 //    val door: Any,
@@ -32,20 +62,18 @@ data class Listing(
 //    val electricity: Any,
 //    val exchange_possible: Any,
 //    val fenced: Any,
-    val first_image: String,
-    val first_image_cloud: Int,
-    val floor: Int  ,
+//    val first_image_cloud: Int,
+//
 //    val floor_material: Any,
 //    val former_dormitory: Any,
 //    val free_planning: Any,
-    val furniture: Int,
+//    val furniture: Int,
 //    val furniture_list: Any,
 //    val gas: Any,
 //    val has_renters: Any,
 //    val heating: Any,
 //    val house_area: Any,
-//    val id: Int,
-    val images: List<Image>,
+//
 //    val infrastructure: Any,
 //    val internet: Any,
 //    val irrigation_water: Any,
@@ -55,12 +83,9 @@ data class Listing(
 //    val kato_path: String,
 //    val kitchen_area: Any,
 //    val kr_id: Int,
-    val land_area: Any,
-//    val lat: Double,
-    val line_of_houses: Int,
-    val listing_type: Int,
+//    val land_area: Any,
+//    val line_of_houses: Int,
 //    val living_area: Any,
-//    val lng: Double,
 //    val location: Any,
 //    val loggia: Any,
 //    val manufacturing_area: Any,
@@ -68,8 +93,7 @@ data class Listing(
 //    val new_balcony: Any,
 //    val new_building_id: Any,
 //    val new_conveniences: Any,
-    val num_floors: Int,
-    val num_rooms: Int,
+//
 //    val num_toilets: Any,
 //    val object_name: Any,
 //    val office_area: Any,
@@ -79,9 +103,7 @@ data class Listing(
 //    val parking: Any,
 //    val payment_period: Any,
 //    val pledge: Any,
-    val price: String,
 //    val price_for: Any,
-    val property_type: Int,
 //    val publishedAt: String,
 //    val region: Any,
 //    val renovation: Any,
@@ -113,6 +135,6 @@ data class Listing(
 //    val user_type: Int,
 //    val utility_bills: Any,
 //    val what_exactly: Any,
-    val where_located: Int,
+//
 //    val windows: Any
 )

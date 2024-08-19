@@ -1,41 +1,18 @@
 package com.example.kilt
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material3.BottomSheetDefaults
-import androidx.compose.material3.BottomSheetScaffold
-import androidx.compose.material3.Button
-import androidx.compose.material3.Divider
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberBottomSheetScaffoldState
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,18 +20,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
-import com.example.kilt.screens.searchpage.PropertyItem
+import com.example.kilt.data.Listing
+import com.example.kilt.network.RetrofitInstance
+import com.example.kilt.network.SearchResponse
 import com.example.kilt.screens.searchpage.SearchPage
-import com.example.kilt.screens.searchpage.filter.FilterPage
-import com.example.kilt.screens.searchpage.homedetails.HomeDetailsScreen
-import com.example.kilt.viewmodels.HomeSaleViewModel
 import com.example.myapplication.data.HomeSale
 import kotlinx.coroutines.launch
 
@@ -76,11 +47,80 @@ class MainActivity : ComponentActivity() {
 //
 //            PropertyItem(homeSale = homeSale, navController = navController)
 //
+//            SearchPage(navController = navController)
+
         }
     }
 }
 
+@Composable
+fun SearchScreen() {
+    val coroutineScope = rememberCoroutineScope()
+    var searchResult by remember { mutableStateOf<SearchResponse?>(null) }
+    var isLoading by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
+    LaunchedEffect(Unit) {
+        isLoading = true
+        errorMessage = null
+
+        coroutineScope.launch {
+            try {
+                val request = HomeSale(
+                    listing = Listing(
+
+                        deal_type = 2,
+                        listing_type = 1,
+                        property_type = 1,
+                        num_rooms = 3,
+                        price = "1500000",
+                        status = 1,
+                        first_image = "",
+                        num_floors = 1,
+                        address_string = "",
+                        floor = 32,
+                        description = "",
+                        built_year = 2010,
+                        images = listOf(),
+                        designation = "",
+                        where_located = 2,
+                        line_of_houses = 3,
+                        ceiling_height = 2.5,
+                        furniture = 3
+                    ),
+
+                    page = 0,
+                    sorting = "new"
+                )
+
+                val response = RetrofitInstance.api.search(request)
+                searchResult = response
+            } catch (e: Exception) {
+                errorMessage = e.message
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        when {
+            isLoading -> {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            }
+            errorMessage != null -> {
+                Text(
+                    text = "Error: $errorMessage",
+                    color = Color.Black,
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+            searchResult != null -> {
+                Log.d("results", "SearchScreen: ${searchResult.toString()}")
+            }
+        }
+    }
+}
 
 
 
