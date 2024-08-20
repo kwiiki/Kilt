@@ -1,6 +1,6 @@
 package com.example.kilt.data.config
 
-data class XXXXXXXXXXXXXXXXXXXX(
+data class BathroomItem(
     val id: Int,
-    val name: Int
+    val name: String
 )

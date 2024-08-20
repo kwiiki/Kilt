@@ -1,6 +1,5 @@
 package com.example.kilt.data
 
-import com.example.kilt.Range
 import com.example.kilt.data.config.Image
 
 data class Listing(

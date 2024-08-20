@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.kilt.data.Config
+import com.example.kilt.repository.FlatRepositoryImpl
 import com.example.kilt.repository.HomeSaleRepository
 import com.example.myapplication.data.HomeSale
 import kotlinx.coroutines.launch
@@ -19,6 +20,15 @@ class HomeSaleViewModel : ViewModel() {
     var topListings = mutableStateOf<List<String>>(emptyList())
         private set
 
+    fun getListingProps(): List<String>? {
+        val flat = FlatRepositoryImpl()
+        val t = config.value?.listingStructures?.let { listingStructures ->
+            flat.getListingProps(1, 2, 6, listingStructures)
+        }
+        Log.d("wwww", "loadHomeSale: $t")
+        return t
+    }
+
     fun loadHomeSale() {
         viewModelScope.launch {
             try {
@@ -27,12 +37,17 @@ class HomeSaleViewModel : ViewModel() {
 
                 Log.d("www", "loadHomesale: ${homeSale.value}")
                 Log.d("ww", "loadConfig: ${config.value?.listingStructures}")
-
+                Log.d("w1","probLabels: ${config.value?.propLabels?.size}")
+                Log.d("w2", "loadHomeSale: ${config.value?.propMapping?.furniture_list?.list?.get(0)}")
+                val flat = FlatRepositoryImpl()
+                val t = config.value?.listingStructures?.let { listingStructures ->
+                    flat.getListingProps(1, 1, 2, listingStructures)
+                }
+                Log.d("w3", "loadHomeSale: $t")
 
 
                 updateTopListings()
             } catch (e: Exception) {
-                // Обработка ошибок
             }
         }
     }

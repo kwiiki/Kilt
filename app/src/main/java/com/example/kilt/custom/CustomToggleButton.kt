@@ -35,8 +35,8 @@ fun CustomToggleButton(
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
-            .height(51.dp)
-            .clip(RoundedCornerShape(18.dp))
+            .height(48.dp)
+            .clip(RoundedCornerShape(12.dp))
             .background(backgroundBrush)
             .clickable { onClick() }
             .padding(horizontal = 24.dp)
