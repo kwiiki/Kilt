@@ -31,7 +31,6 @@ fun OnlyOwnersSection() {
             checked = checked,
             onCheckedChange = { checked = it },
             colors = CheckboxDefaults.colors(
-                checkedColor = Color(0xff4747d1),
                 uncheckedColor = Color.Black,
                 checkmarkColor = Color.White
             ),
