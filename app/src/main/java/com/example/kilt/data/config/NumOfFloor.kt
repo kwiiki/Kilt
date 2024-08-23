@@ -1,6 +1,4 @@
 package com.example.kilt.data.config
 
-data class NumOfFloor(
-    val id: Int,
-    val name: Int
-)
+data class NumOfFloor(override val id: Int, override val name: String): FilterItem()
+

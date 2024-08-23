@@ -1,8 +1,7 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 
 package com.example.kilt.screens.searchpage
 
-import androidx.compose.animation.core.TweenSpec
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,10 +15,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetValue
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -34,14 +39,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.kilt.R
 import com.example.kilt.screens.searchpage.filter.FilterPage
+import com.example.kilt.screens.searchpage.filter.FilterTopAppBar
 import com.example.kilt.screens.searchpage.filter.PriorityBottomSheet
+import com.example.kilt.viewmodels.ConfigViewModel
 
 
 @Composable
-fun SearchAndFilterSection() {
+fun SearchAndFilterSection(configViewModel: ConfigViewModel) {
     var openPriorityBottomSheet by remember { mutableStateOf(false) }
     var openFilterBottomSheet by remember { mutableStateOf(false) }
     var selectedOption by remember { mutableStateOf<String?>(null) }
@@ -50,7 +60,7 @@ fun SearchAndFilterSection() {
     )
     val filterBottomSheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
-        confirmValueChange = { true }
+        confirmValueChange = { it != SheetValue.Hidden }
     )
 
     Column {
@@ -119,21 +129,49 @@ fun SearchAndFilterSection() {
             sheetState = filterBottomSheetState,
             onDismissRequest = { openFilterBottomSheet = false },
             dragHandle = {
-//                Box(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .height(30.dp)
-//                        .background(Color.White)
-//                ) {
-//                    BottomSheetDefaults.DragHandle(
-//                        modifier = Modifier
-//                            .align(Alignment.Center),
-//                        color = Color(0xff010101)
-//                    )
-//                }
+                BottomSheetDefaults.DragHandle()
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color.White),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(
+                        onClick ={ openFilterBottomSheet = false
+                        }, modifier = Modifier.padding(start = 8.dp)
+                    ) {
+                        Icon(
+                            Icons.Default.Close, contentDescription = "Close",
+                            tint = Color(0xff566982),
+                            modifier = Modifier.size(30.dp)
+                        )
+                    }
+                    Text(
+                        "Фильтр",
+                        color = Color(0xff010101),
+                        fontWeight = FontWeight.W700,
+                        fontSize = 18.sp,
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 35.dp),
+                        textAlign = TextAlign.Center
+                    )
+                    TextButton(
+                        onClick = {
+                        },
+                        modifier = Modifier.padding(end = 16.dp)
+                    ) {
+                        Text(
+                            "Стереть",
+                            color = Color(0xff566982),
+                            fontWeight = FontWeight.W400,
+                            fontSize = 16.sp
+                        )
+                    }
+                }
             }
         ) {
-            FilterPage()
+            FilterPage(configViewModel)
         }
     }
     LaunchedEffect(bottomSheetState) {
@@ -145,10 +183,3 @@ fun SearchAndFilterSection() {
             }
     }
 }
-
-
-//@Composable
-//@Preview(showBackground = true)
-//fun PreviewSearchAndFilterSection() {
-//    SearchAndFilterSection()
-//}

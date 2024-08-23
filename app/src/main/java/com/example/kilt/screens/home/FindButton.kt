@@ -16,6 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,7 +34,7 @@ fun FindButton(modifier: Modifier = Modifier) {
     val gradient = Brush.verticalGradient(
         colors = listOf(Color(0xFF3244E4), Color(0xFF1B278F)),
         startY = 0f,
-        endY = 300f
+        endY = 200f
     )
 
     Row(modifier = modifier.fillMaxWidth()) {
@@ -63,7 +64,11 @@ fun FindButton(modifier: Modifier = Modifier) {
                         tint = Color.White
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "Поиск", color = Color.White)
+                    Text(
+                        text = "Поиск",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Color.White
+                    )
                 }
             }
         }

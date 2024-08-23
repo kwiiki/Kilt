@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -48,33 +49,52 @@ fun News(navController: NavHostController) {
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
 
-            Text(text = "6 июля, 2022 года")
+            Text(text = "6 июля, 2022 года", style = MaterialTheme.typography.labelSmall)
 
             Text(
                 text = "Когда в присоединённых районах Алматы появится качественная вода",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.W500,
-                modifier = Modifier.fillMaxWidth()
+                fontSize = 26.sp,
+                modifier = Modifier.fillMaxWidth(),
+                style = MaterialTheme.typography.labelMedium,
+                lineHeight = 25.sp
             )
 
             Text(
                 text = "Проблема качественного водоснабжения в присоединённых районах Алматы постепенно решается. До конца 2022 года власти обещают сдать в эксплуатацию новый водозабор, который обеспечит центральным водоснабжением жителей нескольких микрорайонов.\n" +
-                        "", lineHeight = 24.sp, fontWeight = FontWeight.W500
+                        "", lineHeight = 24.sp, style = MaterialTheme.typography.bodyLarge
             )
 
-            Text(text = "По заверению акима города Ерболата Досаева, в этом году завершится" +
-                    " строительство станции на р. Каргалы. Качественная вода поступит в дома мкр" +
-                    " Карагайлы, Каргалы, Курамыс, Тастыбулак и Таусамалы. Также в этом году начнут строить " +
-                    "станцию на р. Аксай и завершат разработку ПСД водозабора Ерменсай.", lineHeight = 24.sp,fontWeight = FontWeight.W500)
+            Text(
+                text = "По заверению акима города Ерболата Досаева, в этом году завершится" +
+                        " строительство станции на р. Каргалы. Качественная вода поступит в дома мкр" +
+                        " Карагайлы, Каргалы, Курамыс, Тастыбулак и Таусамалы. Также в этом году начнут строить " +
+                        "станцию на р. Аксай и завершат разработку ПСД водозабора Ерменсай.",
+                lineHeight = 24.sp,
+                style = MaterialTheme.typography.bodyLarge
+            )
 
-            Image(painter = img2, contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxWidth())
+            Image(
+                painter = img2,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxWidth()
+            )
 
-            Text(text = "Запуск объектов обеспечит центральным водоснабжением более 150 тысяч жителей.\n" +
-                    "Кроме того, продолжается строительство водопровода (в этом году планируется сдать более 371 км) и канализации (более 260 км).", lineHeight = 24.sp, fontWeight = FontWeight.W500)
-            
-            Text(text = "Параллельно решается вопрос с электросетями: строится две электроподстанции. В этом году запустят одну из них — «Алмагуль». Запуск второй намечен на июль 2023 года. Также до конца года модернизируют 138 км электросетей.", lineHeight = 24.sp, fontWeight = FontWeight.W500)
+            Text(
+                text = "Запуск объектов обеспечит центральным водоснабжением более 150 тысяч жителей.\n" +
+                        "Кроме того, продолжается строительство водопровода (в этом году планируется сдать более 371 км) и канализации (более 260 км).",
+                lineHeight = 24.sp,
+                style = MaterialTheme.typography.bodyLarge
+            )
 
-          //  LazyRowForBlog(modifier = Modifier, navController = navController)
+            Text(
+                text = "Параллельно решается вопрос с электросетями: строится две электроподстанции. В этом году запустят одну из них — «Алмагуль». Запуск второй намечен на июль 2023 года. Также до конца года модернизируют 138 км электросетей.",
+                lineHeight = 24.sp,
+                style = MaterialTheme.typography.bodyLarge
+
+            )
+
+              LazyRowForBlog(modifier = Modifier, navController = navController)
         }
     }
 }

@@ -5,6 +5,5 @@ data class BalconyGlass(
 )
 
 data class BalconyGlassItem(
-    val id: Int,
-    val name: String
-)
+    override val id:Int,override val name:String
+):FilterItem()

@@ -1,3 +1,4 @@
 package com.example.kilt.data.config
 
-data class Designations(val id: Int, val name: String)
+data class Designations( override val id:Int,override val name:String
+):FilterItem()

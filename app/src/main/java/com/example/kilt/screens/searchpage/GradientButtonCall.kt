@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -20,6 +21,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.kilt.R
 
@@ -41,7 +43,9 @@ fun GradientButton(
         Row(
             modifier = Modifier
                 .background(gradient, shape = RoundedCornerShape(12.dp))
-                .padding(horizontal = 16.dp, vertical = 8.dp).weight(1f).height(45.dp),
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .weight(1f)
+                .height(45.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
@@ -50,7 +54,12 @@ fun GradientButton(
                 contentDescription = null
             )
             Spacer(modifier = Modifier.width(6.dp))
-            Text(text = text, color = textColor)
+            Text(
+                text = text,
+                color = textColor,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.W600
+            )
         }
     }
 }

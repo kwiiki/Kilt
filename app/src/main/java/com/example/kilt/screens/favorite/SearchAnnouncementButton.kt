@@ -33,7 +33,7 @@ fun SearchAnnouncementButton(navController: NavHostController) {
     val gradient = Brush.verticalGradient(
         colors = listOf(Color(0xFF3244E4), Color(0xFF1B278F)),
         startY = 0f,
-        endY = 300f
+        endY = 200f
     )
 
     Row(modifier = Modifier.fillMaxWidth()) {

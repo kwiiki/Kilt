@@ -1,7 +1,9 @@
 package com.example.kilt.screens.searchpage.filter
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxColors
 import androidx.compose.material3.CheckboxDefaults
@@ -16,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
@@ -24,28 +27,27 @@ fun OnlyOwnersSection() {
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { checked = !checked } // Toggle checkbox on click
+            .padding(horizontal = 8.dp)
     ) {
-
         Checkbox(
             checked = checked,
             onCheckedChange = { checked = it },
             colors = CheckboxDefaults.colors(
                 uncheckedColor = Color.Black,
-                checkmarkColor = Color.White
+                checkmarkColor = Color.White,
+                checkedColor = Color(0xff1a1aff)
             ),
-
-            )
-
-        Text(
-            "Только от хозяев",
-                 fontSize = 16.sp,
-                 fontWeight = FontWeight.W400
         )
-
+        Text(
+            text = "Только от хозяев",
+            fontSize = 16.sp,
+            fontWeight = FontWeight.W400,
+            modifier = Modifier.padding(start = 8.dp)
+        )
     }
-
-
 }
 
 @Preview(showBackground = true)

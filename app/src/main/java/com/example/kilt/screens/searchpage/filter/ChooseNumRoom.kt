@@ -29,7 +29,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.kilt.data.NumRoom
+import com.example.kilt.data.config.NumRoom
 import com.example.kilt.viewmodels.HomeSaleViewModel
 
 @Composable
@@ -84,7 +84,7 @@ fun NumberRoomFilterButton(
 
 @Composable
 fun NumberRoomFilterButtons(
-    filters: List<NumRoom>?,
+    filters: List<com.example.kilt.data.config.NumRoom>?,
     onFilterSelected: (List<Int>) -> Unit
 ) {
     var selectedFilters by remember { mutableStateOf<List<Int>>(emptyList()) }

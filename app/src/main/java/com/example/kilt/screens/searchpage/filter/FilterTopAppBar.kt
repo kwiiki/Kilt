@@ -29,7 +29,7 @@ fun FilterTopAppBar() {
         verticalAlignment = Alignment.CenterVertically
     ) {
         IconButton(
-            onClick = { // Handle back navigation / },
+            onClick ={
             }, modifier = Modifier.padding(start = 8.dp)
         ) {
             Icon(

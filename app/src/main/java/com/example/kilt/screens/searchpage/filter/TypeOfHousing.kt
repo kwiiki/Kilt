@@ -32,25 +32,74 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.kilt.R
 import com.example.kilt.custom.CustomToggleButton
+import com.example.kilt.viewmodels.ConfigViewModel
 
 @Composable
-fun TypeOfHousing(modifier: Modifier) {
+fun TypeOfHousing(modifier: Modifier, configViewModel: ConfigViewModel) {
+    var isResidentialSelected by remember { mutableStateOf(true) }
+    var isCommercialSelected by remember { mutableStateOf(false) }
+    var selectedIcon by remember { mutableStateOf("builds") }
     var isRentSelected by remember { mutableStateOf(true) }
     var isBuySelected by remember { mutableStateOf(false) }
 
-    Column(modifier = modifier.padding()) {
+
+    fun updateConfig() {
+        val dealType = if (isRentSelected) 1 else 2
+        val listingType = if (isResidentialSelected) 1 else 2
+        val propertyType = when {
+            isCommercialSelected -> 6
+            selectedIcon == "builds" -> 1
+            else -> 2
+        }
+        configViewModel.setTypes(dealType, listingType, propertyType)
+    }
+
+    Column(modifier = modifier) {
+        Row(
+            modifier = modifier
+                .fillMaxWidth()
+                .height(50.dp)
+                .clip(shape = RoundedCornerShape(15.dp))
+                .background(Color(0xffF2F2F2))
+                .padding(4.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            CustomToggleButton(
+                text = "Арендовать",
+                isSelected = isRentSelected,
+                onClick = {
+                    isRentSelected = true
+                    isBuySelected = false
+                    updateConfig()
+                },
+                modifier = Modifier.weight(1f)
+            )
+            CustomToggleButton(
+                text = "Купить",
+                isSelected = isBuySelected,
+                onClick = {
+                    isRentSelected = false
+                    isBuySelected = true
+                    updateConfig()
+                },
+                modifier = Modifier.weight(1f)
+            )
+        }
+        Spacer(modifier = Modifier.height(24.dp))
+        Divider()
+        Spacer(modifier = Modifier.height(12.dp))
         Text(
             "Тип Жилья",
             color = Color(0xff010101),
             fontWeight = FontWeight.W700,
             fontSize = 18.sp,
-            modifier = Modifier.padding(start = 8.dp)
+            modifier = Modifier.padding(start = 10.dp)
         )
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(12.dp))
         Row(
             modifier = modifier
                 .fillMaxWidth()
-                .height(48.dp)
+                .height(50.dp)
                 .clip(shape = RoundedCornerShape(15.dp))
                 .background(Color(0xffF2F2F2))
                 .padding(4.dp),
@@ -58,31 +107,31 @@ fun TypeOfHousing(modifier: Modifier) {
         ) {
             CustomToggleButton(
                 text = "Жилая",
-                isSelected = isRentSelected,
+                isSelected = isResidentialSelected,
                 onClick = {
-                    isRentSelected = true
-                    isBuySelected = false
+                    isResidentialSelected = true
+                    isCommercialSelected = false
+                    updateConfig()
                 },
                 modifier = Modifier.weight(1f)
             )
             CustomToggleButton(
                 text = "Коммерческая",
-                isSelected = isBuySelected,
+                isSelected = isCommercialSelected,
                 onClick = {
-                    isRentSelected = false
-                    isBuySelected = true
+                    isResidentialSelected = false
+                    isCommercialSelected = true
+                    updateConfig()
                 },
                 modifier = Modifier.weight(1f)
             )
         }
-
-        if (isRentSelected) {
-            var selectedIcon by remember { mutableStateOf("builds") }
+        if (isResidentialSelected) {
             Spacer(modifier = Modifier.height(16.dp))
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 16.dp),
+                    .padding(start = 12.dp),
             ) {
                 Column(verticalArrangement = Arrangement.Center) {
                     Box(
@@ -97,13 +146,16 @@ fun TypeOfHousing(modifier: Modifier) {
                                 color = Color(0xffF2F2F2),
                                 RoundedCornerShape(14.dp)
                             )
-                            .clickable { selectedIcon = "builds" }
+                            .clickable {
+                                selectedIcon = "builds"
+                                updateConfig()
+                            }
                     ) {
                         Icon(
                             imageVector = ImageVector.vectorResource(
                                 id = if (selectedIcon == "builds") R.drawable.selected_builds_icon else R.drawable.unselected_builds_icon
                             ),
-                            contentDescription = "Icon 1",
+                            contentDescription ="Icon 1",
                             tint = if (selectedIcon == "builds") Color(0xff3F4FE0) else Color.Unspecified,
                             modifier = Modifier
                                 .align(alignment = Alignment.Center)
@@ -116,7 +168,6 @@ fun TypeOfHousing(modifier: Modifier) {
                         fontSize = 13.sp,
                         modifier = Modifier.padding(start = 10.dp),
                         fontWeight = FontWeight.Medium
-
                     )
                 }
                 Spacer(modifier = Modifier.width(20.dp))
@@ -133,7 +184,10 @@ fun TypeOfHousing(modifier: Modifier) {
                                 color = Color(0xffF2F2F2),
                                 RoundedCornerShape(14.dp)
                             )
-                            .clickable { selectedIcon = "house" }
+                            .clickable {
+                                selectedIcon = "house"
+                                updateConfig()
+                            }
                     ) {
                         Icon(
                             imageVector = ImageVector.vectorResource(

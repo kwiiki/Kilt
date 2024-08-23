@@ -31,7 +31,6 @@ fun CustomToggleButton(
         colors = listOf(Color(0xFF3244E4), Color(0xFF1B278F))
     ) else gradient
     val textColor = if (isSelected) Color(0xffFFFFFF) else Color(0xff566982)
-
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier

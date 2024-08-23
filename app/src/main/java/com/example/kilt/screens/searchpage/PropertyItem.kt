@@ -27,28 +27,24 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.kilt.R
-import com.example.kilt.data.Home
+import com.example.kilt.screens.searchpage.homedetails.formatNumber
+import com.example.kilt.screens.searchpage.homedetails.gradient
 import com.example.kilt.utills.imageCdnUrl
 import com.example.kilt.viewmodels.HomeSaleViewModel
 
-val gradient = Brush.verticalGradient(
-    colors = listOf(Color(0xFF3244E4), Color(0xFF1B278F))
-)
 
 @Composable
-fun PropertyItem(home: Home, navController: NavHostController) {
+fun PropertyItem(navController: NavHostController) {
     val homeSaleViewModel: HomeSaleViewModel = viewModel()
     val topListings by homeSaleViewModel.topListings
     val homeSale by homeSaleViewModel.homeSale
@@ -98,15 +94,12 @@ fun PropertyItem(home: Home, navController: NavHostController) {
             ) {
                 Chip(text = "Собственник")
             }
-
             Text(
-                text = "${homeSale?.listing?.price} ₸",
-                style = MaterialTheme.typography.bodySmall,
+                text = "${formatNumber(homeSale?.listing?.price.toString())} ₸",
+                style = MaterialTheme.typography.labelMedium,
                 fontSize = 24.sp,
-                fontWeight = FontWeight.W700,
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 5.dp)
             )
-
             Row(
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
             ) {
@@ -115,10 +108,12 @@ fun PropertyItem(home: Home, navController: NavHostController) {
                         "num_rooms" -> {
                             IconText(
                                 icon = ImageVector.vectorResource(id = R.drawable.group_icon),
-                                text = "${homeSale?.listing?.num_rooms} комн"
-                            )
+                                text = "${homeSale?.listing?.num_rooms} комн",
+
+                                )
                             Spacer(modifier = Modifier.width(12.dp))
                         }
+
                         "area" -> {
                             IconText(
                                 icon = ImageVector.vectorResource(id = R.drawable.room_icon),
@@ -126,6 +121,7 @@ fun PropertyItem(home: Home, navController: NavHostController) {
                             )
                             Spacer(modifier = Modifier.width(10.dp))
                         }
+
                         "floor" -> {
                             IconText(
                                 icon = ImageVector.vectorResource(id = R.drawable.building_icon),
@@ -133,6 +129,7 @@ fun PropertyItem(home: Home, navController: NavHostController) {
                             )
                             Spacer(modifier = Modifier.width(10.dp))
                         }
+
                         else -> Log.d("PropertyItem", "Unexpected item in topListings: $item")
                     }
                 }
@@ -141,9 +138,8 @@ fun PropertyItem(home: Home, navController: NavHostController) {
             Text(
                 text = homeSale?.listing?.address_string.toString(),
                 style = MaterialTheme.typography.labelSmall,
+                fontSize = 16.sp,
                 color = Color(0xff6B6D79),
-                fontSize = 14.sp,
-                fontWeight = FontWeight.W400,
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
             )
 
@@ -207,6 +203,11 @@ fun IconText(icon: ImageVector, text: String) {
             modifier = Modifier
         )
         Spacer(modifier = Modifier.width(4.dp))
-        Text(text = text, fontSize = 14.sp, color = Color(0xff6B6D79))
+        Text(
+            text = text,
+            fontSize = 14.sp,
+            color = Color(0xff6B6D79),
+            style = MaterialTheme.typography.labelSmall
+        )
     }
 }

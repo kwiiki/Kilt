@@ -1,3 +1,4 @@
 package com.example.kilt.data.config
 
-data class Locateds(val id:Int,val name:String)
+data class Locateds( override val id:Int,override val name:String
+):FilterItem()

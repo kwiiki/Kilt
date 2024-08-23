@@ -39,7 +39,7 @@ fun FloorNum(homeSaleViewModel: HomeSaleViewModel) {
     val numFloorList = homeSaleViewModel.config.value?.propMapping?.floor?.list
     Log.d("numFloorList", "FloorNum: $numFloorList")
     NumberFloorFilterButtons(
-        filters = numFloorList,
+        filters = numFloorList as List<NumOfFloor>?,
         onFilterSelected = { selectedFilters ->
             println("Выбраны фильтры: $selectedFilters")
         }
@@ -56,8 +56,8 @@ fun NumberFloorFilterButton(
     Box(
         modifier = Modifier
             .height(40.dp)
-            .widthIn(35.dp)// Увеличенная минимальная ширина
-            .wrapContentWidth() // Позволяет расширяться при необходимости
+            .widthIn(35.dp)
+            .wrapContentWidth()
             .border(
                 width = 1.5.dp,
                 color = if (isSelected) Color.Blue else Color(0xffc2c2d6),

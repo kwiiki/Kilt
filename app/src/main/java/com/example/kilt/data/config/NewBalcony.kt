@@ -5,6 +5,5 @@ data class NewBalcony(
 )
 
 data class NewBalconyItem(
-    val id: Int,
-    val name: String
-)
+    override val id:Int,override val name:String
+):FilterItem()

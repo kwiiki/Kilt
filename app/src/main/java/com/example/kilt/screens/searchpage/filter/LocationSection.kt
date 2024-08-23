@@ -1,7 +1,9 @@
 package com.example.kilt.screens.searchpage.filter
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -28,7 +30,10 @@ fun LocationSection(modifier: Modifier) {
                 }
             },
             shape = RoundedCornerShape(18.dp),
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(45.dp),
         )
+        Spacer(modifier = Modifier.height(6.dp))
     }
 }

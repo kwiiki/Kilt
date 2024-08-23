@@ -1,6 +1,5 @@
 package com.example.kilt.data.config
 
 data class BathroomItem(
-    val id: Int,
-    val name: String
-)
+    override val id:Int,override val name:String
+):FilterItem()

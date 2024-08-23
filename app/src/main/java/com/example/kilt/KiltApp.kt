@@ -75,7 +75,7 @@ fun KiltApp() {
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(BottomNavigationScreen.HomePage.route) { HomePage(navController) }
-            composable(BottomNavigationScreen.SaleAndRent.route) { SearchPage(navController) }
+            composable(BottomNavigationScreen.SaleAndRent.route) { SearchPage(navController = navController) }
             composable(BottomNavigationScreen.Favorites.route) { FavoritesScreen(navController) }
             composable(BottomNavigationScreen.Profile.route) { ProfileScreen() }
             composable(Screen.BlogPage.route) { BlogPage(navController) }
@@ -140,6 +140,5 @@ fun BottomNavigationBar(navController: NavHostController) {
                 .height(45.dp)
                 .background(Color.Black)
         )
-
     }
 }

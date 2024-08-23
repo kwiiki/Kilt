@@ -1,8 +1,4 @@
 package com.example.kilt.data.config
 
-//data class Conveniences(
-//    val createdAt: String,
-//    val id: Int,
-//    val label_ru: String,
-//    val updatedAt: String
-//)
+data class Conveniences( override val id:Int,override val name:String
+):FilterItem()

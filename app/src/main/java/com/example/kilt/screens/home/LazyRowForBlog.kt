@@ -24,6 +24,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -57,7 +58,7 @@ fun LazyRowForBlog(modifier: Modifier, navController: NavHostController) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = "Наш блог", fontSize = 25.sp, fontWeight = FontWeight.Bold)
+            Text(text = "Наш блог", fontSize = 25.sp, style = MaterialTheme.typography.labelMedium)
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.clickable {
@@ -66,7 +67,7 @@ fun LazyRowForBlog(modifier: Modifier, navController: NavHostController) {
             ) {
                 Text(
                     text = "Смотреть все",
-                    fontSize = 16.sp,
+                    style = MaterialTheme.typography.bodyLarge,
                     color = Color(0XFF3244E4)
 
                 )
@@ -80,7 +81,6 @@ fun LazyRowForBlog(modifier: Modifier, navController: NavHostController) {
 
         LazyRow(
             modifier = Modifier
-//                .padding(8.dp)
                 .height(400.dp)
         ) {
             items(blogs) { blog ->
@@ -143,7 +143,7 @@ fun BlogItem(blog: Blog, navController: NavHostController) {
                 ) {
                     Text(
                         text = "Покупка квартиры",
-                        fontSize = 14.sp,
+                        style = MaterialTheme.typography.bodySmall,
                         color = Color(0xff6B6D79)
                     )
                 }

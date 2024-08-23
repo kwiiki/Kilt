@@ -1,6 +1,7 @@
 package com.example.kilt.data
 
 import com.example.kilt.data.config.Advanced
+import com.example.kilt.data.config.Conveniences
 import com.example.kilt.data.config.Infrastructures
 import com.example.kilt.data.config.ListingStructures
 import com.example.kilt.data.config.PropMapping

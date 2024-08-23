@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -23,10 +22,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
@@ -37,7 +33,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,39 +44,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
-import com.example.kilt.data.ActiveBusiness
-import com.example.kilt.data.BathroomInsideItem
-import com.example.kilt.data.BusinessCondition
-import com.example.kilt.data.BusinessEntrance
-import com.example.kilt.data.BusinessParking
-import com.example.kilt.data.Communications
-import com.example.kilt.data.Condition
-import com.example.kilt.data.Conveniences
-import com.example.kilt.data.DoorItem
-import com.example.kilt.data.DrinkingWater
-import com.example.kilt.data.Electricity
-import com.example.kilt.data.FormerDormitoryItem
-import com.example.kilt.data.FreePlanning
-import com.example.kilt.data.HasRenters
-import com.example.kilt.data.Heating
-import com.example.kilt.data.InternetItem
-import com.example.kilt.data.IrrigationWater
-import com.example.kilt.data.IsBailedItem
-import com.example.kilt.data.ListOfFurniture
-import com.example.kilt.data.Listing
-import com.example.kilt.data.NumRoom
+import com.example.kilt.data.config.Conveniences
 import com.example.kilt.data.PropLabel
-import com.example.kilt.data.SecurityItem
-import com.example.kilt.data.Sewer
-import com.example.kilt.data.Telephone
-import com.example.kilt.data.TypesOfConstruction
+import com.example.kilt.data.config.Telephone
+import com.example.kilt.data.config.TypesOfConstruction
 import com.example.kilt.data.config.BalconyGlassItem
 import com.example.kilt.data.config.BalconyItem
 import com.example.kilt.data.config.BathroomItem
 import com.example.kilt.data.config.Designations
 import com.example.kilt.data.config.FloorMaterialItem
 import com.example.kilt.data.config.Furnituries
-import com.example.kilt.data.config.Houselines
+import com.example.kilt.data.config.HouseLine
 import com.example.kilt.data.config.Locateds
 import com.example.kilt.data.config.LoggiaItem
 import com.example.kilt.data.config.NewBalconyItem
@@ -91,12 +64,11 @@ import com.example.kilt.data.config.RentPeriodItem
 import com.example.kilt.data.config.SuitsForItem
 import com.example.kilt.data.config.ToiletSeparationItem
 import com.example.kilt.data.config.WindowsItem
-import com.example.kilt.network.RetrofitInstance
-import com.example.kilt.network.SearchResponse
 import com.example.kilt.viewmodels.HomeSaleViewModel
-import com.example.myapplication.data.HomeSale
-import kotlinx.coroutines.launch
+import dagger.hilt.android.AndroidEntryPoint
 
+
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -104,11 +76,11 @@ class MainActivity : ComponentActivity() {
         setContent {
             val navController = rememberNavController()
 //            TestFilterScreen()
-//            KiltApp()
+            KiltApp()
 //            HomeDetailsScreen()
 //            ProfileScreen()
 //            val navController = rememberNavController()
-//           SearchPage(navController = navController)
+//            SearchPage(navController = navController)
 //            HomeDetailsScreen(navController)
 //            val homeSaleViewModel: HomeSaleViewModel = viewModel()
 //            val homeSale by homeSaleViewModel.homeSale
@@ -119,34 +91,36 @@ class MainActivity : ComponentActivity() {
 //            SearchPage(navController =
 
 //            PropertyFilters()
-            val homeSaleViewModel: HomeSaleViewModel = viewModel()
-            homeSaleViewModel.loadHomeSale()
-            val propLabels = homeSaleViewModel.config.value?.propLabels
-            val probs = homeSaleViewModel.getListingProps()
-            val scrollable = rememberScrollState()
-
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(scrollable)
-                    .padding(top = 16.dp)
-            ) {
-                probs?.forEach { prop ->
-                    val matchingLabel = propLabels?.find { it.property == prop }
-                    when (matchingLabel?.filter_type) {
-                        "list" -> {
-                            TypeOfConstruction(
-                                homeSaleViewModel = homeSaleViewModel,
-                                prop = prop,
-                                title = matchingLabel.label_ru
-                            )
-                        }
-                        "range" -> RangeFilter(matchingLabel.label_ru)
-                        else -> {}
-                    }
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
-            }
+//            val homeSaleViewModel: HomeSaleViewModel by viewModels()
+//            homeSaleViewModel.loadHomeSale()
+//            val propLabels = homeSaleViewModel.config.value?.propLabels
+//            val probs = homeSaleViewModel.getListingProps()
+//            val scrollable = rememberScrollState()
+//
+//            Column(
+//                modifier = Modifier
+//                    .fillMaxSize()
+//                    .verticalScroll(scrollable)
+//                    .padding(top = 16.dp)
+//            ) {
+//                probs?.forEach { prop ->
+//                    val matchingLabel = propLabels?.find { it.property == prop }
+//                    when (matchingLabel?.filter_type) {
+//                        "list" -> {
+//                            TypeOfConstruction(
+//                                homeSaleViewModel = homeSaleViewModel,
+//                                prop = prop,
+//                                title = matchingLabel.label_ru
+//                            )
+//                        }
+//                        "range" -> RangeFilter(matchingLabel.label_ru)
+//                        else -> {}
+//                    }
+//                    Spacer(modifier = Modifier.height(16.dp))
+//                }
+//            }
+//        }
+//    }
         }
     }
 }
@@ -208,12 +182,12 @@ fun  TypeOfConstruction(
         getId = { (it as? Any)?.let { item ->
             when (item) {
                 is NumOfFloor -> item.id.toString()
-                is NumRoom -> item.id.toString()
-                is ListOfFurniture -> item.id.toString()
+                is com.example.kilt.data.config.NumRoom -> item.id.toString()
+                is com.example.kilt.data.config.ListOfFurniture -> item.id.toString()
                 is Conveniences -> item.id.toString()
                 is RentPeriodItem -> item.id.toString()
-                is BathroomInsideItem -> item.id.toString()
-                is SecurityItem -> item.id.toString()
+                is com.example.kilt.data.config.BathroomInsideItem -> item.id.toString()
+                is com.example.kilt.data.config.SecurityItem -> item.id.toString()
                 is NewBalconyItem -> item.id.toString()
                 is ToiletSeparationItem -> item.id.toString()
                 is LoggiaItem ->item.id.toString()
@@ -221,44 +195,44 @@ fun  TypeOfConstruction(
                 is SuitsForItem -> item.id.toString()
                 is TypesOfConstruction -> item.id.toString()
                 is Furnituries -> item.id.toString()
-                is FormerDormitoryItem -> item.id.toString()
-                is InternetItem -> item.id.toString()
+                is com.example.kilt.data.config.FormerDormitoryItem -> item.id.toString()
+                is com.example.kilt.data.config.InternetItem -> item.id.toString()
                 is BalconyGlassItem -> item.id.toString()
-                is DoorItem -> item.id.toString()
+                is com.example.kilt.data.config.DoorItem -> item.id.toString()
                 is ParkingItem -> item.id.toString()
                 is FloorMaterialItem -> item.id.toString()
-                is IsBailedItem -> item.id.toString()
+                is com.example.kilt.data.config.IsBailedItem -> item.id.toString()
                 is BathroomItem ->item.id.toString()
                 is BalconyItem ->item.id.toString()
-                is Condition ->item.id.toString()
-                is Heating ->item.id.toString()
-                is Sewer->item.id.toString()
-                is DrinkingWater ->item.id.toString()
-                is IrrigationWater ->item.id.toString()
-                is Electricity ->item.id.toString()
+                is com.example.kilt.data.config.Condition ->item.id.toString()
+                is com.example.kilt.data.config.Heating ->item.id.toString()
+                is com.example.kilt.data.config.Sewer ->item.id.toString()
+                is com.example.kilt.data.config.DrinkingWater ->item.id.toString()
+                is com.example.kilt.data.config.IrrigationWater ->item.id.toString()
+                is com.example.kilt.data.config.Electricity ->item.id.toString()
                 is Telephone ->item.id.toString()
                 is Designations ->item.id.toString()
                 is Locateds ->item.id.toString()
-                is ActiveBusiness->item.id.toString()
-                is FreePlanning ->item.id.toString()
-                is BusinessCondition ->item.id.toString()
-                is BusinessParking ->item.id.toString()
-                is BusinessEntrance ->item.id.toString()
-                is Communications ->item.id.toString()
-                is Houselines -> item.id.toString()
-                is HasRenters ->item.id.toString()
+                is com.example.kilt.data.config.ActiveBusiness ->item.id.toString()
+                is com.example.kilt.data.config.FreePlanning ->item.id.toString()
+                is com.example.kilt.data.config.BusinessCondition ->item.id.toString()
+                is com.example.kilt.data.config.BusinessParking ->item.id.toString()
+                is com.example.kilt.data.config.BusinessEntrance ->item.id.toString()
+                is com.example.kilt.data.config.Communications ->item.id.toString()
+                is HouseLine -> item.id.toString()
+                is com.example.kilt.data.config.HasRenters ->item.id.toString()
                 else -> item.toString()
             }
         } ?: "" },
         getName = { (it as? Any)?.let { item ->
             when (item) {
                 is NumOfFloor -> item.name.toString()
-                is NumRoom -> item.name.toString()
-                is ListOfFurniture -> item.name
+                is com.example.kilt.data.config.NumRoom -> item.name.toString()
+                is com.example.kilt.data.config.ListOfFurniture -> item.name
                 is Conveniences -> item.name
                 is RentPeriodItem -> item.name
-                is BathroomInsideItem -> item.name
-                is SecurityItem -> item.name
+                is com.example.kilt.data.config.BathroomInsideItem -> item.name
+                is com.example.kilt.data.config.SecurityItem -> item.name
                 is NewBalconyItem -> item.name
                 is ToiletSeparationItem -> item.name
                 is LoggiaItem ->item.name
@@ -266,32 +240,32 @@ fun  TypeOfConstruction(
                 is SuitsForItem -> item.name
                 is TypesOfConstruction -> item.name
                 is Furnituries -> item.name
-                is FormerDormitoryItem -> item.name
-                is InternetItem -> item.name
+                is com.example.kilt.data.config.FormerDormitoryItem -> item.name
+                is com.example.kilt.data.config.InternetItem -> item.name
                 is BalconyGlassItem -> item.name
-                is DoorItem -> item.name
+                is com.example.kilt.data.config.DoorItem -> item.name
                 is ParkingItem -> item.name
                 is FloorMaterialItem -> item.name
-                is IsBailedItem -> item.name
+                is com.example.kilt.data.config.IsBailedItem -> item.name
                 is BathroomItem ->item.name
                 is BalconyItem ->item.name
-                is Condition ->item.name
-                is Heating ->item.name
-                is Sewer->item.name
-                is DrinkingWater ->item.name
-                is IrrigationWater ->item.name
-                is Electricity ->item.name
+                is com.example.kilt.data.config.Condition ->item.name
+                is com.example.kilt.data.config.Heating ->item.name
+                is com.example.kilt.data.config.Sewer ->item.name
+                is com.example.kilt.data.config.DrinkingWater ->item.name
+                is com.example.kilt.data.config.IrrigationWater ->item.name
+                is com.example.kilt.data.config.Electricity ->item.name
                 is Telephone ->item.name
                 is Designations ->item.name
                 is Locateds ->item.name
-                is ActiveBusiness->item.name
-                is FreePlanning ->item.name
-                is BusinessCondition ->item.name
-                is BusinessParking ->item.name
-                is BusinessEntrance ->item.name
-                is Communications ->item.name
-                is Houselines -> item.name
-                is HasRenters ->item.name
+                is com.example.kilt.data.config.ActiveBusiness ->item.name
+                is com.example.kilt.data.config.FreePlanning ->item.name
+                is com.example.kilt.data.config.BusinessCondition ->item.name
+                is com.example.kilt.data.config.BusinessParking ->item.name
+                is com.example.kilt.data.config.BusinessEntrance ->item.name
+                is com.example.kilt.data.config.Communications ->item.name
+                is HouseLine -> item.name
+                is com.example.kilt.data.config.HasRenters ->item.name
                 else -> item.toString()
             }
         } ?: "" },
@@ -475,7 +449,7 @@ fun RangeFilter(propLabel: PropLabel) {
 }
 
 @Composable
-fun ListFilter(propLabel: PropLabel, items: List<NumRoom>) {
+fun ListFilter(propLabel: PropLabel, items: List<com.example.kilt.data.config.NumRoom>) {
     Column {
         Text(propLabel.label_ru)
         LazyRow {
@@ -519,98 +493,12 @@ fun ToggleFilter(propLabel: PropLabel) {
     }
 }
 
-fun getListForProperty(property: String?, numRooms: List<NumRoom>?): List<NumRoom>? {
+fun getListForProperty(property: String?, numRooms: List<com.example.kilt.data.config.NumRoom>?): List<com.example.kilt.data.config.NumRoom>? {
     return when (property) {
         "num_rooms" -> numRooms
         // Add other properties here if needed
         else -> null
     }
 }
-
-
-@Composable
-fun SearchScreen() {
-    val coroutineScope = rememberCoroutineScope()
-    var searchResult by remember { mutableStateOf<SearchResponse?>(null) }
-    var isLoading by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
-
-    LaunchedEffect(Unit) {
-        isLoading = true
-        errorMessage = null
-
-        coroutineScope.launch {
-            try {
-                val request = HomeSale(
-                    listing = Listing(
-
-                        deal_type = 2,
-                        listing_type = 1,
-                        property_type = 1,
-                        num_rooms = 3,
-                        price = "1500000",
-                        status = 1,
-                        first_image = "",
-                        num_floors = 1,
-                        address_string = "",
-                        floor = 32,
-                        description = "",
-                        built_year = 2010,
-                        images = listOf(),
-                        designation = "",
-                        where_located = 2,
-                        line_of_houses = 3,
-                        ceiling_height = 2.5,
-                        furniture = 3
-                    ),
-
-                    page = 0,
-                    sorting = "new"
-                )
-
-                val response = RetrofitInstance.api.search(request)
-                searchResult = response
-            } catch (e: Exception) {
-                errorMessage = e.message
-            } finally {
-                isLoading = false
-            }
-        }
-    }
-
-    Box(modifier = Modifier.fillMaxSize()) {
-        when {
-            isLoading -> {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-            }
-
-            errorMessage != null -> {
-                Text(
-                    text = "Error: $errorMessage",
-                    color = Color.Black,
-                    modifier = Modifier.align(Alignment.Center)
-                )
-            }
-
-            searchResult != null -> {
-                Log.d("results", "SearchScreen: ${searchResult.toString()}")
-            }
-        }
-    }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

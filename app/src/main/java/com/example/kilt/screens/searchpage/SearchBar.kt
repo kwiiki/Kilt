@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
@@ -41,7 +42,14 @@ fun SearchBar(
         modifier = modifier
             .fillMaxWidth(0.88f)
             .height(55.dp),
-        placeholder = { Text(hint, color = Color(0xff6B6D79), fontSize = 17.sp) },
+        placeholder = {
+            Text(
+                hint,
+                color = Color(0xff6B6D79),
+                fontSize = 17.sp,
+                style = MaterialTheme.typography.bodyLarge
+            )
+        },
         colors = TextFieldDefaults.outlinedTextFieldColors(
             focusedBorderColor = Color.Gray,
             unfocusedBorderColor = Color.LightGray,
@@ -62,7 +70,7 @@ fun SearchBar(
 
 @Composable
 @Preview(showBackground = true)
-fun PreviewSearchBar(){
+fun PreviewSearchBar() {
     SearchBar()
 
 }

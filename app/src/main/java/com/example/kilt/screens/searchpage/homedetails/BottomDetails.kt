@@ -22,7 +22,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.kilt.screens.searchpage.GradientButton
 import com.example.kilt.screens.searchpage.WhatsAppGradientButton
-import com.example.kilt.screens.searchpage.gradient
 
 @Composable
 fun BottomDetails(modifier: Modifier) {
