@@ -45,7 +45,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.kilt.R
 import com.example.kilt.screens.searchpage.filter.FilterPage
-import com.example.kilt.screens.searchpage.filter.FilterTopAppBar
 import com.example.kilt.screens.searchpage.filter.PriorityBottomSheet
 import com.example.kilt.viewmodels.ConfigViewModel
 
@@ -62,6 +61,10 @@ fun SearchAndFilterSection(configViewModel: ConfigViewModel) {
         skipPartiallyExpanded = true,
         confirmValueChange = { it != SheetValue.Hidden }
     )
+
+    LaunchedEffect(Unit) {
+        configViewModel.loadConfig()
+    }
 
     Column {
         Row(verticalAlignment = Alignment.CenterVertically) {

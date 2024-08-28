@@ -3,6 +3,7 @@ package com.example.kilt.data
 import com.example.kilt.data.config.Image
 
 data class Listing(
+    val id:Int,
     val deal_type: Int,
     val listing_type: Int,
     val property_type: Int,

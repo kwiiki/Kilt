@@ -33,9 +33,14 @@ import androidx.compose.ui.unit.sp
 import com.example.kilt.R
 import com.example.kilt.custom.CustomToggleButton
 import com.example.kilt.viewmodels.ConfigViewModel
+import com.example.kilt.viewmodels.SearchViewModel
 
 @Composable
-fun TypeOfHousing(modifier: Modifier, configViewModel: ConfigViewModel) {
+fun TypeOfHousing(
+    modifier: Modifier,
+    configViewModel: ConfigViewModel,
+    searchViewModel: SearchViewModel
+) {
     var isResidentialSelected by remember { mutableStateOf(true) }
     var isCommercialSelected by remember { mutableStateOf(false) }
     var selectedIcon by remember { mutableStateOf("builds") }
@@ -43,7 +48,7 @@ fun TypeOfHousing(modifier: Modifier, configViewModel: ConfigViewModel) {
     var isBuySelected by remember { mutableStateOf(false) }
 
 
-    fun updateConfig() {
+    fun updateFilters() {
         val dealType = if (isRentSelected) 1 else 2
         val listingType = if (isResidentialSelected) 1 else 2
         val propertyType = when {
@@ -51,9 +56,12 @@ fun TypeOfHousing(modifier: Modifier, configViewModel: ConfigViewModel) {
             selectedIcon == "builds" -> 1
             else -> 2
         }
-        configViewModel.setTypes(dealType, listingType, propertyType)
-    }
 
+        configViewModel.setTypes(dealType,listingType,propertyType)
+
+//            searchViewModel.updateFilters(newFilters)
+        searchViewModel.performSearch()
+    }
     Column(modifier = modifier) {
         Row(
             modifier = modifier
@@ -70,7 +78,7 @@ fun TypeOfHousing(modifier: Modifier, configViewModel: ConfigViewModel) {
                 onClick = {
                     isRentSelected = true
                     isBuySelected = false
-                    updateConfig()
+                    updateFilters()
                 },
                 modifier = Modifier.weight(1f)
             )
@@ -80,7 +88,7 @@ fun TypeOfHousing(modifier: Modifier, configViewModel: ConfigViewModel) {
                 onClick = {
                     isRentSelected = false
                     isBuySelected = true
-                    updateConfig()
+                    updateFilters()
                 },
                 modifier = Modifier.weight(1f)
             )
@@ -111,7 +119,7 @@ fun TypeOfHousing(modifier: Modifier, configViewModel: ConfigViewModel) {
                 onClick = {
                     isResidentialSelected = true
                     isCommercialSelected = false
-                    updateConfig()
+                    updateFilters()
                 },
                 modifier = Modifier.weight(1f)
             )
@@ -121,7 +129,7 @@ fun TypeOfHousing(modifier: Modifier, configViewModel: ConfigViewModel) {
                 onClick = {
                     isResidentialSelected = false
                     isCommercialSelected = true
-                    updateConfig()
+                    updateFilters()
                 },
                 modifier = Modifier.weight(1f)
             )
@@ -148,14 +156,14 @@ fun TypeOfHousing(modifier: Modifier, configViewModel: ConfigViewModel) {
                             )
                             .clickable {
                                 selectedIcon = "builds"
-                                updateConfig()
+                                updateFilters()
                             }
                     ) {
                         Icon(
                             imageVector = ImageVector.vectorResource(
                                 id = if (selectedIcon == "builds") R.drawable.selected_builds_icon else R.drawable.unselected_builds_icon
                             ),
-                            contentDescription ="Icon 1",
+                            contentDescription = "Icon 1",
                             tint = if (selectedIcon == "builds") Color(0xff3F4FE0) else Color.Unspecified,
                             modifier = Modifier
                                 .align(alignment = Alignment.Center)
@@ -186,7 +194,7 @@ fun TypeOfHousing(modifier: Modifier, configViewModel: ConfigViewModel) {
                             )
                             .clickable {
                                 selectedIcon = "house"
-                                updateConfig()
+                                updateFilters()
                             }
                     ) {
                         Icon(

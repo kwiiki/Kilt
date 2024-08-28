@@ -25,11 +25,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.kilt.navigation.BottomNavigationScreen
 import com.example.kilt.navigation.Screen
 import com.example.kilt.screens.blog.BlogPage
@@ -39,6 +42,9 @@ import com.example.kilt.screens.home.HomePage
 import com.example.kilt.screens.profile.ProfileScreen
 import com.example.kilt.screens.searchpage.SearchPage
 import com.example.kilt.screens.searchpage.homedetails.HomeDetailsScreen
+import com.example.kilt.viewmodels.ConfigViewModel
+import com.example.kilt.viewmodels.HomeSaleViewModel
+import com.example.kilt.viewmodels.SearchViewModel
 
 
 @Composable
@@ -46,6 +52,10 @@ fun KiltApp() {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
+    val searchViewModel: SearchViewModel = hiltViewModel()
+    val configViewModel: ConfigViewModel = hiltViewModel()
+    val homeSaleViewModel:HomeSaleViewModel = hiltViewModel()
+
 
     val bottomBarRoutes = listOf(
         BottomNavigationScreen.HomePage.route,
@@ -75,12 +85,25 @@ fun KiltApp() {
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(BottomNavigationScreen.HomePage.route) { HomePage(navController) }
-            composable(BottomNavigationScreen.SaleAndRent.route) { SearchPage(navController = navController) }
+            composable(BottomNavigationScreen.SaleAndRent.route) {
+                SearchPage(
+                    homeSaleViewModel= homeSaleViewModel,
+                    configViewModel = configViewModel,
+                    searchViewModel = searchViewModel,
+                    navController = navController
+                )
+            }
             composable(BottomNavigationScreen.Favorites.route) { FavoritesScreen(navController) }
             composable(BottomNavigationScreen.Profile.route) { ProfileScreen() }
             composable(Screen.BlogPage.route) { BlogPage(navController) }
             composable(Screen.News.route) { News(navController) }
-            composable(Screen.HomeDetails.route) { HomeDetailsScreen(navController) }
+            composable(
+                route = Screen.HomeDetails.route,
+                arguments = listOf(navArgument("id") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val id = backStackEntry.arguments?.getString("id")
+                HomeDetailsScreen(navController, id)
+            }
         }
     }
 }

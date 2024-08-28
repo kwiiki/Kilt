@@ -22,7 +22,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -40,14 +39,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.kilt.data.config.FilterItem
 import com.example.kilt.viewmodels.ConfigViewModel
+import com.example.kilt.viewmodels.SearchViewModel
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun FilterPage(configViewModel: ConfigViewModel) {
-    FilterContent(configViewModel = configViewModel)
+fun FilterPage(configViewModel: ConfigViewModel,searchViewModel: SearchViewModel = hiltViewModel()) {
+    FilterContent(configViewModel = configViewModel,searchViewModel)
 //    Scaffold(
 ////        topBar = { FilterTopAppBar() },
 //        content = { FilterContent(configViewModel) },
@@ -55,7 +56,7 @@ fun FilterPage(configViewModel: ConfigViewModel) {
 }
 
 @Composable
-fun FilterContent(configViewModel: ConfigViewModel) {
+fun FilterContent(configViewModel: ConfigViewModel, searchViewModel: SearchViewModel) {
     val config by configViewModel.config.collectAsState()
     val listingProps by configViewModel.listingProps.collectAsState()
 
@@ -71,10 +72,7 @@ fun FilterContent(configViewModel: ConfigViewModel) {
     ) {
 //        ButtonRow(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp), configViewModel)
 //        Divider()
-        TypeOfHousing(
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
-            configViewModel = configViewModel
-        )
+        TypeOfHousing(modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp), configViewModel = configViewModel, searchViewModel = searchViewModel)
         Divider()
         LocationSection(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
         Divider()
@@ -91,17 +89,6 @@ fun FilterContent(configViewModel: ConfigViewModel) {
         }
     }
 }
-
-@Composable
-fun Divider() {
-    Spacer(
-        modifier = Modifier
-            .height(1.5.dp)
-            .fillMaxWidth()
-            .background(Color(0xffe6e6e6))
-    )
-}
-
 @Composable
 fun RangeFilter(prop: String, title: String) {
     var minPrice by remember { mutableStateOf("") }
@@ -187,9 +174,7 @@ fun ListFilter(
         title = title,
         onFilterSelected = { selectedFilters ->
             println("chooseFilter: $selectedFilters")
-            // Here you can update your ViewModel with the selected filter IDs
-            // You might need to add a method to your ViewModel to handle this
-            // viewModel.updateSelectedFilters(prop, selectedFilters)
+
         }
     )
 }
@@ -285,4 +270,13 @@ fun FilterButton(
             textAlign = TextAlign.Center
         )
     }
+}
+@Composable
+fun Divider() {
+    Spacer(
+        modifier = Modifier
+            .height(1.5.dp)
+            .fillMaxWidth()
+            .background(Color(0xffe6e6e6))
+    )
 }

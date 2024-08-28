@@ -6,6 +6,7 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
@@ -41,12 +42,15 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.kilt.R
 import com.example.kilt.data.config.Image
 import com.example.kilt.navigation.NavPath
@@ -58,35 +62,57 @@ import kotlin.math.roundToInt
 
 @Composable
 fun ImageSlider(
+    imageList: List<Image>?,
     modifier: Modifier,
     onFullScreenToggle: (Boolean) -> Unit,
     navController: NavHostController,
 ) {
     val homeSaleViewModel: HomeSaleViewModel = viewModel()
-    val homeSale by homeSaleViewModel.homeSale
-    homeSaleViewModel.loadHomeSale()
-    val listing = homeSale?.listing
-    val imageList = listing?.images ?: emptyList()
+    var isLoading by remember { mutableStateOf(true) }
+
+    LaunchedEffect(Unit) {
+        homeSaleViewModel.loadHomeSale()
+        isLoading = false
+    }
 
     var selectedImage by remember { mutableStateOf<Image?>(null) }
     val listState = rememberLazyListState()
 
-    if (selectedImage != null) {
-        FullScreenPhotoScreen(
-            photoUrl = "${imageCdnUrl}${selectedImage!!.link}",
-            onClose = {
-                selectedImage = null
-                onFullScreenToggle(false)
-            },
-        )
-        onFullScreenToggle(true)
-    } else {
-        PhotosScreen(
-            images = imageList,
-            onPhotoClick = { selectedImage = it },
-            onBackClick = { navController.navigate(NavPath.SEARCH.name) },
-            onFavoriteClick = { /* Handle favorite click */ },
-            listState = listState
+    when {
+        selectedImage != null -> {
+            FullScreenPhotoScreen(
+                photoUrl = "${imageCdnUrl}${selectedImage!!.link}",
+                onClose = {
+                    selectedImage = null
+                    onFullScreenToggle(false)
+                },
+            )
+            onFullScreenToggle(true)
+        }
+        isLoading || imageList == null -> {
+            LoadingIndicator()
+        }
+        else -> {
+            PhotosScreen(
+                images = imageList,
+                onPhotoClick = { selectedImage = it },
+                onBackClick = { navController.navigate(NavPath.SEARCH.name) },
+                onFavoriteClick = { /* Handle favorite click */ },
+                listState = listState
+            )
+        }
+    }
+}
+
+@Composable
+fun LoadingIndicator() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator(
+            color = Color.Gray,
+            modifier = Modifier.size(50.dp)
         )
     }
 }
@@ -107,32 +133,32 @@ fun PhotosScreen(
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator(
-                    color = MaterialTheme.colorScheme.primary,
+                    color = Color.Green,
                     modifier = Modifier.size(50.dp)
                 )
             }
-//            if (images.isEmpty()) {
-//                Box(
-//                    modifier = Modifier.fillMaxSize(),
-//                    contentAlignment = Alignment.TopCenter
-//                ) {
-//                    Image(
-//                        painter = painterResource(id = R.drawable.image_empty),
-//                        contentDescription = null,
-//                        modifier = Modifier.fillMaxSize()
-//                    )
-//                    Box(
-//                        modifier = Modifier.fillMaxSize(),
-//                        contentAlignment = Alignment.Center
-//                    ) {
-//                        Icon(
-//                            imageVector = ImageVector.vectorResource(id = R.drawable.camera_icon),
-//                            contentDescription = null,
-//                            tint = Color.White
-//                        )
-//                    }
-//                }
-//            }
+            if (images.isEmpty()) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.TopCenter
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.image_empty),
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = ImageVector.vectorResource(id = R.drawable.camera_icon),
+                            contentDescription = null,
+                            tint = Color.White
+                        )
+                    }
+                }
+            }
         } else {
             LazyColumn(state = listState) {
                 items(images) { image ->
@@ -181,6 +207,8 @@ fun PhotoItem(image: Image, onPhotoClick: (Image) -> Unit) {
     val scaleFactor = screenWidth / image.width.toFloat()
     val adjustedHeight = image.height.toFloat() * scaleFactor
 
+    var isLoading by remember { mutableStateOf(true) }
+
     Box(
         modifier = Modifier
             .padding(vertical = 4.dp)
@@ -188,18 +216,40 @@ fun PhotoItem(image: Image, onPhotoClick: (Image) -> Unit) {
             .clickable { onPhotoClick(image) }
     ) {
         AsyncImage(
-            model = photoUrl,
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(photoUrl)
+                .crossfade(true)
+                .listener(
+                    onSuccess = { _, _ -> isLoading = false },
+                    onError = { _, _ -> isLoading = false }
+                )
+                .build(),
             contentDescription = null,
             contentScale = ContentScale.FillBounds,
-            modifier = Modifier.height(adjustedHeight.dp).width(500.dp)
+            modifier = Modifier
+                .height(adjustedHeight.dp)
+                .width(500.dp)
         )
+
+        if (isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.LightGray),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
     }
 }
 
 @Composable
 fun FullScreenPhotoScreen(photoUrl: String, onClose: () -> Unit) {
     var offsetY by remember { mutableStateOf(0f) }
-    val dismissThreshold = 300f
+    val dismissThreshold = 100f
     var isClosed by remember { mutableStateOf(false) }
     val offsetYAnimated by animateFloatAsState(
         targetValue = offsetY,
@@ -215,7 +265,7 @@ fun FullScreenPhotoScreen(photoUrl: String, onClose: () -> Unit) {
     )
     LaunchedEffect(isClosed) {
         if (isClosed) {
-            delay(200) // завершения анимации
+            delay(100) // завершения анимации
             onClose()
         }
     }

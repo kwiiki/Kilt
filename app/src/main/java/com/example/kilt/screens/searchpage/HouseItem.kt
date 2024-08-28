@@ -1,4 +1,4 @@
-package com.example.kilt.testrest
+package com.example.kilt.screens.searchpage
 
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -27,59 +27,53 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
 import com.example.kilt.R
-import com.example.kilt.screens.searchpage.Chip
-import com.example.kilt.screens.searchpage.GradientButton
-import com.example.kilt.screens.searchpage.IconText
-import com.example.kilt.screens.searchpage.WhatsAppGradientButton
+import com.example.kilt.data.PropertyItem
+import com.example.kilt.navigation.NavPath
+import com.example.kilt.screens.searchpage.homedetails.formatNumber
+import com.example.kilt.screens.searchpage.homedetails.gradient
+import com.example.kilt.utills.imageCdnUrl
 import com.example.kilt.viewmodels.HomeSaleViewModel
-import com.example.myapplication.data.HomeSale
 
-val gradient = Brush.verticalGradient(
-    colors = listOf(Color(0xFF3244E4), Color(0xFF1B278F))
-)
 
 @Composable
-fun TestPropertyItem(homeSale: HomeSale?, navController: NavHostController) {
-    val homeSaleViewModel: HomeSaleViewModel = viewModel()
+fun HouseItem(
+    homeSaleViewModel: HomeSaleViewModel,
+    search: PropertyItem,
+    navController: NavHostController
+) {
     val topListings by homeSaleViewModel.topListings
-
-
     LaunchedEffect(Unit) {
         homeSaleViewModel.loadHomeSale()
     }
-    Log.d("PropertyItem", "topListings: $topListings")
-
-
+    Log.d("PropertyItem", "topListings: $search")
     Card(
         shape = RoundedCornerShape(16.dp),
         modifier = Modifier
             .padding(vertical = 8.dp)
             .fillMaxWidth()
             .background(Color(0xffFFFFFF))
-            .clickable { navController.navigate("HomeDetails") },
+            .clickable {
+                navController.navigate("${NavPath.HOMEDETAILS.name}/${search.id}")
+            },
         elevation = CardDefaults.cardElevation(15.dp)
     ) {
         Column(modifier = Modifier.background(Color(0xffFFFFFF))) {
             Box {
-                Image(
-                    painter = painterResource(id = R.drawable.kv1),
+                AsyncImage(
+                    model = "${imageCdnUrl}${search.first_image}",
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(150.dp)
+                    modifier = Modifier.height(150.dp)
                 )
                 IconButton(
                     onClick = { /* TODO: Handle favorite click */ },
@@ -102,16 +96,13 @@ fun TestPropertyItem(homeSale: HomeSale?, navController: NavHostController) {
             ) {
                 Chip(text = "Собственник")
             }
-
-            Log.d("w1", "PropertyItem: ${homeSale?.listing?.price}")
             Text(
-                text = "${homeSale?.listing?.price.toString()} ₸",
-                style = MaterialTheme.typography.bodySmall,
+                text = "${formatNumber(search.price)} ₸" ,
+                style = MaterialTheme.typography.labelMedium,
                 fontSize = 24.sp,
-                fontWeight = FontWeight.W700,
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 5.dp)
             )
-
+            Log.d("houseItemPrice", "HouseItem: ${search.price}")
             Row(
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
             ) {
@@ -120,35 +111,37 @@ fun TestPropertyItem(homeSale: HomeSale?, navController: NavHostController) {
                         "num_rooms" -> {
                             IconText(
                                 icon = ImageVector.vectorResource(id = R.drawable.group_icon),
-                                text = "${homeSale?.listing?.num_rooms} комн"
-                            )
+                                text = "${search.num_rooms} комн",
+                                )
                             Spacer(modifier = Modifier.width(12.dp))
                         }
+
                         "area" -> {
                             IconText(
                                 icon = ImageVector.vectorResource(id = R.drawable.room_icon),
-                                text = "${homeSale?.listing?.area} м²"
+                                text = "${search.area.toInt()} м²"
                             )
                             Spacer(modifier = Modifier.width(10.dp))
                         }
+
                         "floor" -> {
                             IconText(
                                 icon = ImageVector.vectorResource(id = R.drawable.building_icon),
-                                text = "${homeSale?.listing?.floor}/${homeSale?.listing?.num_floors}"
+                                text = "${search.floor}/${search.num_floors}"
                             )
                             Spacer(modifier = Modifier.width(10.dp))
                         }
+
                         else -> Log.d("PropertyItem", "Unexpected item in topListings: $item")
                     }
                 }
             }
 
             Text(
-                text = homeSale?.listing?.address_string.toString(),
+                text = search.address_string,
                 style = MaterialTheme.typography.labelSmall,
+                fontSize = 16.sp,
                 color = Color(0xff6B6D79),
-                fontSize = 14.sp,
-                fontWeight = FontWeight.W400,
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
             )
 
@@ -178,3 +171,47 @@ fun TestPropertyItem(homeSale: HomeSale?, navController: NavHostController) {
 }
 
 
+
+
+@Composable
+fun Chip(text: String) {
+    Card(
+        onClick = { /*TODO*/ },
+        elevation = CardDefaults.cardElevation(4.dp),
+        shape = RoundedCornerShape(8.dp),
+
+        ) {
+        Row(
+            modifier = Modifier
+                .background(Color(0xFFFFFFFF), shape = RoundedCornerShape(8.dp))
+                .padding(horizontal = 8.dp, vertical = 4.dp)
+        ) {
+            Image(
+                imageVector = ImageVector.vectorResource(id = R.drawable.chield_check_fill),
+                contentDescription = null,
+                modifier = Modifier
+            )
+            Spacer(modifier = Modifier.width(4.dp))
+            Text(text = text, color = Color(0xFF56B375))
+        }
+    }
+
+}
+
+@Composable
+fun IconText(icon: ImageVector, text: String) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            modifier = Modifier
+        )
+        Spacer(modifier = Modifier.width(4.dp))
+        Text(
+            text = text,
+            fontSize = 14.sp,
+            color = Color(0xff6B6D79),
+            style = MaterialTheme.typography.labelSmall
+        )
+    }
+}

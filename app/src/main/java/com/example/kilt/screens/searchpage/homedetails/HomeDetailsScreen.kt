@@ -1,6 +1,9 @@
 package com.example.kilt.screens.searchpage.homedetails
 
 import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -26,6 +29,7 @@ import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,24 +46,37 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.kilt.R
 import com.example.kilt.screens.searchpage.IconText
-import com.example.kilt.screens.searchpage.homeList
 import com.example.kilt.viewmodels.HomeSaleViewModel
+import com.example.kilt.viewmodels.SearchViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeDetailsScreen(navController: NavHostController) {
+fun HomeDetailsScreen(
+    navController: NavHostController,
+    id: String?,
+    searchViewModel: SearchViewModel = hiltViewModel(),
+) {
     val scrollState = rememberScrollState()
     val scaffoldState = rememberBottomSheetScaffoldState()
     var isFullScreenPhotoVisible by remember { mutableStateOf(false) }
-    val homeSaleViewModel: HomeSaleViewModel = viewModel()
-    val homeSale by homeSaleViewModel.homeSale
-    homeSaleViewModel.loadHomeSale()
+    val homeSaleViewModel: HomeSaleViewModel = hiltViewModel()
+    val homeSale by homeSaleViewModel.home.collectAsState()
     val topListings by homeSaleViewModel.topListings
+    val isLoading by homeSaleViewModel.isLoading.collectAsState()
+
+
+    LaunchedEffect(id) {
+        id?.let {
+            homeSaleViewModel.loadConfig()
+            homeSaleViewModel.loadById(it)
+
+        }
+    }
 
     var openBottomSheet by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
@@ -67,8 +84,18 @@ fun HomeDetailsScreen(navController: NavHostController) {
         skipPartiallyExpanded = true
     )
 
+
+    val searchResult by searchViewModel.searchResult.collectAsState()
+
+    val propertyItem = remember(searchResult, id) {
+        id?.let { searchViewModel.getPropertyById(it) }
+    }
+
     LaunchedEffect(Unit) {
-        homeSaleViewModel.loadHomeSale()
+        homeSaleViewModel.topListings
+        if (searchViewModel.searchResult.value == null) {
+            searchViewModel.performSearch()
+        }
     }
 
     Box(
@@ -82,14 +109,17 @@ fun HomeDetailsScreen(navController: NavHostController) {
                 onDismissRequest = { openBottomSheet = false },
                 dragHandle = {
                     Column(
-                        modifier = Modifier.fillMaxWidth().height(50.dp).background(Color.White),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp)
+                            .background(Color.White),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         BottomSheetDefaults.DragHandle(color = Color(0xff010101))
                     }
                 }
             ) {
-                BottomSheetContent(homeSale?.listing?.price.toString(),
+                BottomSheetContent(propertyItem?.price.toString(),
                     onHideButtonClick = {
                         scope.launch { bottomSheetState.hide() }.invokeOnCompletion {
                             if (!bottomSheetState.isVisible) openBottomSheet = false
@@ -112,14 +142,18 @@ fun HomeDetailsScreen(navController: NavHostController) {
                             .background(Color(0xffffffff))
                             .verticalScroll(scrollState),
                     ) {
-                        Text(
-                            text = "${homeSale?.listing?.price} ₸",
-                            style = MaterialTheme.typography.bodySmall,
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.W700,
-                            modifier = Modifier.padding(start = 8.dp, bottom = 5.dp)
-                        )
-
+                        Log.d("testPrice", "HomeDetailsScreen: ${homeSale?.listing?.price}")
+                        AnimatedVisibility(
+                            visible = !isLoading,
+                            enter = fadeIn() + expandVertically()
+                        ) {
+                            Text(
+                                text = "${formatNumber(homeSale?.listing?.price.toString())} ₸",
+                                style = MaterialTheme.typography.labelMedium,
+                                fontSize = 24.sp,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 5.dp)
+                            )
+                        }
                         Row(
                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                         ) {
@@ -156,14 +190,20 @@ fun HomeDetailsScreen(navController: NavHostController) {
                                 }
                             }
                         }
-                        Text(
-                            text = homeSale?.listing?.address_string ?: "",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = Color(0xff6B6D79),
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.W400,
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                        )
+
+                        AnimatedVisibility(
+                            visible = !isLoading,
+                            enter = fadeIn() + expandVertically()
+                        ) {
+                            Text(
+                                text = homeSale?.listing?.address_string.toString(),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = Color(0xff6B6D79),
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.W400,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                            )
+                        }
                         Spacer(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -171,7 +211,6 @@ fun HomeDetailsScreen(navController: NavHostController) {
                                 .background(Color(0xffDBDFE4))
                         )
                         Calculator(onClick = { openBottomSheet = true })
-
                         Spacer(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -194,12 +233,11 @@ fun HomeDetailsScreen(navController: NavHostController) {
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = homeSale?.listing?.description.toString(),
+                            text = homeSale?.listing?.description ?: "",
                             fontSize = 16.sp,
                             color = Color(0xff566982),
                             modifier = Modifier.padding(horizontal = 16.dp)
                         )
-
                         Text(
                             text = "Информация",
                             color = Color.Black,
@@ -207,10 +245,8 @@ fun HomeDetailsScreen(navController: NavHostController) {
                             fontSize = 22.sp,
                             modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
                         )
-                        InfoSection(homeSaleViewModel)
-
+                        InfoSection(homeSale,homeSaleViewModel)
                         Spacer(modifier = Modifier.height(8.dp))
-
                         val builtYear = homeSaleViewModel.homeSale.value?.listing?.built_year
                         if (builtYear != null && builtYear != 0) {
                             Text(
@@ -222,31 +258,28 @@ fun HomeDetailsScreen(navController: NavHostController) {
                             )
                             InfoHomeSection(homeSaleViewModel)
                         }
-
-                        Text(
-                            text = "Похожие",
-                            color = Color.Black,
-                            fontWeight = FontWeight.W700,
-                            fontSize = 22.sp,
-                            modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
-                        )
-                        Row {
-
-                            LazyRow(modifier = Modifier.padding(horizontal = 8.dp)) {
-                                items(homeList) { home ->
-                                    PropertyItemForSimilar(home, navController)
-                                }
-                            }
-                        }
-
-
+//                        Text(
+//                            text = "Похожие",
+//                            color = Color.Black,
+//                            fontWeight = FontWeight.W700,
+//                            fontSize = 22.sp,
+//                            modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
+//                        )
+//                        Row {
+//
+//                            LazyRow(modifier = Modifier.padding(horizontal = 8.dp)) {
+//                                items(homeList) { home ->
+//                                    PropertyItemForSimilar(home, navController)
+//                                }
+//                            }
+//                        }
                         Spacer(modifier = Modifier.height(110.dp))
                     }
                 }
             }
         ) { innerPadding ->
-            // ImageSlider
             ImageSlider(
+                propertyItem?.images,
                 Modifier.padding(innerPadding),
                 onFullScreenToggle = { isFullScreen ->
                     isFullScreenPhotoVisible = isFullScreen
@@ -257,8 +290,5 @@ fun HomeDetailsScreen(navController: NavHostController) {
         if (!isFullScreenPhotoVisible) {
             BottomDetails(modifier = Modifier.zIndex(1f))
         }
-
     }
 }
-
-

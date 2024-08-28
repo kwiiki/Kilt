@@ -1,7 +1,5 @@
 package com.example.kilt.screens.searchpage.homedetails
 
-import android.util.Log
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,35 +13,33 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.kilt.data.Config
 import com.example.kilt.viewmodels.HomeSaleViewModel
 import com.example.myapplication.data.HomeSale
 
 @Composable
-fun InfoSection(homeSaleViewModel: HomeSaleViewModel) {
-    val homeSale by homeSaleViewModel.homeSale
-    homeSaleViewModel.loadHomeSale()
+fun InfoSection(homeSale: HomeSale?, homeSaleViewModel: HomeSaleViewModel) {
+    val homeSaleView by homeSaleViewModel.homeSale
+//    homeSaleViewModel.loadHomeSale()
     val config = homeSaleViewModel.config
 
-    when (homeSale?.listing?.property_type) {
+    when (homeSaleView?.listing?.property_type) {
         1 -> {
             if (homeSale != null && config.value != null) {
-                FlatInfoSection(homeSale!!, config.value!!)
+                FlatInfoSection(homeSale, config.value!!)
             }
         }
         2 -> {
-            if (homeSale != null && config.value != null) {
-                HomeInfoSection(homeSale!!, config.value!!)
+            if (homeSaleView != null && config.value != null) {
+                HomeInfoSection(homeSaleView!!, config.value!!)
             }
         }
         else -> {
-            if (homeSale != null && config.value != null) {
-                CommercialInfoSection(homeSale, config.value!!)
+            if (homeSaleView != null && config.value != null) {
+                CommercialInfoSection(homeSaleView, config.value!!)
             }
         }
     }
@@ -61,9 +57,9 @@ fun CommercialInfoSection(homeSale: HomeSale?, config: Config) {
         configList.find { it.id == id }
     }
     val matchingLocation =
-        homeSale?.listing?.where_located?.let { locatedList?.find { it.id == homeSale.listing.where_located } }
+        homeSale?.listing?.where_located?.let { locatedList.find { it.id == homeSale.listing.where_located } }
     val matchingLineHouse =
-        homeSale?.listing?.line_of_houses?.let { lineList?.find { it.id == homeSale.listing.line_of_houses } }
+        homeSale?.listing?.line_of_houses?.let { lineList.find { it.id == homeSale.listing.line_of_houses } }
 
     Column(
         modifier = Modifier
