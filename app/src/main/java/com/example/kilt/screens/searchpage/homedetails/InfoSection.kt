@@ -1,5 +1,6 @@
 package com.example.kilt.screens.searchpage.homedetails
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -23,22 +24,24 @@ import com.example.myapplication.data.HomeSale
 @Composable
 fun InfoSection(homeSale: HomeSale?, homeSaleViewModel: HomeSaleViewModel) {
     val homeSaleView by homeSaleViewModel.homeSale
-//    homeSaleViewModel.loadHomeSale()
+    homeSaleViewModel.loadHomeSale()
     val config = homeSaleViewModel.config
 
-    when (homeSaleView?.listing?.property_type) {
+    Log.d("comer", "InfoSection: ${homeSale?.listing?.property_type}")
+    Log.d("comer", "InfoSection: ${homeSale}")
+    when (homeSale?.listing?.property_type) {
         1 -> {
             if (homeSale != null && config.value != null) {
                 FlatInfoSection(homeSale, config.value!!)
             }
         }
         2 -> {
-            if (homeSaleView != null && config.value != null) {
+            if (homeSale != null && config.value != null) {
                 HomeInfoSection(homeSaleView!!, config.value!!)
             }
         }
         else -> {
-            if (homeSaleView != null && config.value != null) {
+            if (homeSale != null && config.value != null) {
                 CommercialInfoSection(homeSaleView, config.value!!)
             }
         }

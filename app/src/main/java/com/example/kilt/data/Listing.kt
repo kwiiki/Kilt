@@ -15,7 +15,7 @@ data class Listing(
     val first_image: String,
     val num_floors: Int,
     val floor: Int,
-    val area: Int = 0,
+    val area: Double = 0.0,
     val address_string: String,
     val description: String,
     val built_year: Int,

@@ -17,9 +17,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.kilt.R
 import com.example.kilt.custom.CustomToggleButton
+import com.example.kilt.data.Filters
 import com.example.kilt.viewmodels.ConfigViewModel
 import com.example.kilt.viewmodels.SearchViewModel
 
@@ -46,6 +49,7 @@ fun TypeOfHousing(
     var selectedIcon by remember { mutableStateOf("builds") }
     var isRentSelected by remember { mutableStateOf(true) }
     var isBuySelected by remember { mutableStateOf(false) }
+    val updatedSearchViewModel = rememberUpdatedState(searchViewModel)
 
 
     fun updateFilters() {
@@ -59,9 +63,11 @@ fun TypeOfHousing(
 
         configViewModel.setTypes(dealType,listingType,propertyType)
 
-//            searchViewModel.updateFilters(newFilters)
+        searchViewModel.updateFilters(Filters(dealType,listingType,propertyType))
+
         searchViewModel.performSearch()
     }
+
     Column(modifier = modifier) {
         Row(
             modifier = modifier
@@ -217,6 +223,9 @@ fun TypeOfHousing(
                     )
                 }
             }
+        }
+        LaunchedEffect(isRentSelected, isBuySelected, isResidentialSelected, isCommercialSelected, selectedIcon) {
+            updateFilters()
         }
     }
 }

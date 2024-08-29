@@ -15,6 +15,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,23 +35,32 @@ fun SearchPage(
     navController: NavHostController,
     searchViewModel: SearchViewModel
 ) {
-    val searchResult by searchViewModel.searchResult.collectAsState()
-    val isLoading by searchViewModel.isLoading.collectAsState()
-    val error by searchViewModel.error.collectAsState()
-    val filters by searchViewModel.filters.collectAsState()
+    val searchResult by remember { searchViewModel.searchResult }.collectAsState()
+    val isLoading by remember { searchViewModel.isLoading }.collectAsState()
+    val error by remember { searchViewModel.error }.collectAsState()
+    val filters by remember { searchViewModel.filters }.collectAsState()
 
     // Обновление при изменении фильтров
     LaunchedEffect(filters) {
+        Log.d("SearchPage", "Filters updated: $filters")
         searchViewModel.performSearch()
     }
+    LaunchedEffect(searchResult) {
+        Log.d("SearchPage1", "Search result updated: ${searchResult?.list?.size}")
+    }
 
-    Log.d("SearchPage", "Search result: $searchResult")
+
+    Log.d("SearchPage", "Search result: ${searchResult?.list?.get(0)}")
+    Log.d("SearchPage", "Filters: $filters")
+    Log.d("SearchPage", "Is loading: $isLoading")
+    Log.d("SearchPage", "Error: $error")
+    Log.d("SearchPage", "Search result size: ${searchResult?.list?.size}")
 
     Column(
         modifier = Modifier
             .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
-        SearchAndFilterSection(configViewModel)
+        SearchAndFilterSection(configViewModel,searchViewModel)
         Spacer(modifier = Modifier.height(8.dp))
         when {
             isLoading -> {
@@ -65,8 +76,10 @@ fun SearchPage(
             searchResult != null -> {
                 LazyColumn {
                     items(searchResult!!.list, key = { it.id }) { search ->
-                        HouseItem(homeSaleViewModel, search, navController)
-                        Log.d("search price", "SearchPage: ${searchResult!!.list[0]}")
+                        key(search.id) {  // Добавьте эту строку
+                            HouseItem(homeSaleViewModel, search, navController,configViewModel)
+                        }
+                        Log.d("search price", "SearchPage: $search")
                     }
                 }
             }

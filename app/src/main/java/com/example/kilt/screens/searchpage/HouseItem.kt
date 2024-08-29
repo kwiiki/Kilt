@@ -24,6 +24,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,7 +34,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.kilt.R
@@ -42,6 +42,7 @@ import com.example.kilt.navigation.NavPath
 import com.example.kilt.screens.searchpage.homedetails.formatNumber
 import com.example.kilt.screens.searchpage.homedetails.gradient
 import com.example.kilt.utills.imageCdnUrl
+import com.example.kilt.viewmodels.ConfigViewModel
 import com.example.kilt.viewmodels.HomeSaleViewModel
 
 
@@ -49,12 +50,15 @@ import com.example.kilt.viewmodels.HomeSaleViewModel
 fun HouseItem(
     homeSaleViewModel: HomeSaleViewModel,
     search: PropertyItem,
-    navController: NavHostController
+    navController: NavHostController,
+    configViewModel: ConfigViewModel
 ) {
-    val topListings by homeSaleViewModel.topListings
+    val topListings by configViewModel.listingTop.collectAsState()
+
     LaunchedEffect(Unit) {
         homeSaleViewModel.loadHomeSale()
     }
+    Log.d("HouseItem", "Recomposing item with id: ${search.id}")
     Log.d("PropertyItem", "topListings: $search")
     Card(
         shape = RoundedCornerShape(16.dp),
@@ -97,7 +101,7 @@ fun HouseItem(
                 Chip(text = "Собственник")
             }
             Text(
-                text = "${formatNumber(search.price)} ₸" ,
+                text = "${formatNumber(search.price)} ₸",
                 style = MaterialTheme.typography.labelMedium,
                 fontSize = 24.sp,
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 5.dp)
@@ -106,35 +110,49 @@ fun HouseItem(
             Row(
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
             ) {
-                topListings.forEach { item ->
-                    when (item.trim()) { // обьязательно нужен трим
+                    Log.d("topListings", "HouseItem: ${topListings}")
+                    Log.d(
+                        "topListings",
+                        "HouseItem: ${search.area} ${search.floor} ${search.num_rooms}"
+                    )
+
+                topListings?.forEach { item ->
+                    Log.d("topListings", "Processing item: ${item.trim()}") // Added log
+
+                    when (item.trim()) { // Ensure item is trimmed properly
                         "num_rooms" -> {
                             IconText(
                                 icon = ImageVector.vectorResource(id = R.drawable.group_icon),
-                                text = "${search.num_rooms} комн",
-                                )
+                                text = "${search.num_rooms} комн"
+                            )
+                            Log.d("topListings", "HouseItem num_rooms: ${search.num_rooms}")
                             Spacer(modifier = Modifier.width(12.dp))
                         }
 
                         "area" -> {
                             IconText(
                                 icon = ImageVector.vectorResource(id = R.drawable.room_icon),
-                                text = "${search.area.toInt()} м²"
+                                text = "${search.area} м²"
                             )
+                            Log.d("topListings", "HouseItem area: ${search.area}")
                             Spacer(modifier = Modifier.width(10.dp))
                         }
+
 
                         "floor" -> {
-                            IconText(
-                                icon = ImageVector.vectorResource(id = R.drawable.building_icon),
-                                text = "${search.floor}/${search.num_floors}"
-                            )
-                            Spacer(modifier = Modifier.width(10.dp))
+                            if (search.floor != 0 && search.num_floors != null) {
+                                IconText(
+                                    icon = ImageVector.vectorResource(id = R.drawable.building_icon),
+                                    text = "${search.floor}/${search.num_floors}"
+                                )
+                                Spacer(modifier = Modifier.width(10.dp))
+                            }
                         }
 
-                        else -> Log.d("PropertyItem", "Unexpected item in topListings: $item")
+                        else -> Log.d("topListings", "Unexpected item in topListings: $item")
                     }
                 }
+
             }
 
             Text(
@@ -169,8 +187,6 @@ fun HouseItem(
         }
     }
 }
-
-
 
 
 @Composable

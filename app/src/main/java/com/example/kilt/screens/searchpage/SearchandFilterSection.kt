@@ -47,10 +47,11 @@ import com.example.kilt.R
 import com.example.kilt.screens.searchpage.filter.FilterPage
 import com.example.kilt.screens.searchpage.filter.PriorityBottomSheet
 import com.example.kilt.viewmodels.ConfigViewModel
+import com.example.kilt.viewmodels.SearchViewModel
 
 
 @Composable
-fun SearchAndFilterSection(configViewModel: ConfigViewModel) {
+fun SearchAndFilterSection(configViewModel: ConfigViewModel, searchViewModel: SearchViewModel) {
     var openPriorityBottomSheet by remember { mutableStateOf(false) }
     var openFilterBottomSheet by remember { mutableStateOf(false) }
     var selectedOption by remember { mutableStateOf<String?>(null) }
@@ -174,7 +175,7 @@ fun SearchAndFilterSection(configViewModel: ConfigViewModel) {
                 }
             }
         ) {
-            FilterPage(configViewModel)
+            FilterPage(configViewModel,searchViewModel)
         }
     }
     LaunchedEffect(bottomSheetState) {

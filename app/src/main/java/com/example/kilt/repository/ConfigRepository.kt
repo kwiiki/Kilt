@@ -6,4 +6,5 @@ import com.example.kilt.data.config.ListingStructures
 interface ConfigRepository {
     suspend fun getConfig(): Config
     suspend fun getListingProps(dealType: Int, listingType: Int, propertyType: Int): List<String>?
+    suspend fun getListingTops(dealType: Int,listingType: Int,propertyType: Int):List<String>?
 }

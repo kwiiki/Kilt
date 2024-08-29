@@ -39,7 +39,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.kilt.data.config.FilterItem
 import com.example.kilt.viewmodels.ConfigViewModel
 import com.example.kilt.viewmodels.SearchViewModel
@@ -47,12 +46,8 @@ import com.example.kilt.viewmodels.SearchViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun FilterPage(configViewModel: ConfigViewModel,searchViewModel: SearchViewModel = hiltViewModel()) {
+fun FilterPage(configViewModel: ConfigViewModel, searchViewModel: SearchViewModel) {
     FilterContent(configViewModel = configViewModel,searchViewModel)
-//    Scaffold(
-////        topBar = { FilterTopAppBar() },
-//        content = { FilterContent(configViewModel) },
-//    )
 }
 
 @Composable
@@ -70,8 +65,6 @@ fun FilterContent(configViewModel: ConfigViewModel, searchViewModel: SearchViewM
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-//        ButtonRow(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp), configViewModel)
-//        Divider()
         TypeOfHousing(modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp), configViewModel = configViewModel, searchViewModel = searchViewModel)
         Divider()
         LocationSection(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
@@ -85,7 +78,6 @@ fun FilterContent(configViewModel: ConfigViewModel, searchViewModel: SearchViewM
                 "list-multiple" -> ListFilter(configViewModel, prop, matchingLabel.label_ru )
                 "range" -> RangeFilter(prop, matchingLabel.label_ru )
             }
-//            Divider()
         }
     }
 }

@@ -15,8 +15,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BottomSheetDefaults
@@ -57,6 +55,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeDetailsScreen(
+    homeSaleViewModel: HomeSaleViewModel,
     navController: NavHostController,
     id: String?,
     searchViewModel: SearchViewModel = hiltViewModel(),
@@ -174,7 +173,6 @@ fun HomeDetailsScreen(
                                         )
                                         Spacer(modifier = Modifier.width(10.dp))
                                     }
-
                                     "floor" -> {
                                         IconText(
                                             icon = ImageVector.vectorResource(id = R.drawable.building_icon),
@@ -278,8 +276,9 @@ fun HomeDetailsScreen(
                 }
             }
         ) { innerPadding ->
+            Log.d("images", "HomeDetailsScreen: ${propertyItem?.images}")
             ImageSlider(
-                propertyItem?.images,
+                homeSale?.listing?.images,
                 Modifier.padding(innerPadding),
                 onFullScreenToggle = { isFullScreen ->
                     isFullScreenPhotoVisible = isFullScreen

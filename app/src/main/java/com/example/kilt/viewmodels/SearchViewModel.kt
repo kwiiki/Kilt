@@ -49,6 +49,7 @@ class SearchViewModel @Inject constructor(
     fun updateFilters(newFilters: Filters) {
         _filters.value = newFilters
         Log.d("SearchViewModel", "Filters updated: ${_filters.value}")
+        performSearch() // Автоматически выполняем поиск при обновлении фильтров
     }
 
     fun getPropertyById(id: String): PropertyItem? {
@@ -98,8 +99,10 @@ class SearchViewModel @Inject constructor(
 
                 // Создайте копию списка перед его назначением в _searchResult
                 _searchResult.value = response.copy(list = response.list.toList())
+                Log.d("SearchViewModel", "Updated _searchResult: ${_searchResult.value}")
 
                 Log.d("SearchViewModel", "Search completed, results: ${response.list.size}")
+                Log.d("SearchViewModel", "Search completed, results: ${response.list[0]}")
                 hasLoadedData = true
             } catch (e: Exception) {
                 _error.value = e.message
