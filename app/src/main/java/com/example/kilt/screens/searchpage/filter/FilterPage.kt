@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -21,6 +22,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,6 +44,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.kilt.data.config.FilterItem
+import com.example.kilt.screens.searchpage.homedetails.gradient
 import com.example.kilt.viewmodels.ConfigViewModel
 import com.example.kilt.viewmodels.SearchViewModel
 
@@ -47,7 +52,53 @@ import com.example.kilt.viewmodels.SearchViewModel
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun FilterPage(configViewModel: ConfigViewModel, searchViewModel: SearchViewModel) {
-    FilterContent(configViewModel = configViewModel,searchViewModel)
+    Box(modifier = Modifier.fillMaxSize()) {
+        FilterContent(configViewModel = configViewModel, searchViewModel)
+        ShowAnnouncementsButton(searchViewModel,
+            Modifier
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 8.dp)
+                .align(alignment = Alignment.BottomCenter)
+        )
+    }
+
+}
+
+@Composable
+fun ShowAnnouncementsButton(searchViewModel: SearchViewModel,modifier: Modifier) {
+    val searchCount by searchViewModel.searchResultCount.collectAsState()
+    Row(modifier = modifier.fillMaxWidth()) {
+        OutlinedButton(
+            onClick = {},
+            contentPadding = PaddingValues(0.dp),
+            colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.Transparent),
+            shape = RoundedCornerShape(12.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+                .background(gradient, RoundedCornerShape(12.dp))
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "Показать ${searchCount.toString()} вариантов",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Color.White
+                    )
+                }
+            }
+        }
+    }
 }
 
 @Composable
@@ -65,7 +116,11 @@ fun FilterContent(configViewModel: ConfigViewModel, searchViewModel: SearchViewM
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        TypeOfHousing(modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp), configViewModel = configViewModel, searchViewModel = searchViewModel)
+        TypeOfHousing(
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
+            configViewModel = configViewModel,
+            searchViewModel = searchViewModel
+        )
         Divider()
         LocationSection(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
         Divider()
@@ -74,17 +129,24 @@ fun FilterContent(configViewModel: ConfigViewModel, searchViewModel: SearchViewM
         listingProps?.forEach { prop ->
             val matchingLabel = config?.propLabels?.find { it.property == prop }
             when (matchingLabel?.filter_type) {
-                "list" -> ListFilter(configViewModel, prop, matchingLabel.label_ru )
-                "list-multiple" -> ListFilter(configViewModel, prop, matchingLabel.label_ru )
-                "range" -> RangeFilter(prop, matchingLabel.label_ru )
+                "list" -> ListFilter(configViewModel, prop, matchingLabel.label_ru, searchViewModel)
+                "list-multiple" -> ListFilter(
+                    configViewModel,
+                    prop,
+                    matchingLabel.label_ru,
+                    searchViewModel
+                )
+
+                "range" -> RangeFilter(prop, matchingLabel.label_ru, searchViewModel)
             }
         }
     }
 }
+
 @Composable
-fun RangeFilter(prop: String, title: String) {
-    var minPrice by remember { mutableStateOf("") }
-    var maxPrice by remember { mutableStateOf("") }
+fun RangeFilter(prop: String, title: String, searchViewModel: SearchViewModel) {
+    var minValue by remember { mutableStateOf("") }
+    var maxValue by remember { mutableStateOf("") }
 
     val trailingText = when (prop) {
         "price" -> "тг."
@@ -106,9 +168,9 @@ fun RangeFilter(prop: String, title: String) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             OutlinedTextField(
-                value = minPrice,
+                value = minValue,
                 onValueChange = { newValue ->
-                    minPrice = newValue.filter { it.isDigit() }
+                    minValue = newValue.filter { it.isDigit() }
                 },
                 modifier = Modifier
                     .weight(1f)
@@ -128,9 +190,9 @@ fun RangeFilter(prop: String, title: String) {
             )
             Text(text = "до", modifier = Modifier.padding(horizontal = 8.dp))
             OutlinedTextField(
-                value = maxPrice,
+                value = maxValue,
                 onValueChange = { newValue ->
-                    maxPrice = newValue.filter { it.isDigit() }
+                    maxValue = newValue.filter { it.isDigit() }
                 },
                 modifier = Modifier
                     .weight(1f)
@@ -148,6 +210,11 @@ fun RangeFilter(prop: String, title: String) {
                     }
                 }
             )
+            LaunchedEffect(minValue, maxValue) {
+                val min = minValue
+                val max = maxValue
+                searchViewModel.updateRangeFilter(prop, min, max)
+            }
         }
     }
     Divider()
@@ -157,7 +224,8 @@ fun RangeFilter(prop: String, title: String) {
 fun ListFilter(
     viewModel: ConfigViewModel,
     prop: String,
-    title: String
+    title: String,
+    searchViewModel: SearchViewModel
 ) {
     val filters = viewModel.getFilterOptions(prop)
 
@@ -165,8 +233,7 @@ fun ListFilter(
         filters = filters,
         title = title,
         onFilterSelected = { selectedFilters ->
-            println("chooseFilter: $selectedFilters")
-
+            searchViewModel.updateListFilter(prop, selectedFilters)
         }
     )
 }
@@ -218,6 +285,7 @@ fun FilterButtons(
                             }
                         )
                     }
+
                     else -> {
                         // Handle other types if necessary
                     }
@@ -263,6 +331,7 @@ fun FilterButton(
         )
     }
 }
+
 @Composable
 fun Divider() {
     Spacer(

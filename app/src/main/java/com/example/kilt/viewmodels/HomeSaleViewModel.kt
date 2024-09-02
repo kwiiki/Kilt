@@ -43,13 +43,10 @@ class HomeSaleViewModel @Inject constructor(
         loadHomeSale()
     }
 
-
     fun loadHomeSale() {
         viewModelScope.launch {
             try {
-                homeSale.value = homeSaleRepository.fetchHomeSale("3")
                 config.value = homeSaleRepository.fetchConfig()
-
                 Log.d("HomeSaleViewModel", "loadHomesale: ${homeSale.value}")
                 Log.d("HomeSaleViewModel", "loadConfig: ${config.value?.listingStructures}")
                 Log.d("HomeSaleViewModel", "probLabels: ${config.value?.propLabels?.size}")

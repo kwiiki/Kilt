@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -31,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -72,26 +74,49 @@ fun HouseItem(
         elevation = CardDefaults.cardElevation(15.dp)
     ) {
         Column(modifier = Modifier.background(Color(0xffFFFFFF))) {
-            Box {
-                AsyncImage(
-                    model = "${imageCdnUrl}${search.first_image}",
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.height(150.dp)
-                )
-                IconButton(
-                    onClick = { /* TODO: Handle favorite click */ },
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
+            if (search.first_image == null) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.FavoriteBorder,
+                    Image(
+                        painter = painterResource(id = R.drawable.image_empty),
                         contentDescription = null,
-                        tint = Color(0xff6B6D79),
+                        modifier = Modifier.height(150.dp),
+                        contentScale = ContentScale.Crop
                     )
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.BottomCenter
+                    ) {
+                        Icon(
+                            imageVector = ImageVector.vectorResource(id = R.drawable.camera_icon),
+                            contentDescription = null,
+                            tint = Color.White
+                        )
+                    }
+                }
+            } else {
+                Box {
+                    AsyncImage(
+                        model = "${imageCdnUrl}${search.first_image}",
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.height(150.dp)
+                    )
+                    IconButton(
+                        onClick = { /* TODO: Handle favorite click */ },
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.FavoriteBorder,
+                            contentDescription = null,
+                            tint = Color(0xff6B6D79),
+                        )
+                    }
                 }
             }
-
             Row(
                 modifier = Modifier
                     .padding(8.dp)
@@ -110,15 +135,14 @@ fun HouseItem(
             Row(
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
             ) {
-                    Log.d("topListings", "HouseItem: ${topListings}")
-                    Log.d(
-                        "topListings",
-                        "HouseItem: ${search.area} ${search.floor} ${search.num_rooms}"
-                    )
+                Log.d("topListings", "HouseItem: ${topListings}")
+                Log.d(
+                    "topListings",
+                    "HouseItem: ${search.area} ${search.floor} ${search.num_rooms}"
+                )
 
                 topListings?.forEach { item ->
                     Log.d("topListings", "Processing item: ${item.trim()}") // Added log
-
                     when (item.trim()) { // Ensure item is trimmed properly
                         "num_rooms" -> {
                             IconText(
@@ -138,7 +162,6 @@ fun HouseItem(
                             Spacer(modifier = Modifier.width(10.dp))
                         }
 
-
                         "floor" -> {
                             if (search.floor != 0 && search.num_floors != null) {
                                 IconText(
@@ -152,9 +175,7 @@ fun HouseItem(
                         else -> Log.d("topListings", "Unexpected item in topListings: $item")
                     }
                 }
-
             }
-
             Text(
                 text = search.address_string,
                 style = MaterialTheme.typography.labelSmall,
@@ -162,7 +183,6 @@ fun HouseItem(
                 color = Color(0xff6B6D79),
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
             )
-
             Row(
                 modifier = Modifier
                     .fillMaxWidth()

@@ -50,7 +50,7 @@ fun SearchPage(
     }
 
 
-    Log.d("SearchPage", "Search result: ${searchResult?.list?.get(0)}")
+//    Log.d("SearchPage", "Search result: ${searchResult?.list?.get(0)}")
     Log.d("SearchPage", "Filters: $filters")
     Log.d("SearchPage", "Is loading: $isLoading")
     Log.d("SearchPage", "Error: $error")

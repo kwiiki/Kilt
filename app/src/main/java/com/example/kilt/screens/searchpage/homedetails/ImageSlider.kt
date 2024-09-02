@@ -133,7 +133,7 @@ fun PhotosScreen(
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator(
-                    color = Color.Green,
+                    color = Color.Gray,
                     modifier = Modifier.size(50.dp)
                 )
             }

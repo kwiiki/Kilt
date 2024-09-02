@@ -21,7 +21,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,7 +33,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.kilt.R
 import com.example.kilt.custom.CustomToggleButton
+import com.example.kilt.data.Area
 import com.example.kilt.data.Filters
+import com.example.kilt.data.config.Price
 import com.example.kilt.viewmodels.ConfigViewModel
 import com.example.kilt.viewmodels.SearchViewModel
 
@@ -49,7 +50,6 @@ fun TypeOfHousing(
     var selectedIcon by remember { mutableStateOf("builds") }
     var isRentSelected by remember { mutableStateOf(true) }
     var isBuySelected by remember { mutableStateOf(false) }
-    val updatedSearchViewModel = rememberUpdatedState(searchViewModel)
 
 
     fun updateFilters() {
@@ -61,9 +61,26 @@ fun TypeOfHousing(
             else -> 2
         }
 
-        configViewModel.setTypes(dealType,listingType,propertyType)
+        configViewModel.setTypes(dealType, listingType, propertyType)
 
-        searchViewModel.updateFilters(Filters(dealType,listingType,propertyType))
+        searchViewModel.updateFilters(
+            Filters(
+                dealType,
+                listingType,
+                propertyType,
+                price = Price(from = "0", to = "500000"),
+                num_rooms = listOf(1,2,3),
+                status = 1,
+                floor = listOf(1,2,3,4,5),
+                area = Area(from = "40", to = "80"),
+//                rent_period = listOf(1,2),
+//                furniture_list = listOf(),
+//                new_conveniences = listOf(1,3,5,2),
+//                toilet_separation = listOf(1,2)
+
+
+            )
+        )
 
         searchViewModel.performSearch()
     }
@@ -224,7 +241,13 @@ fun TypeOfHousing(
                 }
             }
         }
-        LaunchedEffect(isRentSelected, isBuySelected, isResidentialSelected, isCommercialSelected, selectedIcon) {
+        LaunchedEffect(
+            isRentSelected,
+            isBuySelected,
+            isResidentialSelected,
+            isCommercialSelected,
+            selectedIcon
+        ) {
             updateFilters()
         }
     }

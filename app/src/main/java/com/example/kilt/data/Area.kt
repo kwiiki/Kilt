@@ -1,6 +1,6 @@
-package com.example.kilt.data.config
+package com.example.kilt.data
 
-data class Price(
+data class Area(
     val from: String? = null,
     val to: String? = null
 )

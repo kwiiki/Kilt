@@ -1,4 +1,4 @@
-package com.example.kilt.screens.home
+    package com.example.kilt.screens.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -73,7 +73,6 @@ fun FindButton(modifier: Modifier = Modifier) {
             }
         }
     }
-
 }
 
 @Composable
