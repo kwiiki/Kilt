@@ -5,7 +5,7 @@ import com.example.kilt.data.config.ListingStructures
 import com.example.kilt.network.ApiService
 import javax.inject.Inject
 
-class ConfigRepositoryImpl @Inject constructor(
+class  ConfigRepositoryImpl @Inject constructor(
     private val apiService: ApiService,
 ) : ConfigRepository {
 

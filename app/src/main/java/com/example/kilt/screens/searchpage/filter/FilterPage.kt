@@ -210,16 +210,16 @@ fun RangeFilter(prop: String, title: String, searchViewModel: SearchViewModel) {
                     }
                 }
             )
+//            тут возможно надо бы убрать кастинг
             LaunchedEffect(minValue, maxValue) {
-                val min = minValue
-                val max = maxValue
+                val min = minValue.toIntOrNull() ?: 0
+                val max = maxValue.toIntOrNull() ?: Int.MAX_VALUE
                 searchViewModel.updateRangeFilter(prop, min, max)
             }
         }
     }
     Divider()
 }
-
 @Composable
 fun ListFilter(
     viewModel: ConfigViewModel,

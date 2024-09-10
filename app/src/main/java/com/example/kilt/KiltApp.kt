@@ -1,6 +1,9 @@
 package com.example.kilt
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -82,7 +85,9 @@ fun KiltApp() {
         NavHost(
             navController = navController,
             startDestination = BottomNavigationScreen.HomePage.route,
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier.padding(innerPadding),
+//            enterTransition = { fadeIn(animationSpec = tween(0)) },
+//            exitTransition = { fadeOut(animationSpec = tween(0)) }
         ) {
             composable(BottomNavigationScreen.HomePage.route) { HomePage(navController) }
             composable(BottomNavigationScreen.SaleAndRent.route) {

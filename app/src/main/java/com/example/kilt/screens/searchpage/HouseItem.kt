@@ -59,6 +59,7 @@ fun HouseItem(
 
     LaunchedEffect(Unit) {
         homeSaleViewModel.loadHomeSale()
+        homeSaleViewModel.loadConfig()
     }
     Log.d("HouseItem", "Recomposing item with id: ${search.id}")
     Log.d("PropertyItem", "topListings: $search")
@@ -136,13 +137,11 @@ fun HouseItem(
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
             ) {
                 Log.d("topListings", "HouseItem: ${topListings}")
-                Log.d(
-                    "topListings",
-                    "HouseItem: ${search.area} ${search.floor} ${search.num_rooms}"
+                Log.d("topListings", "HouseItem: ${search.area} ${search.floor} ${search.num_rooms}"
                 )
 
                 topListings?.forEach { item ->
-                    Log.d("topListings", "Processing item: ${item.trim()}") // Added log
+                    Log.d("", "Processing item: ${item.trim()}") // Added log
                     when (item.trim()) { // Ensure item is trimmed properly
                         "num_rooms" -> {
                             IconText(

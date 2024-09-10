@@ -33,9 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.kilt.R
 import com.example.kilt.custom.CustomToggleButton
-import com.example.kilt.data.Area
 import com.example.kilt.data.Filters
-import com.example.kilt.data.config.Price
 import com.example.kilt.viewmodels.ConfigViewModel
 import com.example.kilt.viewmodels.SearchViewModel
 
@@ -60,28 +58,15 @@ fun TypeOfHousing(
             selectedIcon == "builds" -> 1
             else -> 2
         }
-
         configViewModel.setTypes(dealType, listingType, propertyType)
-
         searchViewModel.updateFilters(
             Filters(
-                dealType,
-                listingType,
-                propertyType,
-                price = Price(from = "0", to = "500000"),
-                num_rooms = listOf(1,2,3),
-                status = 1,
-                floor = listOf(1,2,3,4,5),
-                area = Area(from = "40", to = "80"),
-//                rent_period = listOf(1,2),
-//                furniture_list = listOf(),
-//                new_conveniences = listOf(1,3,5,2),
-//                toilet_separation = listOf(1,2)
-
-
-            )
+                deal_type = dealType,
+                listing_type = listingType,
+                property_type = propertyType,
+            ),
+            prop
         )
-
         searchViewModel.performSearch()
     }
 

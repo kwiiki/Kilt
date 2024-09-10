@@ -8,21 +8,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.paging.LoadState
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.kilt.viewmodels.ConfigViewModel
 import com.example.kilt.viewmodels.HomeSaleViewModel
 import com.example.kilt.viewmodels.SearchViewModel
@@ -35,51 +34,53 @@ fun SearchPage(
     navController: NavHostController,
     searchViewModel: SearchViewModel
 ) {
-    val searchResult by remember { searchViewModel.searchResult }.collectAsState()
-    val isLoading by remember { searchViewModel.isLoading }.collectAsState()
-    val error by remember { searchViewModel.error }.collectAsState()
     val filters by remember { searchViewModel.filters }.collectAsState()
+    val searchResults = searchViewModel.searchResults.collectAsLazyPagingItems()
 
-    // Обновление при изменении фильтров
     LaunchedEffect(filters) {
         Log.d("SearchPage", "Filters updated: $filters")
-        searchViewModel.performSearch()
+        // Не нужно вызывать performSearch() здесь, так как Pager автоматически обновится при изменении фильтров
     }
-    LaunchedEffect(searchResult) {
-        Log.d("SearchPage1", "Search result updated: ${searchResult?.list?.size}")
-    }
-
-
-//    Log.d("SearchPage", "Search result: ${searchResult?.list?.get(0)}")
-    Log.d("SearchPage", "Filters: $filters")
-    Log.d("SearchPage", "Is loading: $isLoading")
-    Log.d("SearchPage", "Error: $error")
-    Log.d("SearchPage", "Search result size: ${searchResult?.list?.size}")
 
     Column(
         modifier = Modifier
             .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
-        SearchAndFilterSection(configViewModel,searchViewModel)
+        SearchAndFilterSection(configViewModel, searchViewModel)
         Spacer(modifier = Modifier.height(8.dp))
         when {
-            isLoading -> {
+            searchResults.loadState.refresh is LoadState.Loading -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
                 }
             }
-            error != null -> {
+            searchResults.loadState.refresh is LoadState.Error -> {
+                val error = (searchResults.loadState.refresh as LoadState.Error).error
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(text = "Нет подключение к интернету", color = Color.Gray, fontSize = 18.sp)
+                    Text(text = "Error: ${error.message}", color = Color.Red)
                 }
             }
-            searchResult != null -> {
+            else -> {
                 LazyColumn {
-                    items(searchResult!!.list, key = { it.id }) { search ->
-                        key(search.id) {  // Добавьте эту строку
-                            HouseItem(homeSaleViewModel, search, navController,configViewModel)
+                    items(
+                        count = searchResults.itemCount,
+                        key = { index -> "${searchResults[index]?.id}_$index" }
+                    ) { index ->
+                        val property = searchResults[index]
+                        property?.let {
+                            HouseItem(homeSaleViewModel, it, navController, configViewModel)
                         }
-                        Log.d("search price", "SearchPage: $search")
+                    }
+                    when {
+                        searchResults.loadState.append is LoadState.Loading -> {
+                            item { CircularProgressIndicator() }
+                        }
+                        searchResults.loadState.append is LoadState.Error -> {
+                            item {
+                                val error = (searchResults.loadState.append as LoadState.Error).error
+                                Text(text = "Error: ${error.message}", color = Color.Red)
+                            }
+                        }
                     }
                 }
             }

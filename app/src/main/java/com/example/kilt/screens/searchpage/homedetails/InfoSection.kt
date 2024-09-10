@@ -55,6 +55,7 @@ fun CommercialInfoSection(homeSale: HomeSale?, config: Config) {
     val locatedList = config.propMapping.where_located.list
     val lineList = config.propMapping.line_of_houses.list
 
+
     val designationIds = homeSale?.listing?.designation?.split(",")?.mapNotNull { it.toIntOrNull() }
     val matchingDesignations = designationIds?.mapNotNull { id ->
         configList.find { it.id == id }

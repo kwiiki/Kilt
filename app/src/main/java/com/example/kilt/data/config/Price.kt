@@ -1,6 +1,6 @@
 package com.example.kilt.data.config
 
 data class Price(
-    val from: String? = null,
-    val to: String? = null
+    val from:Int,
+    val to: Int
 )

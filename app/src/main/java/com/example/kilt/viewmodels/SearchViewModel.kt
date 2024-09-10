@@ -1,20 +1,25 @@
+@file:OptIn(ExperimentalCoroutinesApi::class)
+
 package com.example.kilt.viewmodels
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.kilt.data.Area
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.example.kilt.data.Filters
 import com.example.kilt.data.PropertyItem
 import com.example.kilt.data.SearchResponse
-import com.example.kilt.data.TConfig
-import com.example.kilt.data.THomeSale
-import com.example.kilt.data.config.Price
 import com.example.kilt.repository.SearchRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -26,9 +31,8 @@ class SearchViewModel @Inject constructor(
     private val _searchResult = MutableStateFlow<SearchResponse?>(null)
     val searchResult: StateFlow<SearchResponse?> = _searchResult.asStateFlow()
 
-    private val _searchResultCount = MutableStateFlow<String?>(null)
+    private val _searchResultCount = MutableStateFlow<String?>("0")
     val searchResultCount: StateFlow<String?> = _searchResultCount.asStateFlow()
-
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
@@ -36,144 +40,82 @@ class SearchViewModel @Inject constructor(
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error.asStateFlow()
 
+    private val _emptyList = MutableStateFlow(true)
+    val emptyList: StateFlow<Boolean> = _emptyList.asStateFlow()
 
-    private var hasLoadedData = false
     private val _filters = MutableStateFlow(
         Filters(
             deal_type = 1,
-            property_type = 1,
             listing_type = 1,
-            price = Price(from = "0", to = "500000"),
-            num_rooms = listOf(),
-            status = 1,
-            floor = listOf(1),
-            area = Area(from = "40", to = "80"),
-//            rent_period = listOf(1),
-//            furniture_list = listOf(),
-//            new_conveniences = listOf(1,3,5,2),
-//            toilet_separation = listOf(1,2)
+            property_type = 1
         )
     )
     val filters: StateFlow<Filters> = _filters.asStateFlow()
-
-    fun updateFilters(newFilters: Filters) {
-        _filters.value = newFilters  // Даем новые фильтры нашему POST запросу в Body
-        Log.d("SearchViewModel", "Filters updated: ${_filters.value}")
+    val searchResults: Flow<PagingData<PropertyItem>> = filters.flatMapLatest { filters ->
+        Pager(
+            config = PagingConfig(pageSize = 20, enablePlaceholders = false),
+            pagingSourceFactory = { SearchPagingSource(searchRepository, filters) }
+        ).flow.cachedIn(viewModelScope)
+    }
+    init {
         performSearch()
-        getCountBySearchResult()// Автоматом отправляем запрос при обновлении фильторм
+        Log.d("SearchViewModel", "Initializing SearchViewModel")
+//        getCountBySearchResult()
     }
-
-
-    fun updateRangeFilter(prop: String, min: String, max: String) {
-        val currentFilters = _filters.value
-        val updatedFilters = when (prop) {
-            "price" -> currentFilters.copy(price = Price(from = min, to = max))
-            "area" -> currentFilters.copy(area = Area(from = min, to = max))
-            else -> currentFilters
-        }
-        updateFilters(updatedFilters)
+    fun updateFilters(newFilters: Filters, prop: String) {
+        _filters.value = searchRepository.updateFilters(_filters.value, newFilters,prop)
+        Log.d("SearchViewModel", "Filters updated: ${_filters.value}")
     }
-
+    fun updateRangeFilter(prop: String, min: Int, max: Int) {
+        _filters.value = searchRepository.updateRangeFilter(_filters.value, prop, min, max)
+        updateFilters(_filters.value,prop)
+    }
     fun updateListFilter(prop: String, selectedValues: List<Int>) {
-        val currentFilters = _filters.value
-        val updatedFilters = when (prop) {
-            "num_rooms" -> currentFilters.copy(num_rooms = selectedValues)
-            "floor" -> currentFilters.copy(floor = selectedValues)
-            "rent_period" -> currentFilters.copy(rent_period = selectedValues)
-//            "furniture_list" ->currentFilters.copy(furniture_list = selectedValues)
-//            "new_conveniences" ->currentFilters.copy(new_conveniences = selectedValues)
-//            "toilet_separation" ->currentFilters.copy(toilet_separation = selectedValues)
-
-
-            // Добавьте другие list-фильтры по необходимости
-            else -> currentFilters
-        }
-        updateFilters(updatedFilters)
+        _filters.value = searchRepository.updateListFilter(_filters.value, prop, selectedValues)
+        Log.d("prop", "updateListFilter1111:$prop ")
+        updateFilters(_filters.value, prop)
     }
-
     fun getPropertyById(id: String): PropertyItem? {
-        return _searchResult.value?.list?.find { it.id.toString() == id }
+        return searchRepository.getPropertyById(id, _searchResult.value)
     }
-
-    fun getCountBySearchResult() {
-        viewModelScope.launch {
-            _isLoading.value = true
-            _error.value = null
-            Log.d("filterValue", "getCountBySearchResult: ${_filters.value}")
-            try {
-                val request = THomeSale(
-                    filters = _filters.value,
-                    config = TConfig(num_rooms = "list"),
-                    page = 1,
-                    sorting = "new"
-                )
-                Log.d("request", "getCountBySearchResult: $request")
-                val resultCount = searchRepository.getResultBySearchCount(request)
-                Log.d("resultCount", "getCountBySearchResult: $resultCount")
-                _searchResultCount.value = resultCount.count
-                Log.d("resultCount", "getCountBySearchResult: ${resultCount.count}")
-            } catch (e: Exception) {
-                _error.value = e.message
-                Log.e("SearchViewModel", "Search error", e)
-
-            }
-        }
-    }
-
+    //    fun getCountBySearchResult() {
+//        viewModelScope.launch {
+//            _isLoading.value = true
+//            _error.value = null
+//            try {
+//                val filtersMap = _filters.value.toMapWithoutEmptyArrays()
+//                val request = searchRepository.createSearchRequest(filtersMap, 0, "new")
+//                val resultCount = searchRepository.getResultBySearchCount(request)
+//                _searchResultCount.value = resultCount.count
+//            } catch (e: Exception) {
+//                _error.value = e.message
+//                Log.e("SearchViewModel", "Search count error", e)
+//            } finally {
+//                _isLoading.value = false
+//            }l
+//        }
+//    }
     fun performSearch() {
         viewModelScope.launch {
+            if (_filters == null) Log.e("SearchViewModel", "_filters is null")
+
             _isLoading.value = true
             _error.value = null
             try {
-                val request = THomeSale(
-                    filters = _filters.value,
-                    config = TConfig(
-                        residential_complex = "residential-complex",
-                        num_rooms = "list",
-                        rent_period = "1",
-                        price = "range",
-                        built_year = "range",
-                        construction_type = "list",
-                        floor = listOf("2"),
-                        num_floors = "range",
-                        furniture = "list",
-                        area = "range",
-                        kitchen_area = "range",
-                        is_bailed = "list",
-                        former_dormitory = "list",
-                        bathroom = "list",
-                        internet = "list",
-                        balcony = "list",
-                        balcony_glass = "list",
-                        door = "list",
-                        parking = "list",
-                        floor_material = "list",
-                        security = "list",
-                        status = "",
-                        user_type = "list",
-                        kato_path = "like",
-                        lat = "range",
-                        lng = "range"
-                    ),
-                    page = 1,
-                    sorting = "new"
-                )
+                val request = searchRepository.createSearchRequest(_filters.value, 1, "new")
+                Log.d("SearchViewModel", "Created search request: $request")
                 val response = searchRepository.performSearch(request)
+                Log.d("SearchViewModel", "Received search response: $response")
                 _searchResult.value = response.copy(list = response.list.toList())
-                Log.d("SearchViewModel", "Search completed, results: ${response.list.size}")
-                Log.d("SearchViewModel", "Applied filters: ${_filters.value}")
+                Log.d("SearchViewModel", "Updated searchResult: ${_searchResult.value}")
             } catch (e: Exception) {
-                _error.value = e.message
                 Log.e("SearchViewModel", "Search error", e)
+                _error.value = e.message ?: "Unknown error occurred"
             } finally {
                 _isLoading.value = false
+                Log.d("SearchViewModel", "Finished performSearch")
             }
         }
-    }
-    // Метод для принудительного обновления данных
-    fun refreshSearch() {
-        hasLoadedData = false
-        performSearch()
     }
 }
 

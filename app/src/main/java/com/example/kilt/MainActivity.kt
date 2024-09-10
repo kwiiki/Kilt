@@ -82,6 +82,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val navController = rememberNavController()
+
+//            val data = Data("ALibek")
 //            TestFilterScreen()
             KiltApp()
 //             val searchViewModel: SearchViewModel by viewModels()
@@ -97,11 +99,13 @@ class MainActivity : ComponentActivity() {
 //            val navController = rememberNavController()
 //
 //            PropertyItem(homeSale = homeSale, navController = navController)
-//
 
         }
     }
 }
+
+
+data class Data(val name:String)
 @Composable
 fun SearchScreen(viewModel: SearchViewModel) {
     val searchResult by viewModel.searchResult.collectAsState()

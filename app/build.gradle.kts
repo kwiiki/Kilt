@@ -4,6 +4,7 @@ plugins {
     id ("com.google.dagger.hilt.android")
     id ("kotlin-kapt")
     id ("dagger.hilt.android.plugin")
+//    kotlin("plugin.serialization") version "2.0.20"
 }
 
 android {
@@ -101,6 +102,10 @@ dependencies {
 
     implementation ("androidx.paging:paging-runtime:3.3.2")
     implementation ("androidx.paging:paging-compose:3.3.2")
+
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.22")
+
+//    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1")
 
 
 

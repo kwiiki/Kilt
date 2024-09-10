@@ -32,4 +32,7 @@ object RepositoryModule {
     fun provideHomeSaleRepository(apiService: ApiService): HomeSaleRepository {
         return HomeSaleRepositoryImpl(apiService)
     }
+
+
+
 }
