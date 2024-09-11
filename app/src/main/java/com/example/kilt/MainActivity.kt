@@ -105,41 +105,7 @@ class MainActivity : ComponentActivity() {
 }
 
 
-data class Data(val name:String)
-@Composable
-fun SearchScreen(viewModel: SearchViewModel) {
-    val searchResult by viewModel.searchResult.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
-    val error by viewModel.error.collectAsState()
-    val scrollableState = rememberScrollState()
 
-    LaunchedEffect(Unit) {
-        viewModel.performSearch()
-    }
-
-    Column(modifier = Modifier.fillMaxSize()) {
-        when {
-            isLoading -> {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
-                }
-            }
-            error != null -> {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(text = error!!, color = Color.Red)
-                }
-            }
-            searchResult != null -> {
-                Column(modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(scrollableState)) {
-                    Text(text = "$searchResult")
-
-                }
-            }
-        }
-    }
-}
 
 
 

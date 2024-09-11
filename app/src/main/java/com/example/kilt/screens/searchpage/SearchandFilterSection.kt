@@ -51,7 +51,11 @@ import com.example.kilt.viewmodels.SearchViewModel
 
 
 @Composable
-fun SearchAndFilterSection(configViewModel: ConfigViewModel, searchViewModel: SearchViewModel) {
+fun SearchAndFilterSection(
+    configViewModel: ConfigViewModel,
+    searchViewModel: SearchViewModel,
+    modifier: Modifier
+) {
     var openPriorityBottomSheet by remember { mutableStateOf(false) }
     var openFilterBottomSheet by remember { mutableStateOf(false) }
     var selectedOption by remember { mutableStateOf<String?>(null) }
@@ -67,7 +71,7 @@ fun SearchAndFilterSection(configViewModel: ConfigViewModel, searchViewModel: Se
         configViewModel.loadConfig()
     }
 
-    Column {
+    Column(modifier = modifier) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             SearchBar()
             Spacer(modifier = Modifier.width(8.dp))
@@ -175,7 +179,7 @@ fun SearchAndFilterSection(configViewModel: ConfigViewModel, searchViewModel: Se
                 }
             }
         ) {
-            FilterPage(configViewModel,searchViewModel)
+            FilterPage(configViewModel,searchViewModel,onCloseFilterBottomSheet = { openFilterBottomSheet = false })
         }
     }
     LaunchedEffect(bottomSheetState) {

@@ -58,16 +58,13 @@ fun TypeOfHousing(
             selectedIcon == "builds" -> 1
             else -> 2
         }
+
         configViewModel.setTypes(dealType, listingType, propertyType)
-        searchViewModel.updateFilters(
-            Filters(
-                deal_type = dealType,
-                listing_type = listingType,
-                property_type = propertyType,
-            ),
-            prop
-        )
-        searchViewModel.performSearch()
+
+        searchViewModel.updateSingleFilter("deal_type", dealType)
+        searchViewModel.updateSingleFilter("listing_type", listingType)
+        searchViewModel.updateSingleFilter("property_type", propertyType)
+
     }
 
     Column(modifier = modifier) {

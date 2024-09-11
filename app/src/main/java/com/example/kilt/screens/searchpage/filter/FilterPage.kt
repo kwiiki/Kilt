@@ -51,25 +51,38 @@ import com.example.kilt.viewmodels.SearchViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun FilterPage(configViewModel: ConfigViewModel, searchViewModel: SearchViewModel) {
+fun FilterPage(
+    configViewModel: ConfigViewModel,
+    searchViewModel: SearchViewModel,
+    onCloseFilterBottomSheet: () -> Unit
+) {
     Box(modifier = Modifier.fillMaxSize()) {
         FilterContent(configViewModel = configViewModel, searchViewModel)
-        ShowAnnouncementsButton(searchViewModel,
+        ShowAnnouncementsButton(
+            searchViewModel,
             Modifier
                 .padding(horizontal = 16.dp)
                 .padding(bottom = 8.dp)
-                .align(alignment = Alignment.BottomCenter)
+                .align(alignment = Alignment.BottomCenter),
+            onCloseFilterBottomSheet
         )
     }
 
 }
 
 @Composable
-fun ShowAnnouncementsButton(searchViewModel: SearchViewModel,modifier: Modifier) {
+fun ShowAnnouncementsButton(
+    searchViewModel: SearchViewModel,
+    modifier: Modifier,
+    onButtonClick: () -> Unit
+) {
     val searchCount by searchViewModel.searchResultCount.collectAsState()
     Row(modifier = modifier.fillMaxWidth()) {
         OutlinedButton(
-            onClick = {},
+            onClick = {
+                searchViewModel.performSearch()
+               onButtonClick()
+            },
             contentPadding = PaddingValues(0.dp),
             colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.Transparent),
             shape = RoundedCornerShape(12.dp),
@@ -88,7 +101,6 @@ fun ShowAnnouncementsButton(searchViewModel: SearchViewModel,modifier: Modifier)
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
-
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = "Показать ${searchCount.toString()} вариантов",
@@ -140,13 +152,15 @@ fun FilterContent(configViewModel: ConfigViewModel, searchViewModel: SearchViewM
                 "range" -> RangeFilter(prop, matchingLabel.label_ru, searchViewModel)
             }
         }
+        Spacer(modifier = Modifier.height(50.dp))
     }
 }
 
 @Composable
 fun RangeFilter(prop: String, title: String, searchViewModel: SearchViewModel) {
-    var minValue by remember { mutableStateOf("") }
-    var maxValue by remember { mutableStateOf("") }
+    val (initialMin, initialMax) = searchViewModel.getRangeFilterValues(prop)
+    var minValue by remember { mutableStateOf(if (initialMin > 0) initialMin.toString() else "") }
+    var maxValue by remember { mutableStateOf(if (initialMax < Int.MAX_VALUE) initialMax.toString() else "") }
 
     val trailingText = when (prop) {
         "price" -> "тг."
@@ -210,16 +224,17 @@ fun RangeFilter(prop: String, title: String, searchViewModel: SearchViewModel) {
                     }
                 }
             )
-//            тут возможно надо бы убрать кастинг
-            LaunchedEffect(minValue, maxValue) {
-                val min = minValue.toIntOrNull() ?: 0
-                val max = maxValue.toIntOrNull() ?: Int.MAX_VALUE
-                searchViewModel.updateRangeFilter(prop, min, max)
-            }
         }
     }
     Divider()
+
+    LaunchedEffect(minValue, maxValue) {
+        val min = minValue.toIntOrNull() ?: 0
+        val max = maxValue.toIntOrNull() ?: Int.MAX_VALUE
+        searchViewModel.updateRangeFilter(prop, min, max)
+    }
 }
+
 @Composable
 fun ListFilter(
     viewModel: ConfigViewModel,
@@ -228,12 +243,14 @@ fun ListFilter(
     searchViewModel: SearchViewModel
 ) {
     val filters = viewModel.getFilterOptions(prop)
+    val selectedFilters = searchViewModel.getSelectedFilters(prop)
 
     FilterButtons(
         filters = filters,
         title = title,
-        onFilterSelected = { selectedFilters ->
-            searchViewModel.updateListFilter(prop, selectedFilters)
+        selectedFilters = selectedFilters,
+        onFilterSelected = { newSelectedFilters ->
+            searchViewModel.updateListFilter(prop, newSelectedFilters)
         }
     )
 }
@@ -242,10 +259,9 @@ fun ListFilter(
 fun FilterButtons(
     filters: List<Any>?,
     title: String,
+    selectedFilters: List<Int>,
     onFilterSelected: (List<Int>) -> Unit
 ) {
-    var selectedFilters by remember { mutableStateOf<List<Int>>(emptyList()) }
-
     Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
         Text(
             text = title,
@@ -264,8 +280,7 @@ fun FilterButtons(
                     text = "Все",
                     isSelected = selectedFilters.isEmpty(),
                     onClick = {
-                        selectedFilters = emptyList()
-                        onFilterSelected(selectedFilters)
+                        onFilterSelected(emptyList())
                     }
                 )
             }
@@ -276,18 +291,16 @@ fun FilterButtons(
                             text = filter.name,
                             isSelected = selectedFilters.contains(filter.id),
                             onClick = {
-                                selectedFilters = if (filter.id in selectedFilters) {
+                                val newSelectedFilters = if (filter.id in selectedFilters) {
                                     selectedFilters - filter.id
                                 } else {
                                     selectedFilters + filter.id
                                 }
-                                onFilterSelected(selectedFilters)
+                                onFilterSelected(newSelectedFilters)
                             }
                         )
                     }
-
                     else -> {
-                        // Handle other types if necessary
                     }
                 }
             }

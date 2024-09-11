@@ -52,23 +52,14 @@ class ConfigViewModel @Inject constructor(private val configRepository: ConfigRe
             "setTypes: dealType=$dealType, listingType=$listingType, propertyType=$propertyType"
         )
 
-      loadDataWithCurrentTypes()
+        loadDataWithCurrentTypes()
     }
 
     private fun loadListingProps(dealType: Int, listingType: Int, propertyType: Int) {
         viewModelScope.launch {
             _listingProps.value =
                 configRepository.getListingProps(dealType, listingType, propertyType)
-            Log.d(
-                "listingProps",
-                "loadListingProps: ${
-                    configRepository.getListingProps(
-                        dealType,
-                        listingType,
-                        propertyType
-                    )
-                }"
-            )
+            Log.d("listingProps","loadListingProps: ${configRepository.getListingProps(dealType, listingType, propertyType)}")
         }
     }
 

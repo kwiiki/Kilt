@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalCoroutinesApi::class)
+@file:OptIn(ExperimentalCoroutinesApi::class, ExperimentalCoroutinesApi::class)
 
 package com.example.kilt.viewmodels
 
@@ -12,6 +12,7 @@ import androidx.paging.cachedIn
 import com.example.kilt.data.Filters
 import com.example.kilt.data.PropertyItem
 import com.example.kilt.data.SearchResponse
+import com.example.kilt.data.FilterValue
 import com.example.kilt.repository.SearchRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -40,74 +41,85 @@ class SearchViewModel @Inject constructor(
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error.asStateFlow()
 
-    private val _emptyList = MutableStateFlow(true)
-    val emptyList: StateFlow<Boolean> = _emptyList.asStateFlow()
+    private var savedPage = 1
+    private var savedScrollIndex = 0
+    private var savedScrollOffset = 0
+    private val _filters = MutableStateFlow(Filters())
 
-    private val _filters = MutableStateFlow(
-        Filters(
-            deal_type = 1,
-            listing_type = 1,
-            property_type = 1
-        )
-    )
+
     val filters: StateFlow<Filters> = _filters.asStateFlow()
-    val searchResults: Flow<PagingData<PropertyItem>> = filters.flatMapLatest { filters ->
+    val searchResults = filters.flatMapLatest { filters ->
         Pager(
-            config = PagingConfig(pageSize = 20, enablePlaceholders = false),
-            pagingSourceFactory = { SearchPagingSource(searchRepository, filters) }
-        ).flow.cachedIn(viewModelScope)
+            config = PagingConfig(pageSize = 10),
+            initialKey = savedPage // Используем сохраненную страницу
+        ) {
+            SearchPagingSource(searchRepository, filters)
+        }.flow
+    }.cachedIn(viewModelScope)
+
+    fun saveScrollState(index: Int, offset: Int) {
+        savedScrollIndex = index
+        savedScrollOffset = offset
+    }
+    fun getSavedScrollState(): Pair<Int, Int> {
+        return Pair(savedScrollIndex, savedScrollOffset)
     }
     init {
-        performSearch()
-        Log.d("SearchViewModel", "Initializing SearchViewModel")
-//        getCountBySearchResult()
+        updateSingleFilter("deal_type", 1)
+        updateSingleFilter("listing_type", 1)
+        updateSingleFilter("property_type", 1)
     }
-    fun updateFilters(newFilters: Filters, prop: String) {
-        _filters.value = searchRepository.updateFilters(_filters.value, newFilters,prop)
+
+    fun getRangeFilterValues(prop: String): Pair<Int, Int> {
+        return when (val filterValue = _filters.value.filterMap[prop]) {
+            is FilterValue.RangeValue -> Pair(filterValue.from, filterValue.to)
+            else -> Pair(0, Int.MAX_VALUE)
+        }
+    }
+
+
+    fun getSelectedFilters(prop: String): List<Int> {
+        return when (val filterValue = _filters.value.filterMap[prop]) {
+            is FilterValue.ListValue -> filterValue.values
+            else -> emptyList()
+        }
+    }
+
+    private fun updateFilters(newFilters: Filters, prop: String) {
+        _filters.value = searchRepository.updateFilters(_filters.value, newFilters, prop)
         Log.d("SearchViewModel", "Filters updated: ${_filters.value}")
     }
-    fun updateRangeFilter(prop: String, min: Int, max: Int) {
-        _filters.value = searchRepository.updateRangeFilter(_filters.value, prop, min, max)
-        updateFilters(_filters.value,prop)
+
+    fun updateRangeFilter(prop: String, from: Int, to: Int) {
+        val newFilters = Filters(mutableMapOf(prop to FilterValue.RangeValue(from, to)))
+        updateFilters(newFilters, prop)
     }
+
+    fun updateSingleFilter(prop: String, value: Int) {
+        val newFilters = Filters(mutableMapOf(prop to FilterValue.SingleValue(value)))
+        updateFilters(newFilters, prop)
+    }
+
     fun updateListFilter(prop: String, selectedValues: List<Int>) {
-        _filters.value = searchRepository.updateListFilter(_filters.value, prop, selectedValues)
-        Log.d("prop", "updateListFilter1111:$prop ")
-        updateFilters(_filters.value, prop)
+        val newFilters = Filters(mutableMapOf(prop to FilterValue.ListValue(selectedValues)))
+        updateFilters(newFilters, prop)
+        Log.d("prop", "updateListFilter1111:$prop")
     }
+
     fun getPropertyById(id: String): PropertyItem? {
         return searchRepository.getPropertyById(id, _searchResult.value)
     }
-    //    fun getCountBySearchResult() {
-//        viewModelScope.launch {
-//            _isLoading.value = true
-//            _error.value = null
-//            try {
-//                val filtersMap = _filters.value.toMapWithoutEmptyArrays()
-//                val request = searchRepository.createSearchRequest(filtersMap, 0, "new")
-//                val resultCount = searchRepository.getResultBySearchCount(request)
-//                _searchResultCount.value = resultCount.count
-//            } catch (e: Exception) {
-//                _error.value = e.message
-//                Log.e("SearchViewModel", "Search count error", e)
-//            } finally {
-//                _isLoading.value = false
-//            }l
-//        }
-//    }
+
     fun performSearch() {
         viewModelScope.launch {
-            if (_filters == null) Log.e("SearchViewModel", "_filters is null")
-
             _isLoading.value = true
             _error.value = null
             try {
-                val request = searchRepository.createSearchRequest(_filters.value, 1, "new")
+                val request = searchRepository.createSearchRequest(_filters.value, 0, "new")
                 Log.d("SearchViewModel", "Created search request: $request")
                 val response = searchRepository.performSearch(request)
                 Log.d("SearchViewModel", "Received search response: $response")
                 _searchResult.value = response.copy(list = response.list.toList())
-                Log.d("SearchViewModel", "Updated searchResult: ${_searchResult.value}")
             } catch (e: Exception) {
                 Log.e("SearchViewModel", "Search error", e)
                 _error.value = e.message ?: "Unknown error occurred"

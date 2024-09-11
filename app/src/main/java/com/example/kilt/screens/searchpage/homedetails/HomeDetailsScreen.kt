@@ -90,12 +90,12 @@ fun HomeDetailsScreen(
         id?.let { searchViewModel.getPropertyById(it) }
     }
 
-    LaunchedEffect(Unit) {
-        homeSaleViewModel.topListings
-        if (searchViewModel.searchResult.value == null) {
-            searchViewModel.performSearch()
-        }
-    }
+//    LaunchedEffect(Unit) {
+//        homeSaleViewModel.topListings
+//        if (searchViewModel.searchResult.value == null) {
+//            searchViewModel.performSearch()
+//        }
+//    }
 
     Box(
         modifier = Modifier

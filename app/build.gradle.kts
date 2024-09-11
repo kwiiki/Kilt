@@ -106,6 +106,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.22")
 
 //    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1")
+//    implementation ("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")
 
 
 

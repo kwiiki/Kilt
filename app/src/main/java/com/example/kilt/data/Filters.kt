@@ -1,60 +1,36 @@
 package com.example.kilt.data
 
-import com.example.kilt.data.config.Price
 
-
+//@Serializable
 data class Filters(
-    val deal_type: Int = 1,
-    val listing_type: Int = 1,
-    val property_type: Int = 1,
-    val num_rooms: List<Int> = listOf(),
-    val price: Price = Price(from = 0, to = 0),
-    val status: Int = 1,
-    val floor:List<Int> = listOf(),
-    val area:Area = Area(from = 0, to = 0),
-    val rent_period:List<Int> = listOf(),
-    val furniture_list:List<Int> = listOf(),
-    val toilet_separation:List<Int> = listOf(),
-    val security: List<Int> = listOf(),
-    val new_conveniences:List<Int> = listOf(),
-    val num_toilets: NumToilets = NumToilets(from = 0, to = 0),
-    val bathroom_inside:List<Int> = listOf(),
-    val new_balcony:List<Int> = listOf(),
-    val loggia:List<Int> = listOf(),
-    val windows: List<Int> = listOf(),
-    val suits_for:List<Int> = listOf(),
-    val built_year:BuiltYear = BuiltYear(from = 0,to = 0),
-    val construction_type:List<Int> = listOf(),
-    val num_floors:NumFloors = NumFloors(from = 0, to = 0),
-    val furniture:List<Int> = listOf(),
-    val kitchen_area:KitchenArea = KitchenArea(from = 0,to = 0),
-    val is_bailed:List<Int> = listOf(),
-    val former_dormitory:List<Int> = listOf(),
-    val bathroom:List<Int> = listOf(),
-    val internet:List<Int> = listOf(),
-    val balcony:List<Int> = listOf(),
-    val balcony_glass:List<Int> = listOf(),
-    val door:List<Int> = listOf(),
-    val parking:List<Int> = listOf(),
-    val floor_material:List<Int> = listOf(),
-    val land_area:LandArea = LandArea(from = 0, to = 0),
-    val living_area:LivingArea = LivingArea(from = 0,to = 0),
-    val condition:List<Int> = listOf(),
-    val heating:List<Int> = listOf(),
-    val sewer:List<Int> = listOf(),
-    val drinking_water:List<Int> = listOf(),
-    val irrigation_water:List<Int> = listOf(),
-    val electricity:List<Int> = listOf(),
-    val telephone:List<Int> = listOf(),
-    val designation:List<Int> = listOf(),
-    val where_located:List<Int> = listOf(),
-    val active_business:List<Int> = listOf(),
-    val has_renters:List<Int> = listOf(),
-    val free_planning:List<Int> = listOf(),
-    val business_condition:List<Int> = listOf(),
-    val line_of_houses:List<Int> = listOf(),
-    val business_parking:List<Int> = listOf(),
-    val business_entrance:List<Int> = listOf(),
-    val communications:List<Int> = listOf(),
-    val dedicated_power:DedicatedPower = DedicatedPower(from = 0,to = 0),
+    val filterMap: MutableMap<String, FilterValue> = mutableMapOf()
 )
+
+
+//object FilterValueSerializer : KSerializer<FilterValue> {
+//
+//    override val descriptor: SerialDescriptor = FilterValue.serializer().descriptor
+//    override fun deserialize(decoder: Decoder): FilterValue {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun serialize(encoder: Encoder, value: FilterValue) {
+//        val jsonEncoder = encoder as? kotlinx.serialization.json.JsonEncoder
+//            ?: throw IllegalStateException("Expected JsonEncoder")
+//
+//        val jsonElement = when (value) {
+//            is FilterValue.SingleValue -> JsonPrimitive(value.value)
+//            is FilterValue.ListValue -> Json.encodeToJsonElement(FilterValue.ListValue.serializer(), value)
+//            is FilterValue.RangeValue -> JsonObject(
+//                mapOf(
+//                    "from" to JsonPrimitive(value.from),
+//                    "to" to JsonPrimitive(value.to)
+//                )
+//            )
+//        }
+//
+//        jsonEncoder.encodeJsonElement(jsonElement)
+//    }
+//
+//
+//}
