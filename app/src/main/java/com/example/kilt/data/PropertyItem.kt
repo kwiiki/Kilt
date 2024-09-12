@@ -11,6 +11,8 @@ data class PropertyItem(
     val area: Double,
     val floor: Int,
     val num_floors: Int?,
+    val rent_period: Int,
+    val living_area:Int,
     val price: String,
     val address_string: String,
     val description: String? = null,

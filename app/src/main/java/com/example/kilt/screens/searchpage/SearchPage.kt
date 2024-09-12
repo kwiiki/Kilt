@@ -1,5 +1,6 @@
 package com.example.kilt.screens.searchpage
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,8 +9,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -46,30 +49,16 @@ fun SearchPage(
     searchViewModel: SearchViewModel
 ) {
     val filters by remember { searchViewModel.filters }.collectAsState()
+    val response by remember { searchViewModel.searchResult }.collectAsState()
     val searchResults = searchViewModel.searchResults.collectAsLazyPagingItems()
-//    LaunchedEffect(filters) {
-//        Log.d("SearchPage", "Filters updated: $filters")
-//    }
-    val listState = rememberLazyListState()
-    val coroutineScope = rememberCoroutineScope()
-    DisposableEffect(Unit) {
-        onDispose {
-            searchViewModel.saveScrollState(
-                listState.firstVisibleItemIndex,
-                listState.firstVisibleItemScrollOffset
-            )
-        }
+
+    LaunchedEffect(filters) {
+        Log.d("SearchPage", "Filters updated: $filters")
+        Log.d("SearchPage", "Filters updated: $response")
+        Log.d("SearchPage", "Filters updated: $searchResults")
     }
-    // restore scroll position
-    LaunchedEffect(searchResults.loadState.refresh) {
-        if (searchResults.loadState.refresh is LoadState.NotLoading) {
-            val (savedIndex, savedOffset) = searchViewModel.getSavedScrollState()
-            if (savedIndex in 0 until searchResults.itemCount) {
-                coroutineScope.launch {
-                    listState.scrollToItem(savedIndex, savedOffset)
-                }
-            }
-        }
+    LaunchedEffect(searchResults.loadState) {
+        Log.d("SearchPage", "LoadState: ${searchResults.loadState}")
     }
     Column(
         modifier = Modifier
@@ -84,17 +73,20 @@ fun SearchPage(
         Spacer(modifier = Modifier.height(8.dp))
         when {
             searchResults.loadState.refresh is LoadState.Loading -> {
+                Log.d("SearchPage", "SearchPage: Loading")
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator(color = Color.Gray)
                 }
             }
             searchResults.loadState.refresh is LoadState.Error -> {
+                Log.d("SearchPage", "SearchPage: Error")
                 val error = (searchResults.loadState.refresh as LoadState.Error).error
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text(text = "Error: ERRRRROR", color = Color.Red)
                 }
             }
             searchResults.itemCount == 0 && searchResults.loadState.refresh is LoadState.NotLoading -> {
+                Log.d("SearchPage", "SearchPage: refresh and NotLoading")
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Image(
                         painter = painterResource(id = R.drawable.image_empty),
@@ -123,54 +115,105 @@ fun SearchPage(
             }
             else -> {
                 Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-                    LazyColumn(state = listState) {
-                        items(
-                            count = searchResults.itemCount,
-                            key = { index -> "${searchResults[index]?.id}_$index" }
-                        ) { index ->
+                    Log.d("SearchPage", "Before LazyColumn, itemCount: ${searchResults.itemCount}")
+//                    Text("Debug: itemCount=${searchResults.itemCount}, loadState=${searchResults.loadState}")
+                    Log.d("Debug", "SearchPage: ${searchResults.loadState}")
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        items(searchResults.itemCount) { index ->
                             val property = searchResults[index]
                             property?.let {
                                 HouseItem(homeSaleViewModel, it, navController, configViewModel)
                             }
                         }
-                        when {
-                            searchResults.loadState.append is LoadState.Loading -> {
-                                item { CircularProgressIndicator() }
-                            }
-
-                            searchResults.loadState.append is LoadState.Error -> {
-                                item {
-                                    val error =
-                                        (searchResults.loadState.append as LoadState.Error).error
-                                    Text(text = "Error: ${error.message}", color = Color.Red)
+                        searchResults.apply {
+                            when {
+                                loadState.refresh is LoadState.Loading -> {
+                                    item {
+                                        Box(
+                                            modifier = Modifier.fillParentMaxSize(),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            CircularProgressIndicator()
+                                        }
+                                    }
                                 }
-                            }
-                            searchResults.loadState.append is LoadState.NotLoading &&
-                                    searchResults.loadState.append.endOfPaginationReached -> {
-                                item {
-                                    Column(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(16.dp),
-                                        horizontalAlignment = Alignment.CenterHorizontally
-                                    ) {
-                                        Text(
-                                            text = "Мы все показали!",
-                                            textAlign = TextAlign.Center,
-                                            fontSize = 22.sp,
-                                            fontWeight = FontWeight.Medium
+                                loadState.refresh is LoadState.Error -> {
+                                    val error = loadState.refresh as LoadState.Error
+                                    item {
+                                        ErrorMessage(
+                                            modifier = Modifier.fillParentMaxSize(),
+                                            message = error.error.localizedMessage ?: "Ошибка загрузки",
+                                            onClickRetry = { retry() }
                                         )
-                                        Spacer(modifier = Modifier.height(8.dp))
-                                        Text(
-                                            text = "Попробуйте другие параметры поиска, чтобы увидеть больше вариантов",
-                                            textAlign = TextAlign.Center
-                                        )
+                                    }
+                                }
+                                loadState.append is LoadState.Loading -> {
+                                    item { LoadingNextPageItem(modifier = Modifier) }
+                                }
+                                loadState.append.endOfPaginationReached -> {
+                                    item {
+                                        Column(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(16.dp),
+                                            horizontalAlignment = Alignment.CenterHorizontally
+                                        ) {
+                                            Text(
+                                                text = "Мы показали все объявления!",
+                                                textAlign = TextAlign.Center,
+                                                fontSize = 22.sp,
+                                                fontWeight = FontWeight.Medium
+                                            )
+                                            Spacer(modifier = Modifier.height(8.dp))
+                                            Text(
+                                                text = "Попробуйте изменить параметры поиска, чтобы увидеть больше вариантов.",
+                                                textAlign = TextAlign.Center
+                                            )
+                                        }
                                     }
                                 }
                             }
                         }
                     }
                 }
+            }
+        }
+    }
+}
+@Composable
+fun LoadingNextPageItem(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator()
+    }
+}
+@Composable
+fun ErrorMessage(
+    modifier: Modifier = Modifier,
+    message: String,
+    onClickRetry: () -> Unit
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                text = message,
+                color = Color.Red,
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(onClick = onClickRetry) {
+                Text(text = "Попробовать снова")
             }
         }
     }

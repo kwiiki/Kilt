@@ -8,7 +8,6 @@ data class TConfig(
     val num_rooms: String = "list",
     val price: String = "range",
     val floor: String = "list",
-    val num_floors: String = "range",
     val area: String = "range",
     val furniture_list: String = "list-multiple",
     val security: String = "list-multiple",

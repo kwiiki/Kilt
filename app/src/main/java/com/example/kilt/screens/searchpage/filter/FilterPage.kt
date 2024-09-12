@@ -230,7 +230,7 @@ fun RangeFilter(prop: String, title: String, searchViewModel: SearchViewModel) {
 
     LaunchedEffect(minValue, maxValue) {
         val min = minValue.toIntOrNull() ?: 0
-        val max = maxValue.toIntOrNull() ?: Int.MAX_VALUE
+        val max = maxValue.toIntOrNull() ?: 0
         searchViewModel.updateRangeFilter(prop, min, max)
     }
 }

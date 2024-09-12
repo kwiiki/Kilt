@@ -9,6 +9,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.kilt.data.Filters
 import com.example.kilt.data.PropertyItem
 import com.example.kilt.data.SearchResponse
@@ -36,33 +37,21 @@ class SearchViewModel @Inject constructor(
     val searchResultCount: StateFlow<String?> = _searchResultCount.asStateFlow()
 
     private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
     private val _error = MutableStateFlow<String?>(null)
-    val error: StateFlow<String?> = _error.asStateFlow()
 
-    private var savedPage = 1
-    private var savedScrollIndex = 0
-    private var savedScrollOffset = 0
     private val _filters = MutableStateFlow(Filters())
+    val filters: StateFlow<Filters> = _filters
 
-
-    val filters: StateFlow<Filters> = _filters.asStateFlow()
-    val searchResults = filters.flatMapLatest { filters ->
+    val searchResults: Flow<PagingData<PropertyItem>> = filters.flatMapLatest { filters ->
         Pager(
-            config = PagingConfig(pageSize = 10),
-            initialKey = savedPage // Используем сохраненную страницу
-        ) {
-            SearchPagingSource(searchRepository, filters)
-        }.flow
-    }.cachedIn(viewModelScope)
-
-    fun saveScrollState(index: Int, offset: Int) {
-        savedScrollIndex = index
-        savedScrollOffset = offset
-    }
-    fun getSavedScrollState(): Pair<Int, Int> {
-        return Pair(savedScrollIndex, savedScrollOffset)
+            config = PagingConfig(
+                pageSize = 10, // Количество объявлений на одной странице
+                initialLoadSize = 10, // Загружаем одну страницу при инициализации
+                enablePlaceholders = false // Отключаем плейсхолдеры
+            ),
+            pagingSourceFactory = { SearchPagingSource(searchRepository, filters) }
+        ).flow.cachedIn(viewModelScope)
     }
     init {
         updateSingleFilter("deal_type", 1)
