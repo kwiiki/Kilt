@@ -2,25 +2,27 @@ package com.example.kilt.data
 
 
 //@Serializable
-data class TConfig(
-    val residential_complex: String = "residential-complex",
-    val rent_period: String = "list",
-    val num_rooms: String = "list",
-    val price: String = "range",
-    val floor: String = "list",
-    val area: String = "range",
-    val furniture_list: String = "list-multiple",
-    val security: String = "list-multiple",
-    val new_conveniences: String = "list-multiple",
-    val toilet_separation: String = "list",
-    val num_toilets: String = "range",
-    val bathroom_inside: String = "list-multiple",
-    val new_balcony: String = "list",
-    val loggia: String = "list",
-    val windows: String = "list-multiple",
-    val suits_for: String = "list-multiple",
 
 
+data class TConfig(val fields: Map<String, String> = mapOf())
+//data class TConfig(
+//    val residential_complex: String = "residential-complex",
+//    val rent_period: String = "list",
+//    val num_rooms: String = "list",
+//    val price: String = "range",
+//    val floor: String = "list",
+//    val area: String = "range",
+//    val furniture_list: String = "list-multiple",
+//    val security: String = "list-multiple",
+//    val new_conveniences: String = "list-multiple",
+//    val toilet_separation: String = "list",
+//    val num_toilets: String = "range",
+//    val bathroom_inside: String = "list-multiple",
+//    val new_balcony: String = "list",
+//    val loggia: String = "list",
+//    val windows: String = "list-multiple",
+//    val suits_for: String = "list-multiple",
+//
 //    val telephone: String = "list",
 //    val built_year: String = "range",
 //    val construction_type: String = "list",
@@ -34,11 +36,6 @@ data class TConfig(
 //    val former_dormitory: String = "list",
 //    val payment_period: String = "list",
 //    val conveniences: String = "list",
-
-
-
-//
-
 //    val bathroom: String = "list",
 //    val land_area: String = "range",
 //    val living_area:String = "range",
@@ -71,7 +68,6 @@ data class TConfig(
 //    val house_area: String = "range",
 //    val price_for: String = "list",
 //    val floor_material: String = "list",
-
 //    val communications: String = "list-multiple",
 //    val business_parking: String = "list-multiple",
 //    val business_entrance: String = "list-multiple",
@@ -80,4 +76,4 @@ data class TConfig(
 //    val kato_path: String = "like",
 //    val lat: String = "range",
 //    val lng: String = "range"
-)
+//)

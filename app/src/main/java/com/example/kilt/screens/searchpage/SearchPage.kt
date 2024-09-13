@@ -45,18 +45,12 @@ fun SearchPage(
 ) {
     val filters by remember { searchViewModel.filters }.collectAsState()
     val response by remember { searchViewModel.searchResult }.collectAsState()
-    val searchResults = searchViewModel.searchResults.collectAsLazyPagingItems()
+    val searchResults = searchViewModel.searchResultsFlow.collectAsLazyPagingItems()
 
-    // Используйте rememberSaveable для сохранения состояния скролла
     val listState by searchViewModel.listState.collectAsState()
 
-    // Сбрасываем состояние скролла при изменении фильтров
-//    LaunchedEffect(filters) {
-//        searchViewModel.resetListState() // Сбрасываем состояние скролла
-//    }
-
     LaunchedEffect(searchResults.loadState) {
-        Log.d("SearchPage", "LoadState: ${searchResults.loadState}")
+        Log.d("SearchPage", "LoadState: ${searchResults.itemCount}")
     }
 
     Column(

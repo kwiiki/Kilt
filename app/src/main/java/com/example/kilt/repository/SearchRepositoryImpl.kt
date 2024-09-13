@@ -5,12 +5,15 @@ import com.example.kilt.data.FilterValue
 import com.example.kilt.data.Filters
 import com.example.kilt.data.PropertyItem
 import com.example.kilt.data.SearchResponse
-import com.example.kilt.data.TConfig
 import com.example.kilt.data.THomeSale
 import com.example.kilt.network.ApiService
 
 
-class SearchRepositoryImpl(private val apiService: ApiService) : SearchRepository {
+class SearchRepositoryImpl(
+    private val apiService: ApiService,
+    private val configRepository: ConfigRepository,
+    private val configHelper: ConfigHelper
+) : SearchRepository {
     override suspend fun performSearch(request: THomeSale): SearchResponse {
         return apiService.search(request)
     }
@@ -54,24 +57,56 @@ class SearchRepositoryImpl(private val apiService: ApiService) : SearchRepositor
         return Filters(updatedMap)
     }
 
-    override fun createSearchRequest(filters: Filters, page: Int, sorting: String): THomeSale {
+    override suspend fun createSearchRequest(
+        filters: Filters,
+        dealType: Int,
+        propertyType: Int,
+        listingType: Int,
+        page: Int,
+        sorting: String
+    ): THomeSale {
+        val config = configRepository.getConfig()
+        val listingStructures = config.listingStructures
+        val listOfPropLabels = config.propLabels
+
+        val dynamicConfig = configHelper.createDynamicTConfig(
+            dealType = dealType,
+            propertyType = propertyType,
+            listingType = listingType,
+            listingStructures = listingStructures,
+            propLabels = listOfPropLabels
+        )
+
         val formattedFilterMap = filters.filterMap.mapValues { (_, value) ->
             when (value) {
-                is FilterValue.SingleValue -> value.value // Извлекаем значение из SingleValue
-                is FilterValue.ListValue -> value.values // Извлекаем список из ListValue
+                is FilterValue.SingleValue -> value.value
+                is FilterValue.ListValue -> value.values.takeIf { it.isNotEmpty() }
                 is FilterValue.RangeValue -> mapOf(
                     "from" to value.from,
                     "to" to value.to
-                ) // Cast RangeValue in Map
+                ).filterValues { it != 0 }.takeIf { it.isNotEmpty() }
+            }
+        }.filterValues { value ->
+            when (value) {
+                is List<*> -> value.isNotEmpty()
+                is Map<*, *> -> value.isNotEmpty()
+                else -> value != null && value != 0
+            }
+        }.mapValues { (_, value) ->
+            when (value) {
+                is List<*> -> value
+                is Map<*, *> -> value
+                else -> value as Any
             }
         }
         return THomeSale(
-            filters = formattedFilterMap, // Передаем упрощенный Map<String, Any> вместо Filters
-            config = TConfig(), // Добавьте нужные поля для конфигурации
+            filters = formattedFilterMap,
+            config = dynamicConfig,
             page = page,
             sorting = sorting
         )
     }
+
 
 }
 

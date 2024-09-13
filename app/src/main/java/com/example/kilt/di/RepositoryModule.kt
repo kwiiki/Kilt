@@ -1,6 +1,7 @@
 package com.example.kilt.di
 
 import com.example.kilt.network.ApiService
+import com.example.kilt.repository.ConfigHelper
 import com.example.kilt.repository.ConfigRepository
 import com.example.kilt.repository.ConfigRepositoryImpl
 import com.example.kilt.repository.HomeSaleRepository
@@ -22,17 +23,26 @@ object RepositoryModule {
     fun provideConfigRepository(apiService: ApiService): ConfigRepository {
         return ConfigRepositoryImpl(apiService)
     }
+
     @Provides
     @Singleton
-    fun provideSearchRepository(apiService: ApiService): SearchRepository {
-        return SearchRepositoryImpl(apiService)
+    fun provideConfigHelper(): ConfigHelper {
+        return ConfigHelper()
     }
+
+    @Provides
+    @Singleton
+    fun provideSearchRepository(
+        apiService: ApiService,
+        configRepository: ConfigRepository,
+        configHelper: ConfigHelper // ConfigHelper injected here
+    ): SearchRepository {
+        return SearchRepositoryImpl(apiService, configRepository, configHelper)
+    }
+
     @Provides
     @Singleton
     fun provideHomeSaleRepository(apiService: ApiService): HomeSaleRepository {
         return HomeSaleRepositoryImpl(apiService)
     }
-
-
-
 }

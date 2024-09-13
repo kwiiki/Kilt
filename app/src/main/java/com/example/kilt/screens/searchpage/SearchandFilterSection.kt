@@ -145,7 +145,8 @@ fun SearchAndFilterSection(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(
-                        onClick ={ openFilterBottomSheet = false
+                        onClick = {
+                            openFilterBottomSheet = false
                         }, modifier = Modifier.padding(start = 8.dp)
                     ) {
                         Icon(
@@ -179,7 +180,10 @@ fun SearchAndFilterSection(
                 }
             }
         ) {
-            FilterPage(configViewModel,searchViewModel,onCloseFilterBottomSheet = { openFilterBottomSheet = false })
+            FilterPage(
+                configViewModel,
+                searchViewModel,
+                onCloseFilterBottomSheet = { openFilterBottomSheet = false })
         }
     }
     LaunchedEffect(bottomSheetState) {

@@ -13,5 +13,5 @@ interface SearchRepository {
     fun updateFilters(currentFilters: Filters, newFilters: Filters, prop: String): Filters
     fun updateRangeFilter(currentFilters: Filters, prop: String, min: Int, max: Int): Filters
     fun updateListFilter(currentFilters: Filters, prop: String, selectedValues: List<Int>): Filters
-    fun createSearchRequest(filters: Filters, page: Int, sorting: String): THomeSale
+    suspend fun createSearchRequest(filters: Filters, dealType: Int, propertyType: Int, listingType: Int, page: Int, sorting: String): THomeSale
 }

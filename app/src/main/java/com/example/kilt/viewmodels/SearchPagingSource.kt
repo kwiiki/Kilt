@@ -9,17 +9,26 @@ import com.example.kilt.repository.SearchRepository
 
 class SearchPagingSource(
     private val searchRepository: SearchRepository,
-    private val filters: Filters
+    private val filters: Filters,
+    private val dealType: Int,
+    private val propertyType: Int,
+    private val listingType: Int
 ) : PagingSource<Int, PropertyItem>() {
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, PropertyItem> {
         try {
             val currentPage = params.key ?: 1
             Log.d("SearchPagingSource", "Loading page $currentPage with loadSize: ${params.loadSize}")
 
-            val request = searchRepository.createSearchRequest(filters, currentPage, "new")
+            val request = searchRepository.createSearchRequest(
+                filters = filters,
+                dealType = dealType,
+                propertyType = propertyType,
+                listingType = listingType,
+                page = currentPage,
+                sorting = "new"
+            )
             val response = searchRepository.performSearch(request)
-            // Убедитесь, что загружается ровно столько данных, сколько нужно
-            val items = response.list // Здесь загружаем данные для одной страницы
+            val items = response.list
             return LoadResult.Page(
                 data = items,
                 prevKey = if (currentPage == 1) null else currentPage - 1,
