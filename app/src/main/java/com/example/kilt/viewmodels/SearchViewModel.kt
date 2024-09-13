@@ -3,6 +3,7 @@
 package com.example.kilt.viewmodels
 
 import android.util.Log
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
@@ -22,6 +23,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -30,6 +32,13 @@ import javax.inject.Inject
 class SearchViewModel @Inject constructor(
     private val searchRepository: SearchRepository
 ) : ViewModel() {
+
+    // Кэш для результатов поиска
+    private var cachedSearchResults: PagingData<PropertyItem>? = null
+
+    // Флаг для отслеживания, была ли загрузка данных
+    private var isDataLoaded = false
+
     private val _searchResult = MutableStateFlow<SearchResponse?>(null)
     val searchResult: StateFlow<SearchResponse?> = _searchResult.asStateFlow()
 
@@ -43,16 +52,41 @@ class SearchViewModel @Inject constructor(
     private val _filters = MutableStateFlow(Filters())
     val filters: StateFlow<Filters> = _filters
 
-    val searchResults: Flow<PagingData<PropertyItem>> = filters.flatMapLatest { filters ->
-        Pager(
-            config = PagingConfig(
-                pageSize = 10, // Количество объявлений на одной странице
-                initialLoadSize = 10, // Загружаем одну страницу при инициализации
-                enablePlaceholders = false // Отключаем плейсхолдеры
-            ),
-            pagingSourceFactory = { SearchPagingSource(searchRepository, filters) }
-        ).flow.cachedIn(viewModelScope)
+    private val _listState = MutableStateFlow(LazyListState())
+    val listState: StateFlow<LazyListState> = _listState.asStateFlow()
+
+    fun updateListState(state: LazyListState) {
+        _listState.value = state
     }
+
+    fun resetListState() {
+        _listState.value = LazyListState()
+    }
+
+    val searchResults: Flow<PagingData<PropertyItem>> = filters.flatMapLatest { filters ->
+        if (!isDataLoaded) {
+            // Если данные ещё не загружены, загружаем и сохраняем их в кэш
+            Pager(
+                config = PagingConfig(
+                    pageSize = 10,
+                    initialLoadSize = 10,
+                    enablePlaceholders = false
+                ),
+                pagingSourceFactory = { SearchPagingSource(searchRepository, filters) }
+            ).flow.cachedIn(viewModelScope).also { flow ->
+                viewModelScope.launch {
+                    flow.collect { pagingData ->
+                        cachedSearchResults = pagingData
+                        isDataLoaded = true // Помечаем, что данные были загружены
+                    }
+                }
+            }
+        } else {
+            // Если данные уже загружены, возвращаем кэшированные данные
+            flowOf(cachedSearchResults ?: PagingData.empty())
+        }
+    }
+
     init {
         updateSingleFilter("deal_type", 1)
         updateSingleFilter("listing_type", 1)
@@ -66,7 +100,6 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-
     fun getSelectedFilters(prop: String): List<Int> {
         return when (val filterValue = _filters.value.filterMap[prop]) {
             is FilterValue.ListValue -> filterValue.values
@@ -77,6 +110,8 @@ class SearchViewModel @Inject constructor(
     private fun updateFilters(newFilters: Filters, prop: String) {
         _filters.value = searchRepository.updateFilters(_filters.value, newFilters, prop)
         Log.d("SearchViewModel", "Filters updated: ${_filters.value}")
+        isDataLoaded = false
+        resetListState()// Если фильтры изменились, необходимо перезагрузить данные
     }
 
     fun updateRangeFilter(prop: String, from: Int, to: Int) {
@@ -101,6 +136,8 @@ class SearchViewModel @Inject constructor(
 
     fun performSearch() {
         viewModelScope.launch {
+            if (isDataLoaded) return@launch // Если данные уже загружены, не повторяем запрос
+
             _isLoading.value = true
             _error.value = null
             try {
@@ -109,6 +146,7 @@ class SearchViewModel @Inject constructor(
                 val response = searchRepository.performSearch(request)
                 Log.d("SearchViewModel", "Received search response: $response")
                 _searchResult.value = response.copy(list = response.list.toList())
+                isDataLoaded = true // Данные загружены
             } catch (e: Exception) {
                 Log.e("SearchViewModel", "Search error", e)
                 _error.value = e.message ?: "Unknown error occurred"
@@ -119,4 +157,5 @@ class SearchViewModel @Inject constructor(
         }
     }
 }
+
 

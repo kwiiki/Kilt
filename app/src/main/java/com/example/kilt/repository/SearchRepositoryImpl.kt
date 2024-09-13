@@ -55,7 +55,6 @@ class SearchRepositoryImpl(private val apiService: ApiService) : SearchRepositor
     }
 
     override fun createSearchRequest(filters: Filters, page: Int, sorting: String): THomeSale {
-        // Проходим по каждому фильтру и распаковываем значение
         val formattedFilterMap = filters.filterMap.mapValues { (_, value) ->
             when (value) {
                 is FilterValue.SingleValue -> value.value // Извлекаем значение из SingleValue
@@ -63,7 +62,7 @@ class SearchRepositoryImpl(private val apiService: ApiService) : SearchRepositor
                 is FilterValue.RangeValue -> mapOf(
                     "from" to value.from,
                     "to" to value.to
-                ) // Преобразуем RangeValue в карту
+                ) // Cast RangeValue in Map
             }
         }
         return THomeSale(
