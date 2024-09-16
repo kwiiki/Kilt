@@ -67,9 +67,9 @@ fun SearchAndFilterSection(
         confirmValueChange = { it != SheetValue.Hidden }
     )
 
-    LaunchedEffect(Unit) {
-        configViewModel.loadConfig()
-    }
+//    LaunchedEffect(Unit) {
+//        configViewModel.loadConfig()
+//    }
 
     Column(modifier = modifier) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -166,8 +166,7 @@ fun SearchAndFilterSection(
                         textAlign = TextAlign.Center
                     )
                     TextButton(
-                        onClick = {
-                        },
+                        onClick = { },
                         modifier = Modifier.padding(end = 16.dp)
                     ) {
                         Text(

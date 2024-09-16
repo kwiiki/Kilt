@@ -18,6 +18,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,11 +44,12 @@ fun TypeOfHousing(
     configViewModel: ConfigViewModel,
     searchViewModel: SearchViewModel
 ) {
-    var isResidentialSelected by remember { mutableStateOf(true) }
-    var isCommercialSelected by remember { mutableStateOf(false) }
-    var selectedIcon by remember { mutableStateOf("builds") }
-    var isRentSelected by remember { mutableStateOf(true) }
-    var isBuySelected by remember { mutableStateOf(false) }
+
+    val isResidentialSelected by searchViewModel.isResidentialSelected.collectAsState()
+    val isCommercialSelected by searchViewModel.isCommercialSelected.collectAsState()
+    val selectedIcon by searchViewModel.selectedIcon.collectAsState()
+    val isRentSelected by searchViewModel.isRentSelected.collectAsState()
+    val isBuySelected by searchViewModel.isBuySelected.collectAsState()
 
 
     fun updateFilters() {
@@ -81,8 +83,7 @@ fun TypeOfHousing(
                 text = "Арендовать",
                 isSelected = isRentSelected,
                 onClick = {
-                    isRentSelected = true
-                    isBuySelected = false
+                    searchViewModel.selectRent()
                     updateFilters()
                 },
                 modifier = Modifier.weight(1f)
@@ -91,8 +92,7 @@ fun TypeOfHousing(
                 text = "Купить",
                 isSelected = isBuySelected,
                 onClick = {
-                    isRentSelected = false
-                    isBuySelected = true
+                    searchViewModel.selectBuy()
                     updateFilters()
                 },
                 modifier = Modifier.weight(1f)
@@ -122,8 +122,7 @@ fun TypeOfHousing(
                 text = "Жилая",
                 isSelected = isResidentialSelected,
                 onClick = {
-                    isResidentialSelected = true
-                    isCommercialSelected = false
+                    searchViewModel.selectResidential()
                     updateFilters()
                 },
                 modifier = Modifier.weight(1f)
@@ -132,8 +131,7 @@ fun TypeOfHousing(
                 text = "Коммерческая",
                 isSelected = isCommercialSelected,
                 onClick = {
-                    isResidentialSelected = false
-                    isCommercialSelected = true
+                    searchViewModel.selectCommercial()
                     updateFilters()
                 },
                 modifier = Modifier.weight(1f)
@@ -160,7 +158,7 @@ fun TypeOfHousing(
                                 RoundedCornerShape(14.dp)
                             )
                             .clickable {
-                                selectedIcon = "builds"
+                                searchViewModel.selectIcon("builds")
                                 updateFilters()
                             }
                     ) {
@@ -198,7 +196,7 @@ fun TypeOfHousing(
                                 RoundedCornerShape(14.dp)
                             )
                             .clickable {
-                                selectedIcon = "house"
+                                searchViewModel.selectIcon("house")
                                 updateFilters()
                             }
                     ) {

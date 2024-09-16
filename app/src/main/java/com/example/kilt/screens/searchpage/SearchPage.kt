@@ -43,16 +43,16 @@ fun SearchPage(
     navController: NavHostController,
     searchViewModel: SearchViewModel
 ) {
-    val filters by remember { searchViewModel.filters }.collectAsState()
     val response by remember { searchViewModel.searchResult }.collectAsState()
     val searchResults = searchViewModel.searchResultsFlow.collectAsLazyPagingItems()
 
     val listState by searchViewModel.listState.collectAsState()
 
     LaunchedEffect(searchResults.loadState) {
-        Log.d("SearchPage", "LoadState: ${searchResults.itemCount}")
+        Log.d("SearchPage", "LoadState: ${response}")
     }
-
+    Log.d("SearchPage", "Refresh state: ${searchResults.loadState.refresh}")
+    Log.d("SearchPage", "Append state: ${searchResults.loadState.append}")
     Column(
         modifier = Modifier
     ) {

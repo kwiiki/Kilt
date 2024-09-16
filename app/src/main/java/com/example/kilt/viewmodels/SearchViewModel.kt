@@ -46,6 +46,21 @@ class SearchViewModel @Inject constructor(
     private val _searchResultsFlow = MutableStateFlow<PagingData<PropertyItem>>(PagingData.empty())
     val searchResultsFlow = _searchResultsFlow.asStateFlow()
 
+    private val _isResidentialSelected = MutableStateFlow(true)
+    var isResidentialSelected: StateFlow<Boolean> = _isResidentialSelected
+
+    private val _isCommercialSelected = MutableStateFlow(false)
+    val isCommercialSelected: StateFlow<Boolean> = _isCommercialSelected
+
+    private val _selectedIcon = MutableStateFlow("builds")
+    val selectedIcon: StateFlow<String> = _selectedIcon
+
+    private val _isRentSelected = MutableStateFlow(true)
+    val isRentSelected: StateFlow<Boolean> = _isRentSelected
+
+    private val _isBuySelected = MutableStateFlow(false)
+    val isBuySelected: StateFlow<Boolean> = _isBuySelected
+
     private fun resetListState() {
         _listState.value = LazyListState()
     }
@@ -54,9 +69,32 @@ class SearchViewModel @Inject constructor(
         updateSingleFilter("deal_type", 1)
         updateSingleFilter("listing_type", 1)
         updateSingleFilter("property_type", 1)
-        performSearch()
-        getCountBySearchResult()
+//        performSearch()
+//        getCountBySearchResult()
     }
+
+    fun selectRent() {
+        _isRentSelected.value = true
+        _isBuySelected.value = false
+    }
+
+    fun selectBuy() {
+        _isRentSelected.value = false
+        _isBuySelected.value = true
+    }
+    fun selectResidential() {
+        _isResidentialSelected.value = true
+        _isCommercialSelected.value = false
+    }
+
+    fun selectCommercial() {
+        _isResidentialSelected.value = false
+        _isCommercialSelected.value = true
+    }
+    fun selectIcon(icon: String) {
+        _selectedIcon.value = icon
+    }
+
 
     fun getRangeFilterValues(prop: String): Pair<Int, Int> {
         return when (val filterValue = _filters.value.filterMap[prop]) {
@@ -75,7 +113,21 @@ class SearchViewModel @Inject constructor(
     private fun updateFilters(newFilters: Filters, prop: String) {
         _filters.value = searchRepository.updateFilters(_filters.value, newFilters, prop)
         isDataLoaded = false
-        resetListState()// Если фильтры изменились, необходимо перезагрузить данные
+        resetListState()
+
+        if (prop !in listOf("deal_type", "listing_type", "property_type")) {
+            performSearch()
+            getCountBySearchResult()
+        }
+    }
+
+    private fun clearFiltersExcept(exceptProps: List<String>) {
+        val clearedFilters = Filters(mutableMapOf<String, FilterValue>().apply {
+            exceptProps.forEach { prop ->
+                _filters.value.filterMap[prop]?.let { this[prop] = it }
+            }
+        })
+        _filters.value = clearedFilters
     }
 
     fun updateRangeFilter(prop: String, from: Int, to: Int) {
@@ -86,6 +138,12 @@ class SearchViewModel @Inject constructor(
     fun updateSingleFilter(prop: String, value: Int) {
         val newFilters = Filters(mutableMapOf(prop to FilterValue.SingleValue(value)))
         updateFilters(newFilters, prop)
+
+        if (prop in listOf("deal_type", "listing_type", "property_type")) {
+            clearFiltersExcept(listOf("deal_type", "listing_type", "property_type"))
+            performSearch()
+            getCountBySearchResult()
+        }
     }
 
     fun updateListFilter(prop: String, selectedValues: List<Int>) {
@@ -149,6 +207,7 @@ class SearchViewModel @Inject constructor(
                 Log.d("SearchViewModel", "performSearch: $request")
                 val response = searchRepository.performSearch(request)
                 _searchResult.value = response.copy(list = response.list.toList())
+                Log.d("SearchViewModel", "response: $response")
 
                 val pager = Pager(
                     config = PagingConfig(
@@ -165,6 +224,7 @@ class SearchViewModel @Inject constructor(
                         )
                     }
                 )
+
                 pager.flow.cachedIn(viewModelScope).collect { pagingData ->
                     _searchResultsFlow.value = pagingData
                 }

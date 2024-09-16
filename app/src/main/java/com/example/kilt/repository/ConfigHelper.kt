@@ -5,16 +5,17 @@ import com.example.kilt.data.TConfig
 import com.example.kilt.data.config.ListingStructures
 
 class ConfigHelper {
-    fun getFieldType(fieldName: String, propLabels: List<PropLabel>): String {
+    private fun getFieldType(fieldName: String, propLabels: List<PropLabel>): String {
         val propLabel = propLabels.find { it.property == fieldName }
         return when {
             propLabel != null -> {
                 when (propLabel.filter_type) {
                     "range" -> "range"
+                    "list-multiple" -> "list-multiple"
                     "list" -> "list"
                     "search" -> "search"
-                    "list-multiple" -> "list-multiple"
-                    else -> "list" // default to list for any other cases
+                    "residential-complex" -> "residential-complex"
+                    else -> "list-multiple" // default to list for any other cases
                 }
             }
             fieldName.endsWith("_list") -> "list-multiple"
@@ -29,17 +30,16 @@ class ConfigHelper {
         listingType: Int,
         listingStructures: List<ListingStructures>,
         propLabels: List<PropLabel>
-    ): TConfig {
+    ): Map<String, String> {
         val matchingStructure = listingStructures.find {
             it.deal_type == dealType &&
                     it.property_type == propertyType &&
                     it.listing_type == listingType
         }
         if (matchingStructure == null) {
-            return TConfig()
+            return emptyMap()
         }
         val props = matchingStructure.props.split(",")
-        val configFields = props.associateWith { prop -> getFieldType(prop, propLabels) }
-        return TConfig(fields = configFields)
+        return props.associateWith { prop -> getFieldType(prop, propLabels) }
     }
 }

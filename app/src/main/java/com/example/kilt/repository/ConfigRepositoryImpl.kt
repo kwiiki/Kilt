@@ -1,38 +1,37 @@
 package com.example.kilt.repository
 
+import android.util.Log
 import com.example.kilt.data.Config
-import com.example.kilt.data.config.ListingStructures
 import com.example.kilt.network.ApiService
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class ConfigRepositoryImpl @Inject constructor(
-    private val apiService: ApiService,
+    private val apiService: ApiService
 ) : ConfigRepository {
+    private val _config = MutableStateFlow<Config?>(null)
+    override val config: StateFlow<Config?> = _config.asStateFlow()
 
-    override suspend fun getConfig(): Config {
-        return apiService.getConfig()
+    override suspend fun loadConfig() {
+        if (_config.value == null) {
+            Log.d("ConfigDownload", "loadConfig: $_config")
+            _config.value = apiService.getConfig()
+        }
     }
-
-    override suspend fun getListingProps(
-        dealType: Int,
-        listingType: Int,
-        propertyType: Int
-    ): List<String>? {
-        val config = getConfig().listingStructures
-        return config.find { structure ->
+    override fun getConfig(): Config? = _config.value
+    override fun getListingProps(dealType: Int, listingType: Int, propertyType: Int): List<String>? {
+        return getConfig()?.listingStructures?.find { structure ->
             structure.deal_type == dealType &&
                     structure.listing_type == listingType &&
                     structure.property_type == propertyType
         }?.props?.split(",")
     }
-
-    override suspend fun getListingTops(
-        dealType: Int,
-        listingType: Int,
-        propertyType: Int
-    ): List<String>? {
-        val config = getConfig().listingStructures
-        return config.find { top ->
+    override fun getListingTops(dealType: Int, listingType: Int, propertyType: Int): List<String>? {
+        return getConfig()?.listingStructures?.find { top ->
             top.deal_type == dealType &&
                     top.listing_type == listingType &&
                     top.property_type == propertyType

@@ -4,7 +4,7 @@ package com.example.kilt.data
 //@Serializable
 
 
-data class TConfig(val fields: Map<String, String> = mapOf())
+data class TConfig(val configMap: Map<String, String> = mapOf())
 //data class TConfig(
 //    val residential_complex: String = "residential-complex",
 //    val rent_period: String = "list",

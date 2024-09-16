@@ -13,11 +13,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ConfigViewModel @Inject constructor(private val configRepository: ConfigRepository) :
-    ViewModel() {
+class ConfigViewModel @Inject constructor(private val configRepository: ConfigRepository) : ViewModel() {
 
-    private val _config = MutableStateFlow<Config?>(null)
-    val config: StateFlow<Config?> = _config
+    val config = configRepository.config
 
     private val _dealType = MutableStateFlow(1)
     val dealType: StateFlow<Int> = _dealType
@@ -32,9 +30,11 @@ class ConfigViewModel @Inject constructor(private val configRepository: ConfigRe
     private val _listingTop = MutableStateFlow<List<String>?>(null)
     val listingTop: StateFlow<List<String>?> = _listingTop
 
-
     init {
-        loadDataWithCurrentTypes()
+        viewModelScope.launch {
+            configRepository.loadConfig()
+            loadDataWithCurrentTypes()
+        }
     }
 
     private fun loadDataWithCurrentTypes() {
@@ -46,42 +46,23 @@ class ConfigViewModel @Inject constructor(private val configRepository: ConfigRe
         _dealType.value = dealType
         _listingType.value = listingType
         _propertyType.value = propertyType
-
-        Log.d(
-            "ConfigViewModel",
-            "setTypes: dealType=$dealType, listingType=$listingType, propertyType=$propertyType"
-        )
-
         loadDataWithCurrentTypes()
     }
 
     private fun loadListingProps(dealType: Int, listingType: Int, propertyType: Int) {
         viewModelScope.launch {
-            _listingProps.value =
-                configRepository.getListingProps(dealType, listingType, propertyType)
-            Log.d("listingProps","loadListingProps: ${configRepository.getListingProps(dealType, listingType, propertyType)}")
+            _listingProps.value = configRepository.getListingProps(dealType, listingType, propertyType)
         }
     }
 
     private fun loadListingTop(dealType: Int = 1, listingType: Int = 1, propertyType: Int = 1) {
         viewModelScope.launch {
             _listingTop.value = configRepository.getListingTops(dealType, listingType, propertyType)
-
         }
-
     }
 
     fun loadHomeSale() {
-        viewModelScope.launch {
-            _config.value = configRepository.getConfig()
-            loadListingProps(_dealType.value, _listingType.value, _propertyType.value)
-        }
-    }
-
-    fun loadConfig() {
-        viewModelScope.launch {
-            _config.value = configRepository.getConfig()
-        }
+        loadListingProps(_dealType.value, _listingType.value, _propertyType.value)
     }
 
     fun getFilterOptions(prop: String): List<Any>? {

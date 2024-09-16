@@ -81,19 +81,6 @@ class HomeSaleViewModel @Inject constructor(
             }
         }
     }
-
-
-//    fun loadById(id: String) {
-//        viewModelScope.launch {
-//            try {
-//                val result = homeSaleRepository.fetchHomeSale(id)
-//                _home.value = result
-//            } catch (e: Exception) {
-//                _error.value = e.message ?: "An unknown error occurred"
-//            }
-//        }
-//    }
-
     fun loadConfig() {
         viewModelScope.launch {
             try {
