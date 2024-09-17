@@ -48,6 +48,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.kilt.R
 import com.example.kilt.screens.searchpage.IconText
+import com.example.kilt.viewmodels.ConfigViewModel
 import com.example.kilt.viewmodels.HomeSaleViewModel
 import com.example.kilt.viewmodels.SearchViewModel
 import kotlinx.coroutines.launch
@@ -55,7 +56,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeDetailsScreen(
-    homeSaleViewModel: HomeSaleViewModel,
+    configViewModel: ConfigViewModel,
     navController: NavHostController,
     id: String?,
     searchViewModel: SearchViewModel = hiltViewModel(),
@@ -65,9 +66,8 @@ fun HomeDetailsScreen(
     var isFullScreenPhotoVisible by remember { mutableStateOf(false) }
     val homeSaleViewModel: HomeSaleViewModel = hiltViewModel()
     val homeSale by homeSaleViewModel.home.collectAsState()
-    val topListings by homeSaleViewModel.topListings
+    val listingsTop by configViewModel.listingTop.collectAsState()
     val isLoading by homeSaleViewModel.isLoading.collectAsState()
-
 
     LaunchedEffect(id) {
         id?.let {
@@ -83,19 +83,11 @@ fun HomeDetailsScreen(
         skipPartiallyExpanded = true
     )
 
-
     val searchResult by searchViewModel.searchResult.collectAsState()
 
     val propertyItem = remember(searchResult, id) {
         id?.let { searchViewModel.getPropertyById(it) }
     }
-
-//    LaunchedEffect(Unit) {
-//        homeSaleViewModel.topListings
-//        if (searchViewModel.searchResult.value == null) {
-//            searchViewModel.performSearch()
-//        }
-//    }
 
     Box(
         modifier = Modifier
@@ -156,7 +148,7 @@ fun HomeDetailsScreen(
                         Row(
                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                         ) {
-                            topListings.forEach { item ->
+                            listingsTop?.forEach { item ->
                                 when (item.trim()) { // обьязательно нужен трим
                                     "num_rooms" -> {
                                         IconText(

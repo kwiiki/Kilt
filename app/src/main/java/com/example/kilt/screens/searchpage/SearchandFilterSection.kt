@@ -166,7 +166,7 @@ fun SearchAndFilterSection(
                         textAlign = TextAlign.Center
                     )
                     TextButton(
-                        onClick = { },
+                        onClick = { searchViewModel.clearAllFilters()},
                         modifier = Modifier.padding(end = 16.dp)
                     ) {
                         Text(

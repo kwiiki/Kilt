@@ -30,6 +30,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -118,6 +119,7 @@ fun FilterContent(configViewModel: ConfigViewModel, searchViewModel: SearchViewM
     val config by configViewModel.config.collectAsState()
     val listingProps by configViewModel.listingProps.collectAsState()
 
+
     LaunchedEffect(Unit) {
         configViewModel.loadHomeSale()
     }
@@ -161,6 +163,7 @@ fun RangeFilter(prop: String, title: String, searchViewModel: SearchViewModel) {
     val (initialMin, initialMax) = searchViewModel.getRangeFilterValues(prop)
     var minValue by remember { mutableStateOf(if (initialMin > 0) initialMin.toString() else "") }
     var maxValue by remember { mutableStateOf(if (initialMax < Int.MAX_VALUE) initialMax.toString() else "") }
+
 
     val trailingText = when (prop) {
         "price" -> "тг."
@@ -245,6 +248,7 @@ fun ListFilter(
     val filters = viewModel.getFilterOptions(prop)
     val selectedFilters = searchViewModel.getSelectedFilters(prop)
 
+
     FilterButtons(
         filters = filters,
         title = title,
@@ -284,7 +288,7 @@ fun FilterButtons(
                     }
                 )
             }
-            items(filters ?: emptyList()) { filter ->
+            items(filters ?: emptyList() ) { filter ->
                 when (filter) {
                     is FilterItem -> {
                         FilterButton(

@@ -107,7 +107,7 @@ fun KiltApp() {
                 arguments = listOf(navArgument("id") { type = NavType.StringType })
             ) { backStackEntry ->
                 val id = backStackEntry.arguments?.getString("id")
-                HomeDetailsScreen(homeSaleViewModel,navController, id)
+                HomeDetailsScreen(configViewModel,navController, id)
             }
         }
     }

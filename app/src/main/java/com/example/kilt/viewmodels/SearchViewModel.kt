@@ -14,6 +14,10 @@ import com.example.kilt.data.PropertyItem
 import com.example.kilt.data.SearchResponse
 import com.example.kilt.repository.SearchRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -65,12 +69,23 @@ class SearchViewModel @Inject constructor(
         _listState.value = LazyListState()
     }
 
+    private val searchJob = Job()
+    private val searchScope = CoroutineScope(Dispatchers.Main + searchJob)
+
     init {
         updateSingleFilter("deal_type", 1)
         updateSingleFilter("listing_type", 1)
         updateSingleFilter("property_type", 1)
-//        performSearch()
+        performSearch()
 //        getCountBySearchResult()
+    }
+
+    private fun debouncedSearch() {
+        searchJob.cancel()
+        searchScope.launch {
+            delay(300) // Задержка в 300 мс
+            getCountBySearchResult()
+        }
     }
 
     fun selectRent() {
@@ -95,6 +110,12 @@ class SearchViewModel @Inject constructor(
         _selectedIcon.value = icon
     }
 
+    fun clearAllFilters() {
+        _filters.value = Filters(mutableMapOf())
+        resetListState()
+        performSearch()
+        getCountBySearchResult()
+    }
 
     fun getRangeFilterValues(prop: String): Pair<Int, Int> {
         return when (val filterValue = _filters.value.filterMap[prop]) {
@@ -114,10 +135,8 @@ class SearchViewModel @Inject constructor(
         _filters.value = searchRepository.updateFilters(_filters.value, newFilters, prop)
         isDataLoaded = false
         resetListState()
-
         if (prop !in listOf("deal_type", "listing_type", "property_type")) {
-            performSearch()
-            getCountBySearchResult()
+            debouncedSearch()
         }
     }
 
@@ -141,7 +160,6 @@ class SearchViewModel @Inject constructor(
 
         if (prop in listOf("deal_type", "listing_type", "property_type")) {
             clearFiltersExcept(listOf("deal_type", "listing_type", "property_type"))
-            performSearch()
             getCountBySearchResult()
         }
     }
@@ -224,7 +242,6 @@ class SearchViewModel @Inject constructor(
                         )
                     }
                 )
-
                 pager.flow.cachedIn(viewModelScope).collect { pagingData ->
                     _searchResultsFlow.value = pagingData
                 }
