@@ -83,7 +83,7 @@ class SearchViewModel @Inject constructor(
     private fun debouncedSearch() {
         searchJob.cancel()
         searchScope.launch {
-            delay(300) // Задержка в 300 мс
+            delay(300) // Задержка в 300 мс для того чтобы кнопки успевали загореть нужным цветом
             getCountBySearchResult()
         }
     }
@@ -110,12 +110,19 @@ class SearchViewModel @Inject constructor(
         _selectedIcon.value = icon
     }
 
-    fun clearAllFilters() {
-        _filters.value = Filters(mutableMapOf())
-        resetListState()
-        performSearch()
-        getCountBySearchResult()
-    }
+//     fun clearAllFilters() {
+//        val currentFilters = _filters.value.filterMap
+//        val preservedFilters = mutableMapOf<String, FilterValue>()
+//        // Сохраняем значения для dealType, propertyType и listingType
+//        listOf("deal_type", "listing_type", "property_type").forEach { key ->
+//            currentFilters[key]?.let { preservedFilters[key] = it }
+//        }
+////        // Обновляем фильтры, сохраняя только нужные значения
+//        _filters.value = Filters(preservedFilters)
+//
+//        resetListState()
+//        getCountBySearchResult()
+//    }
 
     fun getRangeFilterValues(prop: String): Pair<Int, Int> {
         return when (val filterValue = _filters.value.filterMap[prop]) {
@@ -139,29 +146,18 @@ class SearchViewModel @Inject constructor(
             debouncedSearch()
         }
     }
-
-    private fun clearFiltersExcept(exceptProps: List<String>) {
-        val clearedFilters = Filters(mutableMapOf<String, FilterValue>().apply {
-            exceptProps.forEach { prop ->
-                _filters.value.filterMap[prop]?.let { this[prop] = it }
-            }
-        })
-        _filters.value = clearedFilters
-    }
-
     fun updateRangeFilter(prop: String, from: Int, to: Int) {
         val newFilters = Filters(mutableMapOf(prop to FilterValue.RangeValue(from, to)))
         updateFilters(newFilters, prop)
     }
-
     fun updateSingleFilter(prop: String, value: Int) {
         val newFilters = Filters(mutableMapOf(prop to FilterValue.SingleValue(value)))
         updateFilters(newFilters, prop)
-
-        if (prop in listOf("deal_type", "listing_type", "property_type")) {
-            clearFiltersExcept(listOf("deal_type", "listing_type", "property_type"))
-            getCountBySearchResult()
-        }
+//        clearAllFilters()
+//        if (prop in listOf("deal_type", "listing_type", "property_type")) {
+//            clearFiltersExcept(listOf("deal_type", "listing_type", "property_type"))
+//            getCountBySearchResult()
+//        }
     }
 
     fun updateListFilter(prop: String, selectedValues: List<Int>) {
@@ -214,18 +210,18 @@ class SearchViewModel @Inject constructor(
                 val listingType = (_filters.value.filterMap["listing_type"] as? FilterValue.SingleValue)?.value ?: 1
                 val propertyType = (_filters.value.filterMap["property_type"] as? FilterValue.SingleValue)?.value ?: 1
 
-                val request = searchRepository.createSearchRequest(
-                    filters = _filters.value,
-                    dealType = dealType,
-                    propertyType = propertyType,
-                    listingType = listingType,
-                    page = 0,
-                    sorting = "new"
-                )
-                Log.d("SearchViewModel", "performSearch: $request")
-                val response = searchRepository.performSearch(request)
-                _searchResult.value = response.copy(list = response.list.toList())
-                Log.d("SearchViewModel", "response: $response")
+//                val request = searchRepository.createSearchRequest(
+//                    filters = _filters.value,
+//                    dealType = dealType,
+//                    propertyType = propertyType,
+//                    listingType = listingType,
+//                    page = 0,
+//                    sorting = "new"
+//                )
+//                Log.d("SearchViewModel", "performSearch: $request")
+//                val response = searchRepository.performSearch(request)
+//                _searchResult.value = response.copy(list = response.list.toList())
+//                Log.d("SearchViewModel", "response: $response")
 
                 val pager = Pager(
                     config = PagingConfig(

@@ -1,6 +1,7 @@
 package com.example.kilt.screens.searchpage.filter
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -30,7 +31,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -230,7 +230,6 @@ fun RangeFilter(prop: String, title: String, searchViewModel: SearchViewModel) {
         }
     }
     Divider()
-
     LaunchedEffect(minValue, maxValue) {
         val min = minValue.toIntOrNull() ?: 0
         val max = maxValue.toIntOrNull() ?: 0
@@ -247,8 +246,7 @@ fun ListFilter(
 ) {
     val filters = viewModel.getFilterOptions(prop)
     val selectedFilters = searchViewModel.getSelectedFilters(prop)
-
-
+    Log.d("selectedFilters", "ListFilter: $prop $selectedFilters")
     FilterButtons(
         filters = filters,
         title = title,

@@ -4,7 +4,7 @@ plugins {
     id ("com.google.dagger.hilt.android")
     id ("kotlin-kapt")
     id ("dagger.hilt.android.plugin")
-//    kotlin("plugin.serialization") version "2.0.20"
+    kotlin("plugin.serialization") version "2.0.20"
 }
 
 android {
@@ -106,6 +106,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.22")
 
 //    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1")
+//    implementation ("androidx.datastore:datastore-preferences:1.0.0")
 //    implementation ("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")
 
 

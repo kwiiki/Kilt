@@ -32,6 +32,7 @@ class ConfigViewModel @Inject constructor(private val configRepository: ConfigRe
 
     init {
         viewModelScope.launch {
+            Log.d("ConfigDownload", "ConfigViewModel : Load in configViewModel ")
             configRepository.loadConfig()
             loadDataWithCurrentTypes()
         }

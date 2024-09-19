@@ -14,7 +14,7 @@ class HomeSaleRepositoryImpl(
         return apiService.getHomeSale(id)
     }
 
-    override suspend fun fetchConfig(): Config {
-        return apiService.getConfig()
-    }
+//    override suspend fun fetchConfig(): Config {
+//        return apiService.getConfig()
+//    }
 }

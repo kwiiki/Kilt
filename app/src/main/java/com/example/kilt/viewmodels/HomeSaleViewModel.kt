@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.kilt.data.Config
+import com.example.kilt.repository.ConfigRepository
 import com.example.kilt.repository.HomeSaleRepository
 import com.example.myapplication.data.HomeSale
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,7 +18,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeSaleViewModel @Inject constructor(
-    private val homeSaleRepository: HomeSaleRepository
+    private val homeSaleRepository: HomeSaleRepository,
+    private val configRepository: ConfigRepository
 ) : ViewModel() {
 
     private val _home = MutableStateFlow<HomeSale?>(null)
@@ -36,6 +38,8 @@ class HomeSaleViewModel @Inject constructor(
         private set
     var config = mutableStateOf<Config?>(null)
 
+    private var isConfigLoaded = false
+
     var topListings = mutableStateOf<List<String>>(emptyList())
         private set
 
@@ -46,7 +50,7 @@ class HomeSaleViewModel @Inject constructor(
     fun loadHomeSale() {
         viewModelScope.launch {
             try {
-                config.value = homeSaleRepository.fetchConfig()
+                config.value = configRepository.config.value
                 Log.d("HomeSaleViewModel", "loadHomesale: ${homeSale.value}")
                 Log.d("HomeSaleViewModel", "loadConfig: ${config.value?.listingStructures}")
                 Log.d("HomeSaleViewModel", "probLabels: ${config.value?.propLabels?.size}")
@@ -64,7 +68,7 @@ class HomeSaleViewModel @Inject constructor(
     fun loadById(id: String) {
         viewModelScope.launch {
             val homeSaleDeferred = async { homeSaleRepository.fetchHomeSale(id) }
-            val configDeferred = async { homeSaleRepository.fetchConfig() }
+            val configDeferred = async { configRepository.config.value }
             _isLoading.value = true
 
             try {
@@ -81,33 +85,40 @@ class HomeSaleViewModel @Inject constructor(
             }
         }
     }
-    fun loadConfig() {
+
+     fun loadConfig() {
         viewModelScope.launch {
-            try {
-                val configResult = homeSaleRepository.fetchConfig()
-                _configHome.value = configResult
-                updateTopListings()
-            } catch (e: Exception) {
-                _error.value = e.message ?: "An unknown error occurred while fetching config"
+            if (!isConfigLoaded) {
+                try {
+                    Log.d("ConfigDownload", "getConfig: Download Config1")
+                    // Load the config only if it's not loaded yet
+                    if (configRepository.config.value == null) {
+                        configRepository.loadConfig() // Only call if config is null
+                    }
+                    _configHome.value = configRepository.config.value
+                    updateTopListings()
+                    isConfigLoaded = true // Set flag to true after loading config
+                } catch (e: Exception) {
+                    _error.value = e.message ?: "An unknown error occurred while fetching config"
+                }
             }
         }
     }
 
-
     private fun updateTopListings() {
         val homeSaleValue = homeSale.value
-        val listingStructures = config.value?.listingStructures ?: emptyList()
+        Log.d("HomeSaleViewModel", "updateTopListings: ${homeSaleValue}")
+        val listingStructures = configRepository.config.value?.listingStructures
 
         if (homeSaleValue != null) {
-            val topValues = listingStructures.filter { structure ->
+            val topValues = listingStructures?.filter { structure ->
                 structure.deal_type == homeSaleValue.listing.deal_type &&
                         structure.listing_type == homeSaleValue.listing.listing_type &&
                         structure.property_type == homeSaleValue.listing.property_type
-            }.flatMap { it.top.split(",") }
+            }?.flatMap { it.top.split(",") }
 
-            topListings.value = topValues.distinct()
+            topListings.value = topValues?.distinct() ?: emptyList()
         }
         Log.d("HomeSaleViewModel", "updateTopListings: ${topListings.value}")
-        Log.d("HomeSaleViewModel1", "updateTopListings: ${homeSaleValue}")
     }
 }

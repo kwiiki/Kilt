@@ -57,7 +57,7 @@ fun KiltApp() {
     val currentRoute = navBackStackEntry?.destination?.route
     val searchViewModel: SearchViewModel = hiltViewModel()
     val configViewModel: ConfigViewModel = hiltViewModel()
-    val homeSaleViewModel:HomeSaleViewModel = hiltViewModel()
+    val homeSaleViewModel: HomeSaleViewModel = hiltViewModel()
 
 
     val bottomBarRoutes = listOf(
@@ -92,7 +92,7 @@ fun KiltApp() {
             composable(BottomNavigationScreen.HomePage.route) { HomePage(navController) }
             composable(BottomNavigationScreen.SaleAndRent.route) {
                 SearchPage(
-                    homeSaleViewModel= homeSaleViewModel,
+                    homeSaleViewModel = homeSaleViewModel,
                     configViewModel = configViewModel,
                     searchViewModel = searchViewModel,
                     navController = navController
@@ -107,7 +107,7 @@ fun KiltApp() {
                 arguments = listOf(navArgument("id") { type = NavType.StringType })
             ) { backStackEntry ->
                 val id = backStackEntry.arguments?.getString("id")
-                HomeDetailsScreen(configViewModel,navController, id)
+                HomeDetailsScreen(configViewModel, navController, id)
             }
         }
     }

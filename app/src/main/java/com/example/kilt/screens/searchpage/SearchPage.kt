@@ -17,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,28 +42,26 @@ fun SearchPage(
     navController: NavHostController,
     searchViewModel: SearchViewModel
 ) {
-    val response by remember { searchViewModel.searchResult }.collectAsState()
+    val response = searchViewModel.searchResult.collectAsState()
     val searchResults = searchViewModel.searchResultsFlow.collectAsLazyPagingItems()
 
     val listState by searchViewModel.listState.collectAsState()
 
     LaunchedEffect(searchResults.loadState) {
-        Log.d("SearchPage", "LoadState: ${response}")
+        Log.d("SearchPage", "LoadState: $response")
     }
     Log.d("SearchPage", "Refresh state: ${searchResults.loadState.refresh}")
     Log.d("SearchPage", "Append state: ${searchResults.loadState.append}")
     Column(
         modifier = Modifier
     ) {
-        SearchAndFilterSection(
+        SearchAndQuickFilters(
             configViewModel,
             searchViewModel,
             Modifier
                 .padding(horizontal = 16.dp)
                 .padding(top = 8.dp)
         )
-        Spacer(modifier = Modifier.height(8.dp))
-
         when {
             searchResults.loadState.refresh is LoadState.Loading -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -72,7 +69,6 @@ fun SearchPage(
                 }
             }
             searchResults.loadState.refresh is LoadState.Error -> {
-                val error = (searchResults.loadState.refresh as LoadState.Error).error
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text(text = "Error: ERRRRROR", color = Color.Red)
                 }
@@ -171,6 +167,7 @@ fun SearchPage(
         }
     }
 }
+
 @Composable
 fun LoadingNextPageItem(modifier: Modifier = Modifier) {
     Box(

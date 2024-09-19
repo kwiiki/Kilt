@@ -1,5 +1,6 @@
 package com.example.kilt.screens.searchpage
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,21 +24,41 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.kilt.R
 
 @Composable
 fun FilterButtons(
     filters: List<String>,
+    onFilterButtonClicked: (Boolean) -> Unit,
     onFilterSelected: (String) -> Unit
 ) {
     var selectedFilter by remember { mutableStateOf<String?>(null) }
 
     LazyRow(
         modifier = Modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+        contentPadding = PaddingValues( vertical = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
+        item {
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(Color(0xffF2F2F2), shape = (RoundedCornerShape(16.dp)))
+            ) {
+                Image(
+                    imageVector = ImageVector.vectorResource(id = R.drawable.filter_icon),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(18.dp)
+                        .align(alignment = Alignment.Center)
+                        .clickable { onFilterButtonClicked(true)}
+                )
+            }
+        }
         items(filters) { filter ->
             FilterButton(
                 text = filter,
@@ -62,7 +84,7 @@ fun FilterButton(
         modifier = Modifier
             .height(36.dp)
             .fillMaxWidth()
-            .border(width = 1.dp, Color(0xffc2c2d6), RoundedCornerShape(16.dp))
+            .border(width = 1.dp, Color(0xffc2c2d6), RoundedCornerShape(12.dp))
             .clickable(
                 enabled = !isClicked,
                 onClick = {
@@ -86,20 +108,13 @@ fun FilterButton(
 }
 
 @Composable
-fun FilterScreen() {
+fun QuickFilters(onFilterButtonClicked: (Boolean) -> Unit) {
     val filters = listOf("Купить", "Квартира", "Количество комнат", "Цена", "Площадь")
-
     FilterButtons(
         filters = filters,
+        onFilterButtonClicked = onFilterButtonClicked,
         onFilterSelected = { selectedFilter ->
-            // Обработка выбранного фильтра
             println("Выбран фильтр: $selectedFilter")
         }
     )
-}
-
-@Composable
-@Preview(showBackground = true)
-fun PreviewFilterScreen(){
-    FilterScreen()
 }
