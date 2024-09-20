@@ -1,6 +1,5 @@
 package com.example.kilt.di
 
-import androidx.lifecycle.SavedStateHandle
 import com.example.kilt.repository.ConfigRepository
 import com.example.kilt.repository.HomeSaleRepository
 import com.example.kilt.repository.SearchRepository
@@ -19,14 +18,17 @@ object ViewModelModule {
     @Provides
     @ViewModelScoped
     fun provideSearchViewModel(
-        searchRepository: SearchRepository
+        searchRepository: SearchRepository,
     ): SearchViewModel {
-        return SearchViewModel(searchRepository )
+        return SearchViewModel(searchRepository)
     }
 
     @Provides
     @ViewModelScoped
-    fun provideHomeSaleViewModel(homeSaleRepository: HomeSaleRepository,configRepository: ConfigRepository): HomeSaleViewModel {
-        return HomeSaleViewModel(homeSaleRepository,configRepository)
+    fun provideHomeSaleViewModel(
+        homeSaleRepository: HomeSaleRepository,
+        configRepository: ConfigRepository
+    ): HomeSaleViewModel {
+        return HomeSaleViewModel(homeSaleRepository, configRepository)
     }
 }

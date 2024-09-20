@@ -27,7 +27,9 @@ class SearchPagingSource(
                 page = currentPage,
                 sorting = "new"
             )
+            Log.d("request", "request: $request")
             val response = searchRepository.performSearch(request)
+            Log.d("response", "load: $response")
             val items = response.list
             return LoadResult.Page(
                 data = items,

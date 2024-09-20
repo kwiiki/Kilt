@@ -1,5 +1,7 @@
 package com.example.kilt.screens.searchpage
 
+import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -26,9 +28,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.kilt.R
+import com.example.kilt.enums.TypeFilters
+import com.example.kilt.viewmodels.ConfigViewModel
+import com.example.kilt.viewmodels.SearchViewModel
 
 @Composable
 fun FilterButtons(
@@ -40,7 +44,7 @@ fun FilterButtons(
 
     LazyRow(
         modifier = Modifier.fillMaxWidth(),
-        contentPadding = PaddingValues( vertical = 8.dp),
+        contentPadding = PaddingValues(vertical = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item {
@@ -55,9 +59,30 @@ fun FilterButtons(
                     modifier = Modifier
                         .size(18.dp)
                         .align(alignment = Alignment.Center)
-                        .clickable { onFilterButtonClicked(true)}
+                        .clickable { onFilterButtonClicked(true) }
                 )
             }
+        }
+        item {
+            Box(
+                modifier = Modifier
+                    .height(36.dp)
+                    .fillMaxWidth()
+                    .border(width = 1.dp, Color(0xffc2c2d6), RoundedCornerShape(12.dp))
+                    .background(
+                        color = Color(0xffF2F2F2),
+                        shape = RoundedCornerShape(16.dp)
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "Купить",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = Color(0xff110D28),
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+            }
+
         }
         items(filters) { filter ->
             FilterButton(
@@ -79,7 +104,6 @@ fun FilterButton(
     onClick: () -> Unit
 ) {
     var isClicked by remember { mutableStateOf(true) }
-
     Box(
         modifier = Modifier
             .height(36.dp)
@@ -106,12 +130,46 @@ fun FilterButton(
         )
     }
 }
-
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun QuickFilters(onFilterButtonClicked: (Boolean) -> Unit) {
-    val filters = listOf("Купить", "Квартира", "Количество комнат", "Цена", "Площадь")
+fun QuickFilters(
+    configViewModel: ConfigViewModel,
+    searchViewModel: SearchViewModel,
+    onFilterButtonClicked: (Boolean) -> Unit
+) {
+    val advancedConfig = configViewModel.config.value?.advanced
+    val propLabels = configViewModel.config.value?.propLabels
+    val propertyTypes = configViewModel.config.value?.propertyTypes
+
+    val currentPropertyType = propertyTypes?.find { it.id == searchViewModel.propertyType.value }
+    val currentListingType = currentPropertyType?.listing_type ?: searchViewModel.listingType.value
+
+    val filters = when {
+        searchViewModel.dealType.value == 1 && currentPropertyType?.id == 1 && currentListingType == 1 ->
+            advancedConfig?.quick_filters_1_1_1
+        searchViewModel.dealType.value == 2 && currentPropertyType?.id == 1 && currentListingType == 1 ->
+            advancedConfig?.quick_filters_1_1_2
+        searchViewModel.dealType.value == 1 && currentPropertyType?.id == 2 && currentListingType == 1 ->
+            advancedConfig?.quick_filters_2_1_1
+        searchViewModel.dealType.value == 2 && currentPropertyType?.id == 2 && currentListingType == 1 ->
+            advancedConfig?.quick_filters_2_1_2
+        searchViewModel.dealType.value == 1 && currentPropertyType?.id == 6 && currentListingType == 2 ->
+            advancedConfig?.quick_filters_1_2_6
+        else ->
+            advancedConfig?.quick_filters_2_2_6
+    }?.split(",")?.map { it.trim() } ?: emptyList()
+
+    Log.d("quickFilters", "QuickFilters: $filters")
+
+    val filterLabels = filters.map { filterProperty ->
+        when (filterProperty) {
+            TypeFilters.PROPERTY_TYPE.value -> currentPropertyType?.label_ru ?: "Тип недвижимости"
+            else -> propLabels?.find { it.property == filterProperty }?.label_ru ?: filterProperty
+        }
+    }
+
     FilterButtons(
-        filters = filters,
+        filters = filterLabels,
         onFilterButtonClicked = onFilterButtonClicked,
         onFilterSelected = { selectedFilter ->
             println("Выбран фильтр: $selectedFilter")

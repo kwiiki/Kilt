@@ -18,11 +18,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,39 +30,27 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.kilt.R
 import com.example.kilt.custom.CustomToggleButton
-import com.example.kilt.data.Filters
 import com.example.kilt.viewmodels.ConfigViewModel
 import com.example.kilt.viewmodels.SearchViewModel
 
 @Composable
 fun TypeOfHousing(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     configViewModel: ConfigViewModel,
-    searchViewModel: SearchViewModel
+    searchViewModel: SearchViewModel,
 ) {
+    val dealType by searchViewModel.dealType
+    val listingType by searchViewModel.listingType
+    val propertyType by searchViewModel.propertyType
 
-    val isResidentialSelected by searchViewModel.isResidentialSelected.collectAsState()
-    val isCommercialSelected by searchViewModel.isCommercialSelected.collectAsState()
-    val selectedIcon by searchViewModel.selectedIcon.collectAsState()
-    val isRentSelected by searchViewModel.isRentSelected.collectAsState()
-    val isBuySelected by searchViewModel.isBuySelected.collectAsState()
-
-
-    fun updateFilters() {
-        val dealType = if (isRentSelected) 1 else 2
-        val listingType = if (isResidentialSelected) 1 else 2
-        val propertyType = when {
-            isCommercialSelected -> 6
-            selectedIcon == "builds" -> 1
-            else -> 2
-        }
-
-        configViewModel.setTypes(dealType, listingType, propertyType)
-
-        searchViewModel.updateSingleFilter("deal_type", dealType)
-        searchViewModel.updateSingleFilter("listing_type", listingType)
-        searchViewModel.updateSingleFilter("property_type", propertyType)
-
+    val isResidentialSelected = listingType == 1
+    val isCommercialSelected = listingType == 2
+    val isRentSelected = dealType == 1
+    val isBuySelected = dealType == 2
+    val selectedIcon = when (propertyType) {
+        1 -> "builds"
+        2 -> "house"
+        else -> ""
     }
 
     Column(modifier = modifier) {
@@ -82,19 +66,13 @@ fun TypeOfHousing(
             CustomToggleButton(
                 text = "Арендовать",
                 isSelected = isRentSelected,
-                onClick = {
-                    searchViewModel.selectRent()
-                    updateFilters()
-                },
+                onClick = { searchViewModel.selectRent() },
                 modifier = Modifier.weight(1f)
             )
             CustomToggleButton(
                 text = "Купить",
                 isSelected = isBuySelected,
-                onClick = {
-                    searchViewModel.selectBuy()
-                    updateFilters()
-                },
+                onClick = { searchViewModel.selectBuy() },
                 modifier = Modifier.weight(1f)
             )
         }
@@ -121,19 +99,13 @@ fun TypeOfHousing(
             CustomToggleButton(
                 text = "Жилая",
                 isSelected = isResidentialSelected,
-                onClick = {
-                    searchViewModel.selectResidential()
-                    updateFilters()
-                },
+                onClick = { searchViewModel.selectResidential() },
                 modifier = Modifier.weight(1f)
             )
             CustomToggleButton(
                 text = "Коммерческая",
                 isSelected = isCommercialSelected,
-                onClick = {
-                    searchViewModel.selectCommercial()
-                    updateFilters()
-                },
+                onClick = { searchViewModel.selectCommercial() },
                 modifier = Modifier.weight(1f)
             )
         }
@@ -157,10 +129,7 @@ fun TypeOfHousing(
                                 color = Color(0xffF2F2F2),
                                 RoundedCornerShape(14.dp)
                             )
-                            .clickable {
-                                searchViewModel.selectIcon("builds")
-                                updateFilters()
-                            }
+                            .clickable { searchViewModel.selectPropertyType(1) }
                     ) {
                         Icon(
                             imageVector = ImageVector.vectorResource(
@@ -195,10 +164,7 @@ fun TypeOfHousing(
                                 color = Color(0xffF2F2F2),
                                 RoundedCornerShape(14.dp)
                             )
-                            .clickable {
-                                searchViewModel.selectIcon("house")
-                                updateFilters()
-                            }
+                            .clickable { searchViewModel.selectPropertyType(2) }
                     ) {
                         Icon(
                             imageVector = ImageVector.vectorResource(
@@ -221,14 +187,8 @@ fun TypeOfHousing(
                 }
             }
         }
-        LaunchedEffect(
-            isRentSelected,
-            isBuySelected,
-            isResidentialSelected,
-            isCommercialSelected,
-            selectedIcon
-        ) {
-            updateFilters()
-        }
+    }
+    LaunchedEffect(dealType, listingType, propertyType) {
+        configViewModel.setTypes(dealType, listingType, propertyType)
     }
 }

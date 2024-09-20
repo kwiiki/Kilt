@@ -2,6 +2,7 @@ package com.example.kilt.viewmodels
 
 import android.util.Log
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
@@ -23,12 +24,22 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import androidx.compose.runtime.State
+import com.example.kilt.enums.TypeFilters
 
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val searchRepository: SearchRepository
 ) : ViewModel() {
+    private val _dealType = mutableStateOf(1)
+    val dealType: State<Int> = _dealType
+
+    private val _listingType = mutableStateOf(1)
+    val listingType: State<Int> = _listingType
+
+    private val _propertyType = mutableStateOf(1)
+    val propertyType: State<Int> = _propertyType
     private var isDataLoaded = false
 
     private val _searchResult = MutableStateFlow<SearchResponse?>(null)
@@ -50,21 +61,6 @@ class SearchViewModel @Inject constructor(
     private val _searchResultsFlow = MutableStateFlow<PagingData<PropertyItem>>(PagingData.empty())
     val searchResultsFlow = _searchResultsFlow.asStateFlow()
 
-    private val _isResidentialSelected = MutableStateFlow(true)
-    var isResidentialSelected: StateFlow<Boolean> = _isResidentialSelected
-
-    private val _isCommercialSelected = MutableStateFlow(false)
-    val isCommercialSelected: StateFlow<Boolean> = _isCommercialSelected
-
-    private val _selectedIcon = MutableStateFlow("builds")
-    val selectedIcon: StateFlow<String> = _selectedIcon
-
-    private val _isRentSelected = MutableStateFlow(true)
-    val isRentSelected: StateFlow<Boolean> = _isRentSelected
-
-    private val _isBuySelected = MutableStateFlow(false)
-    val isBuySelected: StateFlow<Boolean> = _isBuySelected
-
     private fun resetListState() {
         _listState.value = LazyListState()
     }
@@ -73,11 +69,14 @@ class SearchViewModel @Inject constructor(
     private val searchScope = CoroutineScope(Dispatchers.Main + searchJob)
 
     init {
-        updateSingleFilter("deal_type", 1)
-        updateSingleFilter("listing_type", 1)
-        updateSingleFilter("property_type", 1)
+        updateFiltersAndSearch()
         performSearch()
-//        getCountBySearchResult()
+    }
+    private fun updateFiltersAndSearch() {
+        updateSingleFilter(TypeFilters.DEAL_TYPE.value, dealType.value)
+        updateSingleFilter(TypeFilters.LISTING_TYPE.value, listingType.value)
+        updateSingleFilter(TypeFilters.PROPERTY_TYPE.value, propertyType.value)
+        getCountBySearchResult()
     }
 
     private fun debouncedSearch() {
@@ -88,41 +87,35 @@ class SearchViewModel @Inject constructor(
         }
     }
 
+    fun updatePropertyType(newValue: Int) {
+        _propertyType.value = newValue
+    }
+
     fun selectRent() {
-        _isRentSelected.value = true
-        _isBuySelected.value = false
+        val listing = _listingType.value
+        val property = if (listing == 2) 6 else _propertyType.value
+        updateFilters(1, listing, property)
     }
 
     fun selectBuy() {
-        _isRentSelected.value = false
-        _isBuySelected.value = true
+        val listing = _listingType.value
+        val property = if (listing == 2) 6 else _propertyType.value
+        updateFilters(2, listing, property)
     }
+
     fun selectResidential() {
-        _isResidentialSelected.value = true
-        _isCommercialSelected.value = false
+        updateFilters(_dealType.value, 1, 1)
     }
 
     fun selectCommercial() {
-        _isResidentialSelected.value = false
-        _isCommercialSelected.value = true
-    }
-    fun selectIcon(icon: String) {
-        _selectedIcon.value = icon
+        updateFilters(_dealType.value, 2, 6)
     }
 
-//     fun clearAllFilters() {
-//        val currentFilters = _filters.value.filterMap
-//        val preservedFilters = mutableMapOf<String, FilterValue>()
-//        // Сохраняем значения для dealType, propertyType и listingType
-//        listOf("deal_type", "listing_type", "property_type").forEach { key ->
-//            currentFilters[key]?.let { preservedFilters[key] = it }
-//        }
-////        // Обновляем фильтры, сохраняя только нужные значения
-//        _filters.value = Filters(preservedFilters)
-//
-//        resetListState()
-//        getCountBySearchResult()
-//    }
+    fun selectPropertyType(type: Int) {
+        if (_listingType.value == 1) {
+            updateFilters(_dealType.value, 1, type)
+        }
+    }
 
     fun getRangeFilterValues(prop: String): Pair<Int, Int> {
         return when (val filterValue = _filters.value.filterMap[prop]) {
@@ -142,22 +135,34 @@ class SearchViewModel @Inject constructor(
         _filters.value = searchRepository.updateFilters(_filters.value, newFilters, prop)
         isDataLoaded = false
         resetListState()
-        if (prop !in listOf("deal_type", "listing_type", "property_type")) {
+        if (prop !in listOf(
+                TypeFilters.DEAL_TYPE.value,
+                TypeFilters.LISTING_TYPE.value,
+                TypeFilters.PROPERTY_TYPE.value
+            )
+        ) {
             debouncedSearch()
         }
     }
+
+    private fun updateFilters(deal: Int, listing: Int, property: Int) {
+        _dealType.value = deal
+        _listingType.value = listing
+        _propertyType.value = property
+        updateSingleFilter(TypeFilters.DEAL_TYPE.value, deal)
+        updateSingleFilter(TypeFilters.LISTING_TYPE.value, listing)
+        updateSingleFilter(TypeFilters.PROPERTY_TYPE.value, property)
+        getCountBySearchResult()
+    }
+
     fun updateRangeFilter(prop: String, from: Int, to: Int) {
         val newFilters = Filters(mutableMapOf(prop to FilterValue.RangeValue(from, to)))
         updateFilters(newFilters, prop)
     }
-    fun updateSingleFilter(prop: String, value: Int) {
+
+    private fun updateSingleFilter(prop: String, value: Int) {
         val newFilters = Filters(mutableMapOf(prop to FilterValue.SingleValue(value)))
         updateFilters(newFilters, prop)
-//        clearAllFilters()
-//        if (prop in listOf("deal_type", "listing_type", "property_type")) {
-//            clearFiltersExcept(listOf("deal_type", "listing_type", "property_type"))
-//            getCountBySearchResult()
-//        }
     }
 
     fun updateListFilter(prop: String, selectedValues: List<Int>) {
@@ -176,9 +181,14 @@ class SearchViewModel @Inject constructor(
             _isLoading.value = true
             _error.value = null
             try {
-                val dealType = (_filters.value.filterMap["deal_type"] as? FilterValue.SingleValue)?.value ?: 1
-                val listingType = (_filters.value.filterMap["listing_type"] as? FilterValue.SingleValue)?.value ?: 1
-                val propertyType = (_filters.value.filterMap["property_type"] as? FilterValue.SingleValue)?.value ?: 1
+                val dealType =
+                    (_filters.value.filterMap[TypeFilters.DEAL_TYPE.value] as? FilterValue.SingleValue)?.value ?: 1
+                val listingType =
+                    (_filters.value.filterMap[TypeFilters.LISTING_TYPE.value] as? FilterValue.SingleValue)?.value
+                        ?: 1
+                val propertyType =
+                    (_filters.value.filterMap[TypeFilters.PROPERTY_TYPE.value] as? FilterValue.SingleValue)?.value
+                        ?: 1
 
                 val request = searchRepository.createSearchRequest(
                     filters = _filters.value,
@@ -200,29 +210,17 @@ class SearchViewModel @Inject constructor(
             }
         }
     }
-
     fun performSearch() {
         viewModelScope.launch {
             _isLoading.value = true
             _error.value = null
             try {
-                val dealType = (_filters.value.filterMap["deal_type"] as? FilterValue.SingleValue)?.value ?: 1
-                val listingType = (_filters.value.filterMap["listing_type"] as? FilterValue.SingleValue)?.value ?: 1
-                val propertyType = (_filters.value.filterMap["property_type"] as? FilterValue.SingleValue)?.value ?: 1
-
-//                val request = searchRepository.createSearchRequest(
-//                    filters = _filters.value,
-//                    dealType = dealType,
-//                    propertyType = propertyType,
-//                    listingType = listingType,
-//                    page = 0,
-//                    sorting = "new"
-//                )
-//                Log.d("SearchViewModel", "performSearch: $request")
-//                val response = searchRepository.performSearch(request)
-//                _searchResult.value = response.copy(list = response.list.toList())
-//                Log.d("SearchViewModel", "response: $response")
-
+                val dealType =
+                    (_filters.value.filterMap[TypeFilters.DEAL_TYPE.value] as? FilterValue.SingleValue)?.value ?: 1
+                val listingType =
+                    (_filters.value.filterMap[TypeFilters.LISTING_TYPE.value] as? FilterValue.SingleValue)?.value?: 1
+                val propertyType =
+                    (_filters.value.filterMap[TypeFilters.PROPERTY_TYPE.value] as? FilterValue.SingleValue)?.value?: 1
                 val pager = Pager(
                     config = PagingConfig(
                         pageSize = 10,

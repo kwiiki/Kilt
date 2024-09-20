@@ -24,10 +24,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -101,6 +103,8 @@ fun SearchAndQuickFilters(
         }
         Spacer(modifier = Modifier.height(8.dp))
         QuickFilters(
+            configViewModel = configViewModel,
+            searchViewModel = searchViewModel,
             onFilterButtonClicked = { openFilterBottomSheet = it })
     }
     if (openFilterBottomSheet) {
@@ -158,12 +162,12 @@ fun SearchAndQuickFilters(
                 onCloseFilterBottomSheet = { openFilterBottomSheet = false })
         }
     }
-//    LaunchedEffect(bottomSheetState) {
-//        snapshotFlow { bottomSheetState.currentValue }
-//            .collect { state ->
-//                if (state != SheetValue.Expanded) {
-//                    bottomSheetState.expand()
-//                }
-//            }
-//    }
+    LaunchedEffect(bottomSheetState) {
+        snapshotFlow { bottomSheetState.currentValue }
+            .collect { state ->
+                if (state != SheetValue.Expanded) {
+                    bottomSheetState.expand()
+                }
+            }
+    }
 }
