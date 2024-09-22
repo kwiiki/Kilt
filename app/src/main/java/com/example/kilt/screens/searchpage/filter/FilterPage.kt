@@ -150,7 +150,6 @@ fun FilterContent(configViewModel: ConfigViewModel, searchViewModel: SearchViewM
                     matchingLabel.label_ru,
                     searchViewModel
                 )
-
                 "range" -> RangeFilter(prop, matchingLabel.label_ru, searchViewModel)
             }
         }
@@ -320,7 +319,7 @@ fun FilterButton(
     Box(
         modifier = Modifier
             .height(42.dp)
-            .widthIn(min = 47.dp)
+            .widthIn(min = 42.dp)
             .border(
                 width = 1.5.dp,
                 color = if (isSelected) Color.Blue else Color.LightGray,

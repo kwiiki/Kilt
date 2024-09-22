@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.sp
 import com.example.kilt.R
 import com.example.kilt.screens.searchpage.filter.FilterPage
 import com.example.kilt.screens.searchpage.filter.PriorityBottomSheet
+import com.example.kilt.screens.searchpage.quickFilters.QuickFilters
 import com.example.kilt.viewmodels.ConfigViewModel
 import com.example.kilt.viewmodels.SearchViewModel
 

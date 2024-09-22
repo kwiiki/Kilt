@@ -52,7 +52,6 @@ fun TypeOfHousing(
         2 -> "house"
         else -> ""
     }
-
     Column(modifier = modifier) {
         Row(
             modifier = modifier
