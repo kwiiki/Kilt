@@ -160,7 +160,6 @@ fun FilterContent(configViewModel: ConfigViewModel, searchViewModel: SearchViewM
                         matchingLabel.label_ru,
                         searchViewModel
                     )
-
                     "list-multiple" -> ListFilter(
                         configViewModel,
                         prop,

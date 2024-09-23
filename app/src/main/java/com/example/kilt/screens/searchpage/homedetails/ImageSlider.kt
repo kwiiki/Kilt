@@ -24,6 +24,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -63,7 +66,7 @@ import kotlin.math.roundToInt
 @Composable
 fun ImageSlider(
     imageList: List<Image>?,
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     onFullScreenToggle: (Boolean) -> Unit,
     navController: NavHostController,
 ) {
@@ -261,11 +264,13 @@ fun FullScreenPhotoScreen(photoUrl: String, onClose: () -> Unit) {
 
     val alphaAnimated by animateFloatAsState(
         targetValue = if (offsetY.absoluteValue > dismissThreshold) 0f else 1f,
-        animationSpec = tween(durationMillis = 1000, easing = LinearEasing), label = ""
+        animationSpec = tween(durationMillis = 1000, easing = LinearEasing),
+        label = ""
     )
+
     LaunchedEffect(isClosed) {
         if (isClosed) {
-            delay(100) // завершения анимации
+            delay(100) // Завершение анимации
             onClose()
         }
     }
@@ -300,5 +305,19 @@ fun FullScreenPhotoScreen(photoUrl: String, onClose: () -> Unit) {
                 .alpha(alphaAnimated)
                 .animateContentSize()
         )
+        IconButton(
+            onClick = onClose,
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(top = 16.dp, start = 8.dp)
+                .background(Color(0x80000000), shape = CircleShape) // Полупрозрачный фон
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack, // Используйте нужную вам иконку
+                contentDescription = "Назад",
+                tint = Color.White,
+                modifier = Modifier.size(24.dp)
+            )
+        }
     }
 }

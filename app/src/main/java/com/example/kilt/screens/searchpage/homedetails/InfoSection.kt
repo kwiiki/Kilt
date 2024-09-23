@@ -97,7 +97,7 @@ fun HomeInfoSection(homeSale: HomeSale, config: Config) {
     ) {
         DetailItem("Тип недвижимости", "Дом")
         DetailItem("Количество комнат", homeSale.listing.num_rooms.toString())
-        DetailItem("Площадь", "${homeSale.listing.area} м²")
+        DetailItem("Площадь", homeSale.listing.area.let { "$it м²" })
     }
 }
 

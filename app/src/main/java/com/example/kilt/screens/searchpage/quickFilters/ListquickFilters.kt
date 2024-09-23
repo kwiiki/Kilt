@@ -26,7 +26,8 @@ fun ListQuickFilter(
     configViewModel: ConfigViewModel,
     searchViewModel: SearchViewModel,
     prop: String,
-    title: String
+    title: String,
+    onApplyClick: () -> Unit,
 ) {
     Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
         Spacer(
@@ -55,6 +56,7 @@ fun ListQuickFilter(
         Button(
             onClick = {
                 searchViewModel.performSearch()
+                onApplyClick()
             },
             modifier = Modifier
                 .fillMaxWidth()

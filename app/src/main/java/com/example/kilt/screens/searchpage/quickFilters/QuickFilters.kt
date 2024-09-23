@@ -175,13 +175,19 @@ fun FilterButtons(
                         configViewModel = configViewModel,
                         searchViewModel = searchViewModel,
                         prop = selectedFilterEng!!,
-                        title = filterMap[selectedFilterEng] ?: selectedFilter!!
+                        title = filterMap[selectedFilterEng] ?: selectedFilter!!,
+                        onApplyClick = {
+                            showBottomSheet = false
+                        }
                     )
 
                     selectedFilterEng in listOf("property_type") -> HouseOrFlat(
                         searchViewModel,
                         selectedFilterEng!!,
-                        title = filterMap[selectedFilterEng] ?: selectedFilter!!
+                        title = filterMap[selectedFilterEng] ?: selectedFilter!!,
+                        onApplyClick = {
+                            showBottomSheet = false
+                        }
                     )
 
                     selectedFilterEng in listOf("price", "area") -> RangeContent(

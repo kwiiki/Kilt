@@ -1,4 +1,6 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class,
+    ExperimentalMaterial3Api::class
+)
 
 package com.example.kilt.screens.searchpage.filter
 
@@ -48,7 +50,7 @@ fun RangeFilter(
     var maxValue by remember { mutableStateOf(if (initialMax < Int.MAX_VALUE) initialMax.toString() else "") }
 
     val focusManager = LocalFocusManager.current
-
+    var isFocused by remember { mutableStateOf(false) }
     val trailingText = when (prop) {
         "price" -> "тг."
         "area", "living_area", "land_area", "kitchen_area" -> "м²"
@@ -140,7 +142,7 @@ fun RangeFilter(
     CustomDivider()
     LaunchedEffect(minValue, maxValue) {
         val min = minValue.toIntOrNull() ?: 0
-        val max = maxValue.toIntOrNull() ?: Int.MAX_VALUE
+        val max = maxValue.toIntOrNull() ?: 0
         searchViewModel.updateRangeFilter(prop, min, max)
     }
     val filters by searchViewModel.filters.collectAsState()

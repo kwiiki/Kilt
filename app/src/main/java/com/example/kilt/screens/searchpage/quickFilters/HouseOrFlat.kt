@@ -32,7 +32,12 @@ import com.example.kilt.R
 import com.example.kilt.viewmodels.SearchViewModel
 
 @Composable
-fun HouseOrFlat(searchViewModel: SearchViewModel) {
+fun HouseOrFlat(
+    searchViewModel: SearchViewModel,
+    filterType: String,
+    title: String,
+    onApplyClick: () -> Unit,
+) {
     val propertyType by searchViewModel.propertyType
     val selectedIcon = when (propertyType) {
         1 -> "builds"
@@ -142,6 +147,7 @@ fun HouseOrFlat(searchViewModel: SearchViewModel) {
         Button(
             onClick = {
                 searchViewModel.performSearch()
+                onApplyClick()
             },
             modifier = Modifier
                 .fillMaxWidth()
