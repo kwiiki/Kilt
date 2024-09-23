@@ -1,6 +1,7 @@
-package com.example.kilt.screens.searchpage.quickFilters
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 
-import androidx.compose.foundation.background
+package com.example.kilt.screens.searchpage.filter
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,62 +9,60 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.viewpager.widget.ViewPager
 import com.example.kilt.viewmodels.SearchViewModel
 
 @Composable
-fun RangeContent(
+fun RangeFilter(
     prop: String,
+    title: String,
     searchViewModel: SearchViewModel,
-    onApplyClick: () -> Unit,
-    title: String
+    onFocusChanged: (Boolean) -> Unit,
+    isFocused: Boolean
 ) {
     val (initialMin, initialMax) = searchViewModel.getRangeFilterValues(prop)
     var minValue by remember { mutableStateOf(if (initialMin > 0) initialMin.toString() else "") }
     var maxValue by remember { mutableStateOf(if (initialMax < Int.MAX_VALUE) initialMax.toString() else "") }
 
+    val focusManager = LocalFocusManager.current
 
     val trailingText = when (prop) {
         "price" -> "тг."
         "area", "living_area", "land_area", "kitchen_area" -> "м²"
         else -> ""
     }
-    Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-        Spacer(
-            modifier = Modifier
-                .padding(start = 150.dp)
-                .padding(bottom = 8.dp) // Add some padding if needed
-                .height(5.dp)
-                .width(52.dp)
-                .background(Color(0xffDBDFE4), RoundedCornerShape(12.dp))
-        )
+
+    Column(modifier = Modifier.padding(16.dp)) {
         Text(
             text = title,
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
             color = Color.Black
         )
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -71,15 +70,27 @@ fun RangeContent(
         ) {
             OutlinedTextField(
                 value = minValue,
-                onValueChange = { newValue ->
-                    minValue = newValue.filter { it.isDigit() }
+                onValueChange = {
+                    minValue = it.filter { it.isDigit() }
+                    if (it.isEmpty()) {
+                        searchViewModel.updateRangeFilter(prop, 0, maxValue.toIntOrNull() ?: Int.MAX_VALUE)
+                    }
                 },
                 modifier = Modifier
                     .weight(1f)
-                    .height(45.dp),
+                    .height(45.dp)
+                    .onFocusChanged { focusState ->
+                        onFocusChanged(focusState.isFocused)
+                    },
                 singleLine = true,
                 shape = RoundedCornerShape(16.dp),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    unfocusedBorderColor = Color(0xFFcfcfcf),
+                    focusedBorderColor = Color(0xFFcfcfcf),
+                    cursorColor = if (isFocused) LocalContentColor.current else Color.Transparent
+                ),
                 trailingIcon = {
                     if (trailingText.isNotEmpty()) {
                         Text(
@@ -90,18 +101,30 @@ fun RangeContent(
                     }
                 }
             )
-            Text(text = "до", color = Color.Black, modifier = Modifier.padding(horizontal = 8.dp))
+            Text(text = "до", modifier = Modifier.padding(horizontal = 8.dp))
             OutlinedTextField(
                 value = maxValue,
-                onValueChange = { newValue ->
-                    maxValue = newValue.filter { it.isDigit() }
+                onValueChange = {
+                    maxValue = it.filter { it.isDigit() }
+                    if (it.isEmpty()) {
+                        searchViewModel.updateRangeFilter(prop, minValue.toIntOrNull() ?: 0, Int.MAX_VALUE)
+                    }
                 },
                 modifier = Modifier
                     .weight(1f)
-                    .height(45.dp),
+                    .height(45.dp)
+                    .onFocusChanged { focusState ->
+                        onFocusChanged(focusState.isFocused)
+                    },
                 singleLine = true,
                 shape = RoundedCornerShape(16.dp),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    unfocusedBorderColor = Color(0xFFcfcfcf),
+                    focusedBorderColor = Color(0xFFcfcfcf),
+                    cursorColor = if (isFocused) LocalContentColor.current else Color.Transparent
+                ),
                 trailingIcon = {
                     if (trailingText.isNotEmpty()) {
                         Text(
@@ -113,29 +136,17 @@ fun RangeContent(
                 }
             )
         }
-        Spacer(modifier = Modifier.height(32.dp)) // Ensure space between rows
-        Button(
-            onClick = {
-                searchViewModel.performSearch()
-                onApplyClick()
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp),
-            shape = RoundedCornerShape(12.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Blue)
-        ) {
-            Text(
-                text = "Применить",
-                color = Color.White,
-            )
-        }
-
     }
+    CustomDivider()
     LaunchedEffect(minValue, maxValue) {
         val min = minValue.toIntOrNull() ?: 0
-        val max = maxValue.toIntOrNull() ?: 0
+        val max = maxValue.toIntOrNull() ?: Int.MAX_VALUE
         searchViewModel.updateRangeFilter(prop, min, max)
     }
+    val filters by searchViewModel.filters.collectAsState()
+    LaunchedEffect(filters) {
+        val (min, max) = searchViewModel.getRangeFilterValues(prop)
+        minValue = if (min > 0) min.toString() else ""
+        maxValue = if (max < Int.MAX_VALUE) max.toString() else ""
+    }
 }
-

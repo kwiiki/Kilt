@@ -76,7 +76,7 @@ fun TypeOfHousing(
             )
         }
         Spacer(modifier = Modifier.height(24.dp))
-        Divider()
+        CustomDivider()
         Spacer(modifier = Modifier.height(12.dp))
         Text(
             "Тип Жилья",

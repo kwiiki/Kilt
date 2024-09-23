@@ -32,7 +32,7 @@ import com.example.kilt.R
 import com.example.kilt.viewmodels.SearchViewModel
 
 @Composable
-fun HouseOrFlat(searchViewModel: SearchViewModel, filterType: String, title: String) {
+fun HouseOrFlat(searchViewModel: SearchViewModel) {
     val propertyType by searchViewModel.propertyType
     val selectedIcon = when (propertyType) {
         1 -> "builds"
@@ -59,7 +59,6 @@ fun HouseOrFlat(searchViewModel: SearchViewModel, filterType: String, title: Str
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-//                .padding(start = 12.dp),
         ) {
             Column(
                 verticalArrangement = Arrangement.Center,

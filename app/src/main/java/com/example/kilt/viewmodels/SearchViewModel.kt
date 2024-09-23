@@ -73,6 +73,7 @@ class SearchViewModel @Inject constructor(
         performSearch()
     }
     private fun updateFiltersAndSearch() {
+        resetNonMainFilters() // Сбрасываем неосновные фильтры
         updateSingleFilter(TypeFilters.DEAL_TYPE.value, dealType.value)
         updateSingleFilter(TypeFilters.LISTING_TYPE.value, listingType.value)
         updateSingleFilter(TypeFilters.PROPERTY_TYPE.value, propertyType.value)
@@ -86,9 +87,19 @@ class SearchViewModel @Inject constructor(
             getCountBySearchResult()
         }
     }
-
-    fun updatePropertyType(newValue: Int) {
-        _propertyType.value = newValue
+    private fun resetNonMainFilters() {
+        val newFilters = Filters()
+        // Save only main filters
+        _filters.value.filterMap[TypeFilters.DEAL_TYPE.value]?.let {
+            newFilters.filterMap[TypeFilters.DEAL_TYPE.value] = it
+        }
+        _filters.value.filterMap[TypeFilters.LISTING_TYPE.value]?.let {
+            newFilters.filterMap[TypeFilters.LISTING_TYPE.value] = it
+        }
+        _filters.value.filterMap[TypeFilters.PROPERTY_TYPE.value]?.let {
+            newFilters.filterMap[TypeFilters.PROPERTY_TYPE.value] = it
+        }
+        _filters.value = newFilters
     }
 
     fun selectRent() {
@@ -130,6 +141,10 @@ class SearchViewModel @Inject constructor(
             else -> emptyList()
         }
     }
+    fun clearAllFilters() {
+        _filters.value = Filters()
+        updateFiltersAndSearch()
+    }
 
     private fun updateFilters(newFilters: Filters, prop: String) {
         _filters.value = searchRepository.updateFilters(_filters.value, newFilters, prop)
@@ -149,9 +164,13 @@ class SearchViewModel @Inject constructor(
         _dealType.value = deal
         _listingType.value = listing
         _propertyType.value = property
+
+        resetNonMainFilters()
+
         updateSingleFilter(TypeFilters.DEAL_TYPE.value, deal)
         updateSingleFilter(TypeFilters.LISTING_TYPE.value, listing)
         updateSingleFilter(TypeFilters.PROPERTY_TYPE.value, property)
+
         getCountBySearchResult()
     }
 

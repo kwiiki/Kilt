@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
+
 package com.example.kilt.screens.searchpage.filter
 
 import android.annotation.SuppressLint
@@ -21,13 +23,17 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -37,7 +43,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -82,7 +90,7 @@ fun ShowAnnouncementsButton(
         OutlinedButton(
             onClick = {
                 searchViewModel.performSearch()
-               onButtonClick()
+                onButtonClick()
             },
             contentPadding = PaddingValues(0.dp),
             colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.Transparent),
@@ -118,124 +126,72 @@ fun ShowAnnouncementsButton(
 fun FilterContent(configViewModel: ConfigViewModel, searchViewModel: SearchViewModel) {
     val config by configViewModel.config.collectAsState()
     val listingProps by configViewModel.listingProps.collectAsState()
-
+    val scrollState = rememberScrollState()
+    var focusedFilter by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(Unit) {
         configViewModel.loadHomeSale()
     }
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-            .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        TypeOfHousing(
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
-            configViewModel = configViewModel,
-            searchViewModel = searchViewModel
-        )
-        Divider()
-        LocationSection(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
-        Divider()
-        OnlyOwnersSection()
-        Divider()
-        listingProps?.forEach { prop ->
-            val matchingLabel = config?.propLabels?.find { it.property == prop }
-            when (matchingLabel?.filter_type) {
-                "list" -> ListFilter(configViewModel, prop, matchingLabel.label_ru, searchViewModel)
-                "list-multiple" -> ListFilter(
-                    configViewModel,
-                    prop,
-                    matchingLabel.label_ru,
-                    searchViewModel
-                )
-                "range" -> RangeFilter(prop, matchingLabel.label_ru, searchViewModel)
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White)
+                .verticalScroll(scrollState),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            TypeOfHousing(
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
+                configViewModel = configViewModel,
+                searchViewModel = searchViewModel
+            )
+            CustomDivider()
+            LocationSection(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
+            CustomDivider()
+            OnlyOwnersSection()
+            CustomDivider()
+            listingProps?.forEach { prop ->
+                val matchingLabel = config?.propLabels?.find { it.property == prop }
+                when (matchingLabel?.filter_type) {
+                    "list" -> ListFilter(
+                        configViewModel,
+                        prop,
+                        matchingLabel.label_ru,
+                        searchViewModel
+                    )
+
+                    "list-multiple" -> ListFilter(
+                        configViewModel,
+                        prop,
+                        matchingLabel.label_ru,
+                        searchViewModel
+                    )
+                    "range" -> RangeFilter(
+                        prop = prop,
+                        title = matchingLabel.label_ru,
+                        searchViewModel = searchViewModel,
+                        onFocusChanged = { isFocused ->
+                            focusedFilter = if (isFocused) prop else null
+                        },
+                        isFocused = focusedFilter == prop
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(50.dp))
+        }
+    }
+    CustomDivider()
+    LaunchedEffect(focusedFilter) {
+        focusedFilter?.let { prop ->
+            val index = listingProps?.indexOf(prop) ?: -1
+            if (index != -1) {
+                val scrollPosition = index * 400 // Примерная высота каждого фильтра
+                scrollState.animateScrollTo(scrollPosition)
             }
         }
-        Spacer(modifier = Modifier.height(50.dp))
     }
 }
-
-@Composable
-fun RangeFilter(prop: String, title: String, searchViewModel: SearchViewModel) {
-    val (initialMin, initialMax) = searchViewModel.getRangeFilterValues(prop)
-    var minValue by remember { mutableStateOf(if (initialMin > 0) initialMin.toString() else "") }
-    var maxValue by remember { mutableStateOf(if (initialMax < Int.MAX_VALUE) initialMax.toString() else "") }
-
-
-    val trailingText = when (prop) {
-        "price" -> "тг."
-        "area", "living_area", "land_area", "kitchen_area" -> "м²"
-        else -> ""
-    }
-
-    Column(modifier = Modifier.padding(16.dp)) {
-        Text(
-            text = title,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Black
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            OutlinedTextField(
-                value = minValue,
-                onValueChange = { newValue ->
-                    minValue = newValue.filter { it.isDigit() }
-                },
-                modifier = Modifier
-                    .weight(1f)
-                    .height(45.dp),
-                singleLine = true,
-                shape = RoundedCornerShape(16.dp),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                trailingIcon = {
-                    if (trailingText.isNotEmpty()) {
-                        Text(
-                            text = trailingText,
-                            fontWeight = FontWeight.W400,
-                            color = Color(0xff010101)
-                        )
-                    }
-                }
-            )
-            Text(text = "до", modifier = Modifier.padding(horizontal = 8.dp))
-            OutlinedTextField(
-                value = maxValue,
-                onValueChange = { newValue ->
-                    maxValue = newValue.filter { it.isDigit() }
-                },
-                modifier = Modifier
-                    .weight(1f)
-                    .height(45.dp),
-                singleLine = true,
-                shape = RoundedCornerShape(16.dp),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                trailingIcon = {
-                    if (trailingText.isNotEmpty()) {
-                        Text(
-                            text = trailingText,
-                            fontWeight = FontWeight.W400,
-                            color = Color(0xff010101)
-                        )
-                    }
-                }
-            )
-        }
-    }
-    Divider()
-    LaunchedEffect(minValue, maxValue) {
-        val min = minValue.toIntOrNull() ?: 0
-        val max = maxValue.toIntOrNull() ?: 0
-        searchViewModel.updateRangeFilter(prop, min, max)
-    }
-}
-
 @Composable
 fun ListFilter(
     viewModel: ConfigViewModel,
@@ -285,7 +241,7 @@ fun FilterButtons(
                     }
                 )
             }
-            items(filters ?: emptyList() ) { filter ->
+            items(filters ?: emptyList()) { filter ->
                 when (filter) {
                     is FilterItem -> {
                         FilterButton(
@@ -301,13 +257,14 @@ fun FilterButtons(
                             }
                         )
                     }
+
                     else -> {
                     }
                 }
             }
         }
     }
-    Divider()
+    CustomDivider()
 }
 
 @Composable
@@ -347,7 +304,7 @@ fun FilterButton(
 }
 
 @Composable
-fun Divider() {
+fun CustomDivider() {
     Spacer(
         modifier = Modifier
             .height(1.5.dp)

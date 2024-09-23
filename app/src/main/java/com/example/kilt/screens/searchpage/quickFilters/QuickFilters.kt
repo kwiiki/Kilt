@@ -61,7 +61,6 @@ fun FilterButtons(
     var isDealTypeClicked by remember { mutableStateOf(false) }
     val bottomSheetState = rememberModalBottomSheetState()
 
-    // Функция для сброса выбранного фильтра
     fun resetSelectedFilter() {
         selectedFilter = null
         selectedFilterEng = null
