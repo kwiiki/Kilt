@@ -18,39 +18,58 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.kilt.data.Config
+import com.example.kilt.viewmodels.ConfigViewModel
 import com.example.kilt.viewmodels.HomeSaleViewModel
 import com.example.myapplication.data.HomeSale
 
 @Composable
-fun InfoSection(homeSale: HomeSale?, homeSaleViewModel: HomeSaleViewModel) {
+fun InfoSection(homeSale: HomeSale?, homeSaleViewModel: HomeSaleViewModel,configViewModel: ConfigViewModel) {
     val homeSaleView by homeSaleViewModel.homeSale
     homeSaleViewModel.loadHomeSale()
     val config = homeSaleViewModel.config
 
     Log.d("comer", "InfoSection: ${homeSale?.listing?.property_type}")
-    Log.d("comer", "InfoSection: ${homeSale}")
+    Log.d("comer", "InfoSection: $homeSale")
     when (homeSale?.listing?.property_type) {
         1 -> {
-            if (homeSale != null && config.value != null) {
-                FlatInfoSection(homeSale, config.value!!)
+            if (config.value != null) {
+                FlatInfoSection(homeSale, config.value!!,configViewModel)
             }
         }
         2 -> {
-            if (homeSale != null && config.value != null) {
-                HomeInfoSection(homeSaleView!!, config.value!!)
+            if (config.value != null) {
+                HomeInfoSection(homeSale, config.value!!)
             }
         }
         else -> {
             if (homeSale != null && config.value != null) {
-                CommercialInfoSection(homeSaleView, config.value!!)
+                CommercialInfoSection(homeSale, config.value!!,homeSaleViewModel)
             }
         }
     }
 }
-
-
 @Composable
-fun CommercialInfoSection(homeSale: HomeSale?, config: Config) {
+fun FlatInfoSection(homeSale: HomeSale, config: Config,configViewModel: ConfigViewModel) {
+    val listingStructureInfo = configViewModel.listingInfo
+    val propLabels = config.propLabels
+    val furnitureList = config.propMapping.furniture.list
+    val matchingFurniture = furnitureList.find { it.id == homeSale.listing.furniture }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+    ) {
+        // Отображение информации о квартире
+        DetailItem("Тип недвижимости", "Квартира")
+        DetailItem("Количество комнат", homeSale.listing.num_rooms.toString())
+        DetailItem("Этаж", homeSale.listing.floor.toString())
+        DetailItem("Мебилирована", matchingFurniture?.name.toString())
+        DetailItem("Площадь", homeSale.listing.area.let { "$it м²" })
+    }
+}
+@Composable
+fun CommercialInfoSection(homeSale: HomeSale?, config: Config,homeSaleViewModel: HomeSaleViewModel) {
     val configList = config.propMapping.designation.list
     val locatedList = config.propMapping.where_located.list
     val lineList = config.propMapping.line_of_houses.list
@@ -100,27 +119,6 @@ fun HomeInfoSection(homeSale: HomeSale, config: Config) {
         DetailItem("Площадь", homeSale.listing.area.let { "$it м²" })
     }
 }
-
-@Composable
-fun FlatInfoSection(homeSale: HomeSale, config: Config) {
-    val furnitureList = config.propMapping.furniture.list
-    val matchingFurniture = furnitureList.find { it.id == homeSale.listing.furniture }
-
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-    ) {
-        // Отображение информации о квартире
-        DetailItem("Тип недвижимости", "Квартира")
-        DetailItem("Количество комнат", homeSale.listing.num_rooms.toString())
-        DetailItem("Этаж", homeSale.listing.floor.toString())
-        DetailItem("Мебилирована", matchingFurniture?.name.toString())
-        DetailItem("Площадь", homeSale.listing.area.let { "$it м²" })
-    }
-}
-
 @Composable
 fun DetailItem(label: String, value: String) {
     Row(

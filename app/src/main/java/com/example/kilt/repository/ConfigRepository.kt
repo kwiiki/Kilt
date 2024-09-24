@@ -10,4 +10,5 @@ interface ConfigRepository {
     fun getConfig(): Config?
     fun getListingProps(dealType: Int, listingType: Int, propertyType: Int): List<String>?
     fun getListingTops(dealType: Int, listingType: Int, propertyType: Int): List<String>?
+    fun getListingInfo(dealType: Int,listingType: Int,propertyType: Int):List<String>?
 }

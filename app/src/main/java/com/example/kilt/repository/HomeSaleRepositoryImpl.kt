@@ -13,8 +13,4 @@ class HomeSaleRepositoryImpl(
         Log.d("repo id", "fetchHomeSale: $id")
         return apiService.getHomeSale(id)
     }
-
-//    override suspend fun fetchConfig(): Config {
-//        return apiService.getConfig()
-//    }
 }

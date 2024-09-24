@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalPagerApi::class)
+
 package com.example.kilt.screens.searchpage.homedetails
 
 import androidx.compose.animation.animateContentSize
@@ -25,12 +27,14 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -59,6 +63,9 @@ import com.example.kilt.data.config.Image
 import com.example.kilt.navigation.NavPath
 import com.example.kilt.utills.imageCdnUrl
 import com.example.kilt.viewmodels.HomeSaleViewModel
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.delay
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
@@ -72,21 +79,21 @@ fun ImageSlider(
 ) {
     val homeSaleViewModel: HomeSaleViewModel = viewModel()
     var isLoading by remember { mutableStateOf(true) }
+    var selectedImageIndex by remember { mutableStateOf<Int?>(null) }
 
     LaunchedEffect(Unit) {
         homeSaleViewModel.loadHomeSale()
         isLoading = false
     }
-
-    var selectedImage by remember { mutableStateOf<Image?>(null) }
     val listState = rememberLazyListState()
 
     when {
-        selectedImage != null -> {
+        selectedImageIndex != null -> {
             FullScreenPhotoScreen(
-                photoUrl = "${imageCdnUrl}${selectedImage!!.link}",
+                images = imageList ?: emptyList(),
+                selectedIndex = selectedImageIndex ?: 0,
                 onClose = {
-                    selectedImage = null
+                    selectedImageIndex = null
                     onFullScreenToggle(false)
                 },
             )
@@ -98,7 +105,9 @@ fun ImageSlider(
         else -> {
             PhotosScreen(
                 images = imageList,
-                onPhotoClick = { selectedImage = it },
+                onPhotoClick = { image ->
+                    selectedImageIndex = imageList.indexOf(image)
+                },
                 onBackClick = { navController.navigate(NavPath.SEARCH.name) },
                 onFavoriteClick = { /* Handle favorite click */ },
                 listState = listState
@@ -250,7 +259,11 @@ fun PhotoItem(image: Image, onPhotoClick: (Image) -> Unit) {
 }
 
 @Composable
-fun FullScreenPhotoScreen(photoUrl: String, onClose: () -> Unit) {
+fun FullScreenPhotoScreen(
+    images: List<Image>,
+    selectedIndex: Int,
+    onClose: () -> Unit
+) {
     var offsetY by remember { mutableStateOf(0f) }
     val dismissThreshold = 100f
     var isClosed by remember { mutableStateOf(false) }
@@ -267,10 +280,11 @@ fun FullScreenPhotoScreen(photoUrl: String, onClose: () -> Unit) {
         animationSpec = tween(durationMillis = 1000, easing = LinearEasing),
         label = ""
     )
+    val pagerState = rememberPagerState(initialPage = selectedIndex)
 
     LaunchedEffect(isClosed) {
         if (isClosed) {
-            delay(100) // Завершение анимации
+            delay(100)
             onClose()
         }
     }
@@ -295,25 +309,43 @@ fun FullScreenPhotoScreen(photoUrl: String, onClose: () -> Unit) {
                 )
             }
     ) {
-        AsyncImage(
-            model = photoUrl,
-            contentDescription = null,
-            contentScale = ContentScale.Fit,
+        HorizontalPager(
+            count = images.size,
+            state = pagerState,
             modifier = Modifier
                 .fillMaxSize()
                 .offset { IntOffset(0, offsetYAnimated.roundToInt()) }
                 .alpha(alphaAnimated)
                 .animateContentSize()
+        ) { page ->
+            val image = images[page]
+            val photoUrl = "${imageCdnUrl}${image.link}"
+            AsyncImage(
+                model = photoUrl,
+                contentDescription = null,
+                contentScale = ContentScale.Fit,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+        Text(
+            text = "${pagerState.currentPage + 1} / ${images.size}",
+            color = Color.White,
+            style = MaterialTheme.typography.labelMedium,
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = 16.dp)
+                .background(Color(0x80000000), shape = RoundedCornerShape(8.dp))
+                .padding(horizontal = 16.dp, vertical = 8.dp)
         )
         IconButton(
             onClick = onClose,
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .padding(top = 16.dp, start = 8.dp)
-                .background(Color(0x80000000), shape = CircleShape) // Полупрозрачный фон
+                .background(Color(0x80000000), shape = CircleShape)
         ) {
             Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack, // Используйте нужную вам иконку
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "Назад",
                 tint = Color.White,
                 modifier = Modifier.size(24.dp)

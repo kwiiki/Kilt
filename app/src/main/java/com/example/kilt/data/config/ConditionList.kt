@@ -5,5 +5,5 @@ data class Condition(
 ):FilterItem()
 
 data class ConditionList(
-    val list: List<com.example.kilt.data.config.Condition>
+    val list: List<Condition>
 )

@@ -25,22 +25,11 @@ data class Listing(
     val line_of_houses: Int,
     val ceiling_height: Double,
     val furniture: Int,
-
-
-
-
-
-
-
-
-
 //    val address_string: String,
-//
 //    val balcony: Any,
 //    val balcony_glass: Any,
 //    val bathroom: Any,
 //    val bathroom_inside: Any,
-//
 //    val business_condition: Any,
 //    val business_entrance: Any,
 //    val business_parking: Any,
@@ -53,8 +42,6 @@ data class Listing(
 //    val createdAt: String,
 //    val dacha_array: Any,
 //    val dedicated_power: Any,
-//
-//
 //    val district: Any,
 //    val divisibility: Any,
 //    val door: Any,
@@ -63,7 +50,6 @@ data class Listing(
 //    val exchange_possible: Any,
 //    val fenced: Any,
 //    val first_image_cloud: Int,
-//
 //    val floor_material: Any,
 //    val former_dormitory: Any,
 //    val free_planning: Any,
@@ -73,7 +59,6 @@ data class Listing(
 //    val has_renters: Any,
 //    val heating: Any,
 //    val house_area: Any,
-//
 //    val infrastructure: Any,
 //    val internet: Any,
 //    val irrigation_water: Any,

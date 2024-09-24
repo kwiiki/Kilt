@@ -34,6 +34,7 @@ class HomeSaleViewModel @Inject constructor(
     private val _configHome = MutableStateFlow<Config?>(null)
     val configHome: StateFlow<Config?> = _configHome.asStateFlow()
 
+
     var homeSale = mutableStateOf<HomeSale?>(null)
         private set
     var config = mutableStateOf<Config?>(null)

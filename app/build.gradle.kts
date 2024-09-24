@@ -95,15 +95,15 @@ dependencies {
 
     implementation (libs.hilt.android)
     kapt (libs.hilt.compiler)
-    implementation ("androidx.hilt:hilt-navigation-compose:1.2.0")
+    implementation (libs.androidx.hilt.navigation.compose)
 
 
     implementation ("androidx.paging:paging-runtime:3.3.2")
     implementation ("androidx.paging:paging-compose:3.3.2")
 
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.22")
+    implementation(libs.kotlin.reflect)
 
-//    implementation ("com.google.accompanist:accompanist-pager:0.28.0")
+    implementation ("com.google.accompanist:accompanist-pager:0.28.0")
 //    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1")
 //    implementation ("androidx.datastore:datastore-preferences:1.0.0")
 //    implementation ("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")

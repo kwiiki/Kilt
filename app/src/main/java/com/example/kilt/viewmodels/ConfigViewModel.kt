@@ -30,6 +30,9 @@ class ConfigViewModel @Inject constructor(private val configRepository: ConfigRe
     private val _listingTop = MutableStateFlow<List<String>?>(null)
     val listingTop: StateFlow<List<String>?> = _listingTop
 
+    private val _listingInfo = MutableStateFlow<List<String>?>(null)
+    val listingInfo: StateFlow<List<String>?> = _listingInfo
+
     init {
         viewModelScope.launch {
             Log.d("ConfigDownload", "ConfigViewModel : Load in configViewModel ")
@@ -41,6 +44,7 @@ class ConfigViewModel @Inject constructor(private val configRepository: ConfigRe
     private fun loadDataWithCurrentTypes() {
         loadListingProps(_dealType.value, _listingType.value, _propertyType.value)
         loadListingTop(_dealType.value, _listingType.value, _propertyType.value)
+        loadListingInfo(_dealType.value,_listingType.value,_propertyType.value)
     }
 
     fun setTypes(dealType: Int, listingType: Int, propertyType: Int) {
@@ -48,6 +52,12 @@ class ConfigViewModel @Inject constructor(private val configRepository: ConfigRe
         _listingType.value = listingType
         _propertyType.value = propertyType
         loadDataWithCurrentTypes()
+    }
+
+    private fun loadListingInfo(dealType: Int, listingType: Int, propertyType: Int) {
+        viewModelScope.launch {
+            _listingInfo.value = configRepository.getListingInfo(dealType, listingType, propertyType)
+        }
     }
 
     private fun loadListingProps(dealType: Int, listingType: Int, propertyType: Int) {

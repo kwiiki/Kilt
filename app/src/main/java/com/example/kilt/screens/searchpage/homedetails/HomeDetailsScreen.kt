@@ -235,7 +235,7 @@ fun HomeDetailsScreen(
                             fontSize = 22.sp,
                             modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
                         )
-                        InfoSection(homeSale,homeSaleViewModel)
+                        InfoSection(homeSale,homeSaleViewModel,configViewModel)
                         Spacer(modifier = Modifier.height(8.dp))
                         val builtYear = homeSaleViewModel.homeSale.value?.listing?.built_year
                         if (builtYear != null && builtYear != 0) {

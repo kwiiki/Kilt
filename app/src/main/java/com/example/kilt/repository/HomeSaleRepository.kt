@@ -5,5 +5,4 @@ import com.example.myapplication.data.HomeSale
 
 interface HomeSaleRepository {
     suspend fun fetchHomeSale(id: String): HomeSale
-//    suspend fun fetchConfig(): Config
 }
