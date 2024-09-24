@@ -27,96 +27,94 @@ fun InfoSection(homeSale: HomeSale?, homeSaleViewModel: HomeSaleViewModel,config
     val homeSaleView by homeSaleViewModel.homeSale
     homeSaleViewModel.loadHomeSale()
     val config = homeSaleViewModel.config
+    val propertyType = homeSale?.listing?.property_type
 
     Log.d("comer", "InfoSection: ${homeSale?.listing?.property_type}")
     Log.d("comer", "InfoSection: $homeSale")
     when (homeSale?.listing?.property_type) {
         1 -> {
             if (config.value != null) {
-                FlatInfoSection(homeSale, config.value!!,configViewModel)
+                FlatInfoSection(homeSale, config.value!!,configViewModel,propertyType)
             }
         }
         2 -> {
             if (config.value != null) {
-                HomeInfoSection(homeSale, config.value!!)
+                FlatInfoSection(homeSale, config.value!!,configViewModel,propertyType)
             }
         }
         else -> {
             if (homeSale != null && config.value != null) {
-                CommercialInfoSection(homeSale, config.value!!,homeSaleViewModel)
+                FlatInfoSection(homeSale, config.value!!,configViewModel,propertyType)
             }
         }
     }
 }
 @Composable
-fun FlatInfoSection(homeSale: HomeSale, config: Config,configViewModel: ConfigViewModel) {
+fun FlatInfoSection(
+    homeSale: HomeSale,
+    config: Config,
+    configViewModel: ConfigViewModel,
+    propertyType: Int?
+) {
     val listingStructureInfo = configViewModel.listingInfo
     val propLabels = config.propLabels
-    val furnitureList = config.propMapping.furniture.list
-    val matchingFurniture = furnitureList.find { it.id == homeSale.listing.furniture }
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
     ) {
-        // Отображение информации о квартире
-        DetailItem("Тип недвижимости", "Квартира")
-        DetailItem("Количество комнат", homeSale.listing.num_rooms.toString())
-        DetailItem("Этаж", homeSale.listing.floor.toString())
-        DetailItem("Мебилирована", matchingFurniture?.name.toString())
-        DetailItem("Площадь", homeSale.listing.area.let { "$it м²" })
-    }
-}
-@Composable
-fun CommercialInfoSection(homeSale: HomeSale?, config: Config,homeSaleViewModel: HomeSaleViewModel) {
-    val configList = config.propMapping.designation.list
-    val locatedList = config.propMapping.where_located.list
-    val lineList = config.propMapping.line_of_houses.list
+        Log.d("test", "FlatInfoSection: ${homeSale.listing.furniture}")
+        Log.d("test", "FlatInfoSection: ${homeSale.listing.id}")
+        DetailItem("Тип недвижимости", if (propertyType == 1) "Квартира" else "Дом")
 
-
-    val designationIds = homeSale?.listing?.designation?.split(",")?.mapNotNull { it.toIntOrNull() }
-    val matchingDesignations = designationIds?.mapNotNull { id ->
-        configList.find { it.id == id }
-    }
-    val matchingLocation =
-        homeSale?.listing?.where_located?.let { locatedList.find { it.id == homeSale.listing.where_located } }
-    val matchingLineHouse =
-        homeSale?.listing?.line_of_houses?.let { lineList.find { it.id == homeSale.listing.line_of_houses } }
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-    ) {
-        val infoList = listOf(
-            "Год постройки" to (homeSale?.listing?.built_year?.takeIf { it != 0 }?.toString()),
-            "Площадь" to homeSale?.listing?.area?.toString(),
-            "Высота потолков" to (homeSale?.listing?.ceiling_height?.takeIf { it != 0.0 }?.toString()),
-            "Назначение" to matchingDesignations?.joinToString(", ") { it.name }.takeIf { !it.isNullOrEmpty() },
-            "Где размещён" to matchingLocation?.name,
-            "Линия домов" to matchingLineHouse?.name
-        )
-
-        infoList.forEach { (label, value) ->
-            if (value != null) {
-                DetailItem(label, value)
+        listingStructureInfo.value.forEach { propertyName ->
+            val label = propLabels.find { it.property == propertyName }
+            val value = when (propertyName) {
+                "num_rooms" -> homeSale.listing.num_rooms.takeIf { it != null && it != 0 }?.toString()
+                "floor" -> homeSale.listing.floor.takeIf { it != null && it != 0 }?.toString()
+                "area" -> homeSale.listing.area.takeIf { it != null && it != 0.0 }?.let {
+                    if (it.rem(1) == 0.0) "${it.toInt()} м²" else "$it м²"
+                }
+                "built_year" -> homeSale.listing.built_year.takeIf { it != null && it != 0 }?.toString()
+                "num_floors" -> homeSale.listing.num_floors.takeIf { it != null && it != 0 }?.toString()
+                "ceiling_height" -> homeSale.listing.ceiling_height.takeIf { it != null && it != 0.0 }?.let {
+                    if (it.rem(1) == 0.0) "${it.toInt()} м" else "$it м"
+                }
+                "max_usage" -> homeSale.listing.max_usage.takeIf { it != null && it != "" }?.toString()
+                else -> null
+            }
+            value?.let {
+                DetailItem(label?.label_ru ?: propertyName, it)
             }
         }
-    }
-}
 
+        // Пример обработки мебели
+        val furnitureList = config.propMapping.furniture.list
+        val lineOfHouseList = config.propMapping.line_of_houses.list
+        val whereLocatedList = config.propMapping.where_located.list
+        val designationList = config.propMapping.designation.list
 
-@Composable
-fun HomeInfoSection(homeSale: HomeSale, config: Config) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-    ) {
-        DetailItem("Тип недвижимости", "Дом")
-        DetailItem("Количество комнат", homeSale.listing.num_rooms.toString())
-        DetailItem("Площадь", homeSale.listing.area.let { "$it м²" })
+        val matchingFurniture = furnitureList.find { it.id == homeSale.listing.furniture }
+        matchingFurniture?.let {
+            DetailItem("Меблирована", it.name)
+        }
+        val matchingLineOfHouses = lineOfHouseList.find { it.id == homeSale.listing.line_of_houses }
+        matchingLineOfHouses?.let {
+            DetailItem(label = "Линия домов", value = it.name)
+        }
+        val matchingLocated = whereLocatedList.find { it.id == homeSale.listing.where_located }
+        matchingLocated?.let {
+            DetailItem(label = "Где размещён", value = it.name)
+        }
+        // Поиск и отображение значений назначения
+        val designationIds = homeSale.listing.designation?.split(",")?.map { it.trim().toIntOrNull() }?.filterNotNull() ?: emptyList()
+        val matchedDesignations = designationList.filter { it.id in designationIds }
+        if (matchedDesignations.isNotEmpty()) {
+            matchedDesignations.forEach { designation ->
+                DetailItem(label = "Назначение", value = designation.name)
+            }
+        }
     }
 }
 @Composable

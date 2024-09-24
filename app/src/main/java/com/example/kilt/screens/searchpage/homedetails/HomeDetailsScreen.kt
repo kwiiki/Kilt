@@ -68,7 +68,6 @@ fun HomeDetailsScreen(
     val homeSale by homeSaleViewModel.home.collectAsState()
     val listingsTop by configViewModel.listingTop.collectAsState()
     val isLoading by homeSaleViewModel.isLoading.collectAsState()
-
     LaunchedEffect(id) {
         id?.let {
             homeSaleViewModel.loadConfig()
@@ -76,7 +75,6 @@ fun HomeDetailsScreen(
 
         }
     }
-
     var openBottomSheet by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     val bottomSheetState = rememberModalBottomSheetState(
@@ -145,42 +143,52 @@ fun HomeDetailsScreen(
                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 5.dp)
                             )
                         }
-                        Row(
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                        AnimatedVisibility(
+                            visible = !isLoading,
+                            enter = fadeIn() + expandVertically()
                         ) {
-                            listingsTop?.forEach { item ->
-                                when (item.trim()) { // обьязательно нужен трим
-                                    "num_rooms" -> {
-                                        IconText(
-                                            icon = ImageVector.vectorResource(id = R.drawable.group_icon),
-                                            text = "${homeSale?.listing?.num_rooms} комн"
+                            Row(
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                            ) {
+                                listingsTop?.forEach { item ->
+                                    when (item.trim()) { // обьязательно нужен трим
+                                        "num_rooms" -> {
+                                            IconText(
+                                                icon = ImageVector.vectorResource(id = R.drawable.group_icon),
+                                                text = "${homeSale?.listing?.num_rooms} комн"
+                                            )
+                                            Spacer(modifier = Modifier.width(12.dp))
+                                        }
+                                        "area" -> {
+                                            val area = homeSale?.listing?.area
+                                            val formattedArea = if (area?.rem(1) == 0.0) {
+                                                area.toInt().toString()
+                                            } else {
+                                                area.toString()
+                                            }
+                                            IconText(
+                                                icon = ImageVector.vectorResource(id = R.drawable.room_icon),
+                                                text = "$formattedArea м²"
+                                            )
+                                            Spacer(modifier = Modifier.width(10.dp))
+                                        }
+                                        "floor" -> {
+                                            if (homeSale?.listing?.floor != 0 && homeSale?.listing?.num_floors != null) {
+                                                IconText(
+                                                    icon = ImageVector.vectorResource(id = R.drawable.building_icon),
+                                                    text = "${homeSale?.listing?.floor}/${homeSale?.listing?.num_floors}"
+                                                )
+                                                Spacer(modifier = Modifier.width(10.dp))
+                                            }
+                                        }
+                                        else -> Log.d(
+                                            "PropertyItem",
+                                            "Unexpected item in topListings: $item"
                                         )
-                                        Spacer(modifier = Modifier.width(12.dp))
                                     }
-
-                                    "area" -> {
-                                        IconText(
-                                            icon = ImageVector.vectorResource(id = R.drawable.room_icon),
-                                            text = "${homeSale?.listing?.area} м²"
-                                        )
-                                        Spacer(modifier = Modifier.width(10.dp))
-                                    }
-                                    "floor" -> {
-                                        IconText(
-                                            icon = ImageVector.vectorResource(id = R.drawable.building_icon),
-                                            text = "${homeSale?.listing?.floor}/${homeSale?.listing?.num_floors}"
-                                        )
-                                        Spacer(modifier = Modifier.width(10.dp))
-                                    }
-
-                                    else -> Log.d(
-                                        "PropertyItem",
-                                        "Unexpected item in topListings: $item"
-                                    )
                                 }
                             }
                         }
-
                         AnimatedVisibility(
                             visible = !isLoading,
                             enter = fadeIn() + expandVertically()

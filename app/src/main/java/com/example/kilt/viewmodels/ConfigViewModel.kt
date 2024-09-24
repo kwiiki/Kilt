@@ -1,6 +1,7 @@
 package com.example.kilt.viewmodels
 
 import android.util.Log
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.kilt.data.Config
@@ -11,6 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import androidx.compose.runtime.State
 
 @HiltViewModel
 class ConfigViewModel @Inject constructor(private val configRepository: ConfigRepository) : ViewModel() {
@@ -30,8 +32,9 @@ class ConfigViewModel @Inject constructor(private val configRepository: ConfigRe
     private val _listingTop = MutableStateFlow<List<String>?>(null)
     val listingTop: StateFlow<List<String>?> = _listingTop
 
-    private val _listingInfo = MutableStateFlow<List<String>?>(null)
-    val listingInfo: StateFlow<List<String>?> = _listingInfo
+    private val _listingInfo = mutableStateOf<List<String>>(emptyList())
+    val listingInfo: State<List<String>> = _listingInfo
+
 
     init {
         viewModelScope.launch {
@@ -56,10 +59,10 @@ class ConfigViewModel @Inject constructor(private val configRepository: ConfigRe
 
     private fun loadListingInfo(dealType: Int, listingType: Int, propertyType: Int) {
         viewModelScope.launch {
-            _listingInfo.value = configRepository.getListingInfo(dealType, listingType, propertyType)
+            val result = configRepository.getListingInfo(dealType, listingType, propertyType)
+            _listingInfo.value = result ?: emptyList()
         }
     }
-
     private fun loadListingProps(dealType: Int, listingType: Int, propertyType: Int) {
         viewModelScope.launch {
             _listingProps.value = configRepository.getListingProps(dealType, listingType, propertyType)

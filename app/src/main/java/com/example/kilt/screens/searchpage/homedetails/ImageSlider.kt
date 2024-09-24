@@ -54,6 +54,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
@@ -330,6 +331,7 @@ fun FullScreenPhotoScreen(
         Text(
             text = "${pagerState.currentPage + 1} / ${images.size}",
             color = Color.White,
+            fontSize = 18.sp,
             style = MaterialTheme.typography.labelMedium,
             modifier = Modifier
                 .align(Alignment.TopCenter)

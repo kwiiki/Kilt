@@ -93,7 +93,6 @@ fun BottomSheetContent(
     price: String,
     onHideButtonClick: () -> Unit
 ) {
-    // State variables to store user input
     var propertyPrice by remember { mutableStateOf(price) }
     var initialPayment by remember {
         mutableStateOf((price.filter { it.isDigit() }.toBigDecimalOrNull() ?: BigDecimal.ZERO)
@@ -113,8 +112,6 @@ fun BottomSheetContent(
             ""
         }
     }
-
-    // Calculate the percentage of the initial payment
     val initialPaymentPercentage = remember(propertyPrice, initialPayment) {
         val propertyPriceValue = propertyPrice.filter { it.isDigit() }.toBigDecimalOrNull() ?: BigDecimal.ONE
         val initialPaymentValue = initialPayment.filter { it.isDigit() }.toBigDecimalOrNull() ?: BigDecimal.ZERO

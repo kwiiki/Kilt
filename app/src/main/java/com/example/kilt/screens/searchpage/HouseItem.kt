@@ -153,11 +153,16 @@ fun HouseItem(
                         }
 
                         "area" -> {
+                            val area = search.area
+                            val formattedArea = if (area.rem(1) == 0.0) {
+                                area.toInt().toString()
+                            } else {
+                                area.toString()
+                            }
                             IconText(
                                 icon = ImageVector.vectorResource(id = R.drawable.room_icon),
-                                text = "${search.area} м²"
+                                text = "$formattedArea м²"
                             )
-                            Log.d("topListings", "HouseItem area: ${search.area}")
                             Spacer(modifier = Modifier.width(10.dp))
                         }
 
