@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalPagerApi::class)
+
 package com.example.kilt.screens.searchpage
 
 import android.util.Log
@@ -46,8 +48,13 @@ import com.example.kilt.screens.searchpage.homedetails.gradient
 import com.example.kilt.utills.imageCdnUrl
 import com.example.kilt.viewmodels.ConfigViewModel
 import com.example.kilt.viewmodels.HomeSaleViewModel
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.HorizontalPagerIndicator
+import com.google.accompanist.pager.rememberPagerState
 
 
+@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun HouseItem(
     homeSaleViewModel: HomeSaleViewModel,
@@ -61,8 +68,12 @@ fun HouseItem(
         homeSaleViewModel.loadHomeSale()
         homeSaleViewModel.loadConfig()
     }
+
     Log.d("HouseItem", "Recomposing item with id: ${search.id}")
-    Log.d("PropertyItem", "topListings: $search")
+
+    // Example list of images, replace with your actual data
+    val imageList = search.images
+
     Card(
         shape = RoundedCornerShape(16.dp),
         modifier = Modifier
@@ -98,17 +109,38 @@ fun HouseItem(
                     }
                 }
             } else {
+                val pagerState = rememberPagerState(initialPage = 0)
                 Box {
-                    AsyncImage(
-                        model = "${imageCdnUrl}${search.first_image}",
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.height(150.dp)
+                    HorizontalPager(
+                        count = if (imageList.size > 5) 5 else imageList.size,
+                        state = pagerState,
+                        modifier = Modifier
+                            .height(170.dp)
+                            .fillMaxWidth()
+                    ) { page ->
+                        Log.d("ImageList", "HouseItem:${imageCdnUrl}${imageList[page].link}")
+                        AsyncImage(
+                            model = "${imageCdnUrl}${imageList[page].link}",
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+
+                    HorizontalPagerIndicator(
+                        pagerState = pagerState,
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(16.dp),
+                        pageCount = if (imageList.size > 5) 5 else imageList.size, // Ограничиваем индикатор до 10 точек
+                        activeColor = Color(0xFFFFFFFF), // Цвет активного индикатора
+                        inactiveColor = Color(0xFFBBBBBB), // Цвет неактивного индикатора
                     )
+
+
                     IconButton(
                         onClick = { /* TODO: Handle favorite click */ },
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
+                        modifier = Modifier.align(Alignment.TopEnd)
                     ) {
                         Icon(
                             imageVector = Icons.Default.FavoriteBorder,
@@ -118,6 +150,8 @@ fun HouseItem(
                     }
                 }
             }
+
+            // The rest of your UI (Chip, Text, etc.)
             Row(
                 modifier = Modifier
                     .padding(8.dp)
@@ -126,32 +160,26 @@ fun HouseItem(
             ) {
                 Chip(text = "Собственник")
             }
+
             Text(
                 text = "${formatNumber(search.price)} ₸",
                 style = MaterialTheme.typography.labelMedium,
                 fontSize = 24.sp,
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 5.dp)
             )
-            Log.d("houseItemPrice", "HouseItem: ${search.price}")
+
             Row(
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
             ) {
-                Log.d("topListings", "HouseItem: ${topListings}")
-                Log.d("topListings", "HouseItem: ${search.area} ${search.floor} ${search.num_rooms}"
-                )
-
                 topListings?.forEach { item ->
-                    Log.d("", "Processing item: ${item.trim()}") // Added log
-                    when (item.trim()) { // Ensure item is trimmed properly
+                    when (item.trim()) {
                         "num_rooms" -> {
                             IconText(
                                 icon = ImageVector.vectorResource(id = R.drawable.group_icon),
                                 text = "${search.num_rooms} комн"
                             )
-                            Log.d("topListings", "HouseItem num_rooms: ${search.num_rooms}")
                             Spacer(modifier = Modifier.width(12.dp))
                         }
-
                         "area" -> {
                             val area = search.area
                             val formattedArea = if (area.rem(1) == 0.0) {
@@ -165,7 +193,6 @@ fun HouseItem(
                             )
                             Spacer(modifier = Modifier.width(10.dp))
                         }
-
                         "floor" -> {
                             if (search.floor != 0 && search.num_floors != null) {
                                 IconText(
@@ -175,11 +202,10 @@ fun HouseItem(
                                 Spacer(modifier = Modifier.width(10.dp))
                             }
                         }
-
-                        else -> Log.d("topListings", "Unexpected item in topListings: $item")
                     }
                 }
             }
+
             Text(
                 text = search.address_string,
                 style = MaterialTheme.typography.labelSmall,
@@ -187,6 +213,7 @@ fun HouseItem(
                 color = Color(0xff6B6D79),
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
             )
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -211,8 +238,6 @@ fun HouseItem(
         }
     }
 }
-
-
 @Composable
 fun Chip(text: String) {
     Card(
@@ -235,9 +260,7 @@ fun Chip(text: String) {
             Text(text = text, color = Color(0xFF56B375))
         }
     }
-
 }
-
 @Composable
 fun IconText(icon: ImageVector, text: String) {
     Row(verticalAlignment = Alignment.CenterVertically) {

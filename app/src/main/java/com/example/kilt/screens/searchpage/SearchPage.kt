@@ -59,7 +59,7 @@ fun SearchPage(
             configViewModel,
             searchViewModel,
             Modifier
-                .padding(horizontal = 16.dp)
+                .padding(horizontal = 10.dp)
                 .padding(top = 8.dp)
         )
         when {

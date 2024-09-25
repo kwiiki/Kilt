@@ -188,7 +188,6 @@ class SearchViewModel @Inject constructor(
         val newFilters = Filters(mutableMapOf(prop to FilterValue.ListValue(selectedValues)))
         updateFilters(newFilters, prop)
         getCountBySearchResult()
-        Log.d("prop", "updateListFilter1111:$prop")
     }
 
     fun getPropertyById(id: String): PropertyItem? {

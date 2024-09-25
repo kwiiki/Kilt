@@ -328,6 +328,7 @@ fun FullScreenPhotoScreen(
                 modifier = Modifier.fillMaxSize()
             )
         }
+
         Text(
             text = "${pagerState.currentPage + 1} / ${images.size}",
             color = Color.White,
@@ -335,7 +336,7 @@ fun FullScreenPhotoScreen(
             style = MaterialTheme.typography.labelMedium,
             modifier = Modifier
                 .align(Alignment.TopCenter)
-                .padding(top = 16.dp)
+                .padding(top = 24.dp)
                 .background(Color(0x80000000), shape = RoundedCornerShape(8.dp))
                 .padding(horizontal = 16.dp, vertical = 8.dp)
         )

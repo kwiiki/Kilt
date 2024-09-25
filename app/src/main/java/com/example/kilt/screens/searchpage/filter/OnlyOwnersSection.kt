@@ -42,7 +42,7 @@ fun OnlyOwnersSection() {
             ),
         )
         Text(
-            text = "Только от хозяев",
+            text = "От собственников недвижимости",
             fontSize = 16.sp,
             fontWeight = FontWeight.W400,
             modifier = Modifier.padding(start = 8.dp)

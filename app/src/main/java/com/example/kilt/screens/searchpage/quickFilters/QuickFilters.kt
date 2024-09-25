@@ -71,7 +71,7 @@ fun FilterButtons(
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
+            .padding(top = 8.dp, end = 8.dp),
         contentPadding = PaddingValues(vertical = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
@@ -99,8 +99,8 @@ fun FilterButtons(
                     .height(40.dp)
                     .wrapContentWidth()
                     .border(
-                        width = 1.5.dp,
-                        color = Color(0xffDBDFE4),
+                        width = 1.dp,
+                        color = Color.Blue,
                         shape = RoundedCornerShape(12.dp)
                     )
                     .background(
@@ -122,6 +122,7 @@ fun FilterButtons(
             }
         }
         items(filters.zip(filterEng)) { (filter, filterEngValue) ->
+            Log.d("filter123", "FilterButtons: ${currentFilters.filterMap[filterEngValue]}")
             val isActive = currentFilters.filterMap[filterEngValue]?.let {
                 when (it) {
                     is FilterValue.RangeValue -> it.from != 0 || it.to != Int.MAX_VALUE

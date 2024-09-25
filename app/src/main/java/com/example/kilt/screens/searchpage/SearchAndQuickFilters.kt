@@ -64,15 +64,15 @@ fun SearchAndQuickFilters(
         confirmValueChange = { it != SheetValue.Hidden }
     )
     Column(modifier = modifier) {
+        Spacer(modifier = Modifier.height(8.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {
-            SearchBar()
-            Spacer(modifier = Modifier.width(8.dp))
+            SearchBar(modifier = Modifier.fillMaxWidth(0.88f))
+            Spacer(modifier = Modifier.width(12.dp))
             Image(
                 imageVector = ImageVector.vectorResource(R.drawable.vec),
                 contentDescription = "Значок электронной почты",
                 modifier = Modifier
-                    .size(40.dp, 40.dp)
-                    .padding(8.dp)
+                    .size(20.dp, 20.dp)
                     .clickable { openPriorityBottomSheet = true }
             )
         }
@@ -102,7 +102,6 @@ fun SearchAndQuickFilters(
                 )
             }
         }
-        Spacer(modifier = Modifier.height(8.dp))
         QuickFilters(
             configViewModel = configViewModel,
             searchViewModel = searchViewModel,
