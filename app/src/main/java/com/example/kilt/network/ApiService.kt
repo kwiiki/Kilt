@@ -4,6 +4,8 @@ import com.example.kilt.data.Config
 import com.example.kilt.data.Count
 import com.example.kilt.data.SearchResponse
 import com.example.kilt.data.THomeSale
+import com.example.kilt.data.kato.KatoResponse
+import com.example.kilt.data.kato.MicroDistrictResponse
 import com.example.myapplication.data.HomeSale
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -22,5 +24,11 @@ interface ApiService {
 
     @POST("listings/count-search")
     suspend fun getSearchCount(@Body request: THomeSale):Count
+
+    @GET("kato/parent/{id}")
+    suspend fun getKato(@Path("id") id:String): KatoResponse
+
+    @GET("kato/parent/{id}")
+    suspend fun getMicroDistrict(@Path("id") id:String): MicroDistrictResponse
 }
 

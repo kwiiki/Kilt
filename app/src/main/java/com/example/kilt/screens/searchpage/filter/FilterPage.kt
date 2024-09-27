@@ -52,6 +52,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.example.kilt.data.config.FilterItem
 import com.example.kilt.screens.searchpage.homedetails.gradient
 import com.example.kilt.viewmodels.ConfigViewModel
@@ -61,12 +62,13 @@ import com.example.kilt.viewmodels.SearchViewModel
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun FilterPage(
+    navController: NavHostController,
     configViewModel: ConfigViewModel,
     searchViewModel: SearchViewModel,
     onCloseFilterBottomSheet: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
-        FilterContent(configViewModel = configViewModel, searchViewModel)
+        FilterContent(navController,configViewModel = configViewModel, searchViewModel)
         ShowAnnouncementsButton(
             searchViewModel,
             Modifier
@@ -123,7 +125,7 @@ fun ShowAnnouncementsButton(
 }
 
 @Composable
-fun FilterContent(configViewModel: ConfigViewModel, searchViewModel: SearchViewModel) {
+fun FilterContent(navController: NavHostController,configViewModel: ConfigViewModel, searchViewModel: SearchViewModel) {
     val config by configViewModel.config.collectAsState()
     val listingProps by configViewModel.listingProps.collectAsState()
     val scrollState = rememberScrollState()
@@ -147,7 +149,7 @@ fun FilterContent(configViewModel: ConfigViewModel, searchViewModel: SearchViewM
                 searchViewModel = searchViewModel
             )
             CustomDivider()
-            LocationSection(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
+            LocationSection(navController,modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
             CustomDivider()
             OnlyOwnersSection()
             CustomDivider()

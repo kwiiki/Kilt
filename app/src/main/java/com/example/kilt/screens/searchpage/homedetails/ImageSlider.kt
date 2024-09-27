@@ -328,7 +328,6 @@ fun FullScreenPhotoScreen(
                 modifier = Modifier.fillMaxSize()
             )
         }
-
         Text(
             text = "${pagerState.currentPage + 1} / ${images.size}",
             color = Color.White,

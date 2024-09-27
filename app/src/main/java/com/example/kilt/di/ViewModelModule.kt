@@ -2,7 +2,9 @@ package com.example.kilt.di
 
 import com.example.kilt.repository.ConfigRepository
 import com.example.kilt.repository.HomeSaleRepository
+import com.example.kilt.repository.KatoRepository
 import com.example.kilt.repository.SearchRepository
+import com.example.kilt.viewmodels.ChooseCityViewModel
 import com.example.kilt.viewmodels.HomeSaleViewModel
 import com.example.kilt.viewmodels.SearchViewModel
 import dagger.Module
@@ -30,5 +32,12 @@ object ViewModelModule {
         configRepository: ConfigRepository
     ): HomeSaleViewModel {
         return HomeSaleViewModel(homeSaleRepository, configRepository)
+    }
+    @Provides
+    @ViewModelScoped
+    fun provideChooseViewModel(
+        katoRepository: KatoRepository
+    ): ChooseCityViewModel {
+        return ChooseCityViewModel(katoRepository)
     }
 }

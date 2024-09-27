@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.example.kilt.screens.searchpage.quickFilters
 
 import androidx.compose.foundation.background
@@ -13,8 +15,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -28,11 +32,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.viewpager.widget.ViewPager
 import com.example.kilt.viewmodels.SearchViewModel
 
 @Composable
-fun RangeContent(
+fun QuickRangeFilter(
     prop: String,
     searchViewModel: SearchViewModel,
     onApplyClick: () -> Unit,
@@ -40,7 +43,7 @@ fun RangeContent(
 ) {
     val (initialMin, initialMax) = searchViewModel.getRangeFilterValues(prop)
     var minValue by remember { mutableStateOf(if (initialMin > 0) initialMin.toString() else "") }
-    var maxValue by remember { mutableStateOf(if (initialMax < Int.MAX_VALUE) initialMax.toString() else "") }
+    var maxValue by remember { mutableStateOf(if (initialMax < Int.MAX_VALUE && initialMax > 0) initialMax.toString() else "") }
 
 
     val trailingText = when (prop) {
@@ -80,6 +83,11 @@ fun RangeContent(
                 singleLine = true,
                 shape = RoundedCornerShape(16.dp),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    unfocusedBorderColor = Color(0xFFcfcfcf),
+                    focusedBorderColor = Color(0xFFcfcfcf),
+                    cursorColor = Color.Black
+                ),
                 trailingIcon = {
                     if (trailingText.isNotEmpty()) {
                         Text(
@@ -102,6 +110,11 @@ fun RangeContent(
                 singleLine = true,
                 shape = RoundedCornerShape(16.dp),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    unfocusedBorderColor = Color(0xFFcfcfcf),
+                    focusedBorderColor = Color(0xFFcfcfcf),
+                    cursorColor = Color.Black
+                ),
                 trailingIcon = {
                     if (trailingText.isNotEmpty()) {
                         Text(

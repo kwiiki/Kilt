@@ -20,10 +20,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import com.example.kilt.navigation.NavPath
 
 
 @Composable
 fun SearchBar(
+    navController: NavHostController,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = Modifier.padding()) {
@@ -31,7 +35,7 @@ fun SearchBar(
             modifier = modifier
                 .fillMaxWidth()
                 .height(45.dp)
-                .clickable { /* Handle click action */ }
+                .clickable { navController.navigate(NavPath.CHOOSECITYPAGE.name) }
                 .background(Color.Transparent, shape = RoundedCornerShape(14.dp))
                 .border(
                     width = 1.dp,
@@ -58,6 +62,7 @@ fun SearchBar(
 @Composable
 @Preview(showBackground = true)
 fun PreviewSearchBar() {
-    SearchBar()
+    val navController = rememberNavController()
+    SearchBar(navController = navController)
 
 }

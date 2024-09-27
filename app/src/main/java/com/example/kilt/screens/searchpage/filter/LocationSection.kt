@@ -3,10 +3,8 @@ package com.example.kilt.screens.searchpage.filter
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -22,15 +20,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import com.example.kilt.navigation.NavPath
 
 @Composable
-fun LocationSection(modifier: Modifier) {
+fun LocationSection(navController: NavHostController,modifier: Modifier) {
     Column(modifier = Modifier.padding()) {
         Box(
             modifier = modifier
                 .fillMaxWidth()
                 .height(45.dp)
-                .clickable { /* Handle click action */ }
+                .clickable { navController.navigate(NavPath.CHOOSECITYPAGE.name) }
                 .background(Color.Transparent, shape = RoundedCornerShape(14.dp))
                 .border(
                     width = 1.dp,
@@ -57,5 +58,6 @@ fun LocationSection(modifier: Modifier) {
 @Composable
 @Preview(showBackground = true)
 fun PreviewLocationSection() {
-    LocationSection(modifier = Modifier)
+    val navController = rememberNavController()
+    LocationSection(navController,modifier = Modifier)
 }

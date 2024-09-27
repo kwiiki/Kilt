@@ -56,6 +56,7 @@ fun SearchPage(
         modifier = Modifier
     ) {
         SearchAndQuickFilters(
+            navController,
             configViewModel,
             searchViewModel,
             Modifier

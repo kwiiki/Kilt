@@ -1,9 +1,6 @@
 package com.example.kilt
 
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -44,6 +41,7 @@ import com.example.kilt.screens.favorite.FavoritesScreen
 import com.example.kilt.screens.home.HomePage
 import com.example.kilt.screens.profile.ProfileScreen
 import com.example.kilt.screens.searchpage.SearchPage
+import com.example.kilt.screens.searchpage.chooseCity.ChooseCityPage
 import com.example.kilt.screens.searchpage.homedetails.HomeDetailsScreen
 import com.example.kilt.viewmodels.ConfigViewModel
 import com.example.kilt.viewmodels.HomeSaleViewModel
@@ -109,6 +107,7 @@ fun KiltApp() {
                 val id = backStackEntry.arguments?.getString("id")
                 HomeDetailsScreen(configViewModel, navController, id)
             }
+            composable(Screen.ChooseCityPage.route){ ChooseCityPage(navController) }
         }
     }
 }

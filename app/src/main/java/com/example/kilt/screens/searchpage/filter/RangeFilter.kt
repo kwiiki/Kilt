@@ -1,5 +1,5 @@
 @file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class,
-    ExperimentalMaterial3Api::class
+    ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class
 )
 
 package com.example.kilt.screens.searchpage.filter
@@ -47,7 +47,7 @@ fun RangeFilter(
 ) {
     val (initialMin, initialMax) = searchViewModel.getRangeFilterValues(prop)
     var minValue by remember { mutableStateOf(if (initialMin > 0) initialMin.toString() else "") }
-    var maxValue by remember { mutableStateOf(if (initialMax < Int.MAX_VALUE) initialMax.toString() else "") }
+    var maxValue by remember { mutableStateOf(if (initialMax < Int.MAX_VALUE && initialMax > 0) initialMax.toString() else "") }
 
     val focusManager = LocalFocusManager.current
     var isFocused by remember { mutableStateOf(false) }
@@ -72,11 +72,12 @@ fun RangeFilter(
         ) {
             OutlinedTextField(
                 value = minValue,
-                onValueChange = {
-                    minValue = it.filter { it.isDigit() }
-                    if (it.isEmpty()) {
-                        searchViewModel.updateRangeFilter(prop, 0, maxValue.toIntOrNull() ?: Int.MAX_VALUE)
-                    }
+                onValueChange = { newValue ->
+                    val filtered = newValue.filter { it.isDigit() }
+                    minValue = filtered
+                    val min = filtered.toIntOrNull() ?: 0
+                    val max = maxValue.toIntOrNull() ?: Int.MAX_VALUE
+                    searchViewModel.updateRangeFilter(prop, min, max)
                 },
                 modifier = Modifier
                     .weight(1f)
@@ -106,11 +107,12 @@ fun RangeFilter(
             Text(text = "до", modifier = Modifier.padding(horizontal = 8.dp))
             OutlinedTextField(
                 value = maxValue,
-                onValueChange = {
-                    maxValue = it.filter { it.isDigit() }
-                    if (it.isEmpty()) {
-                        searchViewModel.updateRangeFilter(prop, minValue.toIntOrNull() ?: 0, Int.MAX_VALUE)
-                    }
+                onValueChange = { newValue ->
+                    val filtered = newValue.filter { it.isDigit() }
+                    maxValue = filtered
+                    val min = minValue.toIntOrNull() ?: 0
+                    val max = filtered.toIntOrNull() ?: Int.MAX_VALUE
+                    searchViewModel.updateRangeFilter(prop, min, max)
                 },
                 modifier = Modifier
                     .weight(1f)
@@ -140,11 +142,11 @@ fun RangeFilter(
         }
     }
     CustomDivider()
-    LaunchedEffect(minValue, maxValue) {
-        val min = minValue.toIntOrNull() ?: 0
-        val max = maxValue.toIntOrNull() ?: 0
-        searchViewModel.updateRangeFilter(prop, min, max)
-    }
+//    LaunchedEffect(minValue, maxValue) {
+//        val min = minValue.toIntOrNull() ?: 0
+//        val max = maxValue.toIntOrNull() ?: 0
+//        searchViewModel.updateRangeFilter(prop, min, max)
+//    }
     val filters by searchViewModel.filters.collectAsState()
     LaunchedEffect(filters) {
         val (min, max) = searchViewModel.getRangeFilterValues(prop)

@@ -40,6 +40,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.example.kilt.R
 import com.example.kilt.screens.searchpage.filter.FilterPage
 import com.example.kilt.screens.searchpage.filter.PriorityBottomSheet
@@ -49,6 +50,7 @@ import com.example.kilt.viewmodels.SearchViewModel
 
 @Composable
 fun SearchAndQuickFilters(
+    navController: NavHostController,
     configViewModel: ConfigViewModel,
     searchViewModel: SearchViewModel,
     modifier: Modifier
@@ -66,7 +68,7 @@ fun SearchAndQuickFilters(
     Column(modifier = modifier) {
         Spacer(modifier = Modifier.height(8.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {
-            SearchBar(modifier = Modifier.fillMaxWidth(0.88f))
+            SearchBar(navController,modifier = Modifier.fillMaxWidth(0.88f))
             Spacer(modifier = Modifier.width(12.dp))
             Image(
                 imageVector = ImageVector.vectorResource(R.drawable.vec),
@@ -157,6 +159,7 @@ fun SearchAndQuickFilters(
             }
         ) {
             FilterPage(
+                navController,
                 configViewModel,
                 searchViewModel,
                 onCloseFilterBottomSheet = { openFilterBottomSheet = false })

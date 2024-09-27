@@ -125,7 +125,9 @@ fun FilterButtons(
             Log.d("filter123", "FilterButtons: ${currentFilters.filterMap[filterEngValue]}")
             val isActive = currentFilters.filterMap[filterEngValue]?.let {
                 when (it) {
-                    is FilterValue.RangeValue -> it.from != 0 || it.to != Int.MAX_VALUE
+                    is FilterValue.RangeValue -> {
+                        it.from > 0 || it.to > 0
+                    }
                     is FilterValue.SingleValue -> it.value != 0
                     is FilterValue.ListValue -> it.values.isNotEmpty()
                 }
@@ -171,7 +173,6 @@ fun FilterButtons(
                             isDealTypeClicked = false
                         }
                     }
-
                     selectedFilterEng == "num_rooms" -> ListQuickFilter(
                         configViewModel = configViewModel,
                         searchViewModel = searchViewModel,
@@ -181,7 +182,6 @@ fun FilterButtons(
                             showBottomSheet = false
                         }
                     )
-
                     selectedFilterEng in listOf("property_type") -> HouseOrFlat(
                         searchViewModel,
                         selectedFilterEng!!,
@@ -190,14 +190,13 @@ fun FilterButtons(
                             showBottomSheet = false
                         }
                     )
-
-                    selectedFilterEng in listOf("price", "area") -> RangeContent(
+                    selectedFilterEng in listOf("price", "area") -> QuickRangeFilter(
                         selectedFilterEng!!,
                         searchViewModel,
                         title = filterMap[selectedFilterEng] ?: selectedFilter!!,
                         onApplyClick = {
                             showBottomSheet = false
-                            resetSelectedFilter()  // Добавьте эту строку
+                            resetSelectedFilter()
                         }
                     )
                     else -> {
@@ -224,8 +223,8 @@ fun FilterButton(
     }
 
     val backgroundColor = when {
-        isActive -> Color.Blue.copy(alpha = 0.1f)
-        isSelected -> Color.Blue.copy(alpha = 0.1f)
+        isActive -> Color.Blue.copy(alpha = 0.05f)
+        isSelected -> Color.Blue.copy(alpha = 0.05f)
         else -> Color(0xffF2F2F2)
     }
 

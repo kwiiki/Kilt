@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalPagerApi::class)
-
 package com.example.kilt.screens.searchpage
 
 import android.util.Log
@@ -53,7 +51,6 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
 
-
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun HouseItem(
@@ -71,7 +68,6 @@ fun HouseItem(
 
     Log.d("HouseItem", "Recomposing item with id: ${search.id}")
 
-    // Example list of images, replace with your actual data
     val imageList = search.images
 
     Card(
@@ -126,18 +122,15 @@ fun HouseItem(
                             modifier = Modifier.fillMaxSize()
                         )
                     }
-
                     HorizontalPagerIndicator(
                         pagerState = pagerState,
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
                             .padding(16.dp),
-                        pageCount = if (imageList.size > 5) 5 else imageList.size, // Ограничиваем индикатор до 10 точек
-                        activeColor = Color(0xFFFFFFFF), // Цвет активного индикатора
-                        inactiveColor = Color(0xFFBBBBBB), // Цвет неактивного индикатора
+                        pageCount = if (imageList.size > 5) 5 else imageList.size,
+                        activeColor = Color(0xFFFFFFFF),
+                        inactiveColor = Color(0xFFBBBBBB),
                     )
-
-
                     IconButton(
                         onClick = { /* TODO: Handle favorite click */ },
                         modifier = Modifier.align(Alignment.TopEnd)
@@ -150,8 +143,6 @@ fun HouseItem(
                     }
                 }
             }
-
-            // The rest of your UI (Chip, Text, etc.)
             Row(
                 modifier = Modifier
                     .padding(8.dp)
@@ -160,14 +151,12 @@ fun HouseItem(
             ) {
                 Chip(text = "Собственник")
             }
-
             Text(
                 text = "${formatNumber(search.price)} ₸",
                 style = MaterialTheme.typography.labelMedium,
                 fontSize = 24.sp,
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 5.dp)
             )
-
             Row(
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
             ) {
@@ -205,7 +194,6 @@ fun HouseItem(
                     }
                 }
             }
-
             Text(
                 text = search.address_string,
                 style = MaterialTheme.typography.labelSmall,
@@ -244,7 +232,6 @@ fun Chip(text: String) {
         onClick = { /*TODO*/ },
         elevation = CardDefaults.cardElevation(4.dp),
         shape = RoundedCornerShape(8.dp),
-
         ) {
         Row(
             modifier = Modifier
