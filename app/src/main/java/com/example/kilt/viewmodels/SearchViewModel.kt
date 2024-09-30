@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateListOf
 import com.example.kilt.enums.TypeFilters
 
 
@@ -60,6 +61,9 @@ class SearchViewModel @Inject constructor(
 
     private val _searchResultsFlow = MutableStateFlow<PagingData<PropertyItem>>(PagingData.empty())
     val searchResultsFlow = _searchResultsFlow.asStateFlow()
+
+    private val _selectedComplexIds = mutableStateListOf<Int>()
+    val selectedComplexIds: List<Int> = _selectedComplexIds
 
     private fun resetListState() {
         _listState.value = LazyListState()
@@ -126,6 +130,16 @@ class SearchViewModel @Inject constructor(
         if (_listingType.value == 1) {
             updateFilters(_dealType.value, 1, type)
         }
+    }
+
+    fun addComplexId(id: Int) {
+        if (!_selectedComplexIds.contains(id)) {
+            _selectedComplexIds.add(id)
+        }
+    }
+
+    fun removeComplexId(id: Int) {
+        _selectedComplexIds.remove(id)
     }
 
     fun getRangeFilterValues(prop: String): Pair<Int, Int> {

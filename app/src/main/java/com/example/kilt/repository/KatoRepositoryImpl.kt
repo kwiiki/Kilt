@@ -2,6 +2,7 @@ package com.example.kilt.repository
 
 import com.example.kilt.data.kato.KatoResponse
 import com.example.kilt.data.kato.MicroDistrictResponse
+import com.example.kilt.data.kato.ResidentialComplexResponse
 import com.example.kilt.network.ApiService
 
 class KatoRepositoryImpl(private val apiService: ApiService):KatoRepository {
@@ -11,5 +12,9 @@ class KatoRepositoryImpl(private val apiService: ApiService):KatoRepository {
 
     override suspend fun getMicroDistrict(id: String): MicroDistrictResponse {
         return apiService.getMicroDistrict(id)
+    }
+
+    override suspend fun getResidentialComplex(city: String): ResidentialComplexResponse {
+        return apiService.getResidentialComplex(city)
     }
 }

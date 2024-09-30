@@ -258,9 +258,6 @@ fun FilterButtons(
                             }
                         )
                     }
-
-                    else -> {
-                    }
                 }
             }
         }

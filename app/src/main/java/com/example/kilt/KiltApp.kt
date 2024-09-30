@@ -107,7 +107,7 @@ fun KiltApp() {
                 val id = backStackEntry.arguments?.getString("id")
                 HomeDetailsScreen(configViewModel, navController, id)
             }
-            composable(Screen.ChooseCityPage.route){ ChooseCityPage(navController) }
+            composable(Screen.ChooseCityPage.route){ ChooseCityPage(navController,searchViewModel, modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp))  }
         }
     }
 }

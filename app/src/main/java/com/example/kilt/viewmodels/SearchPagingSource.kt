@@ -29,6 +29,7 @@ class SearchPagingSource(
             )
             Log.d("request", "request: $request")
             val response = searchRepository.performSearch(request)
+            response.list.forEach { println("all id: ${it.id}") }
             Log.d("response", "load: $response")
             val items = response.list
             return LoadResult.Page(

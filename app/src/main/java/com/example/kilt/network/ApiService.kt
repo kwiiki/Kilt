@@ -6,11 +6,13 @@ import com.example.kilt.data.SearchResponse
 import com.example.kilt.data.THomeSale
 import com.example.kilt.data.kato.KatoResponse
 import com.example.kilt.data.kato.MicroDistrictResponse
+import com.example.kilt.data.kato.ResidentialComplexResponse
 import com.example.myapplication.data.HomeSale
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface ApiService {
     @GET("listings/{id}")
@@ -30,5 +32,8 @@ interface ApiService {
 
     @GET("kato/parent/{id}")
     suspend fun getMicroDistrict(@Path("id") id:String): MicroDistrictResponse
+
+    @GET("residential-complex/all")
+    suspend fun getResidentialComplex(@Query("starts") city: String): ResidentialComplexResponse
 }
 
