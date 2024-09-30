@@ -1,7 +1,7 @@
 package com.example.kilt.repository
 
+import android.util.Log
 import com.example.kilt.data.PropLabel
-import com.example.kilt.data.TConfig
 import com.example.kilt.data.config.ListingStructures
 
 class ConfigHelper {
@@ -36,6 +36,7 @@ class ConfigHelper {
                     it.property_type == propertyType &&
                     it.listing_type == listingType
         }
+        Log.d("kato_path", "createDynamicTConfig: $matchingStructure")
         if (matchingStructure == null) {
             return emptyMap()
         }

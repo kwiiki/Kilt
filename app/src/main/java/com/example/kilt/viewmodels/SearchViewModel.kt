@@ -198,6 +198,12 @@ class SearchViewModel @Inject constructor(
         updateFilters(newFilters, prop)
     }
 
+    fun updateListFilter1(prop: String, selectedValues1: List<String>) {
+        val newFilters = Filters(mutableMapOf(prop to FilterValue.ListValue1(selectedValues1)))
+        updateFilters(newFilters, prop)
+        getCountBySearchResult()
+    }
+
     fun updateListFilter(prop: String, selectedValues: List<Int>) {
         val newFilters = Filters(mutableMapOf(prop to FilterValue.ListValue(selectedValues)))
         updateFilters(newFilters, prop)

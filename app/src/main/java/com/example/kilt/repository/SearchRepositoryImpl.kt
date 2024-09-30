@@ -73,12 +73,15 @@ class SearchRepositoryImpl(
             listingType = listingType,
             listingStructures = listingStructures,
             propLabels = listOfPropLabels
-        )
+        ).toMutableMap()
+
+        dynamicConfig["kato_path"] = "like"
 
         val formattedFilterMap = filters.filterMap.mapValues { (_, value) ->
             when (value) {
                 is FilterValue.SingleValue -> value.value
                 is FilterValue.ListValue -> value.values.takeIf { it.isNotEmpty() }
+                is FilterValue.ListValue1 -> value.values.takeIf { it.isNotEmpty() }
                 is FilterValue.RangeValue -> mapOf(
                     "from" to value.from,
                     "to" to value.to

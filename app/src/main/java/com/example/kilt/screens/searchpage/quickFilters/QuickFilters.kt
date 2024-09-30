@@ -128,6 +128,7 @@ fun FilterButtons(
                     is FilterValue.RangeValue -> {
                         it.from > 0 || it.to > 0
                     }
+                    is FilterValue.ListValue1 -> it.values.isNotEmpty()
                     is FilterValue.SingleValue -> it.value != 0
                     is FilterValue.ListValue -> it.values.isNotEmpty()
                 }

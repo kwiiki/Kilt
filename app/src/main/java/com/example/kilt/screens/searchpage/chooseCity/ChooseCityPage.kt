@@ -1,4 +1,6 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class,
+    ExperimentalMaterial3Api::class
+)
 
 package com.example.kilt.screens.searchpage.chooseCity
 
@@ -42,6 +44,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -112,6 +115,7 @@ fun ChooseCityPage(
                 }
                 TextButton(onClick = {
                     viewModel.resetSelection()
+                    searchViewModel.clearAllFilters()
                 }) {
                     Text(
                         text = "Сбросить",
@@ -210,11 +214,24 @@ fun ChooseCityPage(
                                         fontWeight = FontWeight.W700
                                     )
                                     Spacer(modifier = Modifier.weight(1f))
-                                    Icon(
-                                        Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                                        contentDescription = "Arrow",
-                                        modifier = Modifier.size(30.dp),
-                                        tint = Color(0xff566982)
+                                    var isChecked by remember { mutableStateOf(false) }
+                                    Checkbox(
+                                        checked = isChecked,
+                                        onCheckedChange = { checked ->
+                                            isChecked = checked
+                                            if (checked) {
+                                                val cityId = when (selectedCity) {
+                                                    "г.Алматы" -> "75000000"
+                                                    "г.Астана" -> "710000000"
+                                                    "г.Шымкент" -> "79000000"
+                                                    "Алматинская область" -> "19000000"
+                                                    else -> null
+                                                }
+                                                cityId?.let {
+                                                    searchViewModel.updateListFilter1("kato_path", listOf(it))
+                                                }
+                                            }
+                                        }
                                     )
                                 }
                             }
@@ -234,7 +251,8 @@ fun ChooseCityPage(
                                     onMicroDistrictClick = { microDistrict ->
                                         viewModel.selectMicroDistrict(microDistrict)
                                     },
-                                    searchViewModel
+                                    searchViewModel,
+                                    selectedCity = selectedCity.toString()
                                 )
                             }
                         }
@@ -280,7 +298,8 @@ fun DistrictRow(
     isExpanded: Boolean,
     onExpandClick: () -> Unit,
     onMicroDistrictClick: (MicroDistrict) -> Unit,
-    searchViewModel: SearchViewModel
+    searchViewModel: SearchViewModel,
+    selectedCity: String
 ) {
     Column(
         modifier = Modifier
@@ -342,7 +361,9 @@ fun DistrictRow(
                     microDistrict = microDistrict,
                     isChecked = false,
                     onDistrictClick = { onMicroDistrictClick(microDistrict) },
-                    searchViewModel
+                    district = district, // Передаем район
+                    selectedCity = selectedCity, // Передаем город
+                    searchViewModel = searchViewModel // Передаем ViewModel
                 )
             }
         }
@@ -353,7 +374,9 @@ fun MicroDistrictRow(
     microDistrict: MicroDistrict,
     isChecked: Boolean,
     onDistrictClick: (MicroDistrict) -> Unit,
-    searchViewModel: SearchViewModel
+    district: District, // Передаем информацию о районе
+    selectedCity: String, // Передаем выбранный город
+    searchViewModel: SearchViewModel // Передаем ViewModel для обновления фильтра
 ) {
     Row(
         modifier = Modifier
@@ -377,53 +400,29 @@ fun MicroDistrictRow(
         Spacer(modifier = Modifier.weight(1f))
         Checkbox(
             checked = isChecked,
-            onCheckedChange = { onDistrictClick(microDistrict) }
-        )
-    }
-    CustomDivider()
-}
-@Composable
-fun ResidentialComplexRow(
-    complex: ResidentialComplex,
-    searchViewModel: SearchViewModel
-) {
-    val isChecked = remember { mutableStateOf(false) }
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { }
-            .padding(vertical = 12.dp, horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            imageVector = ImageVector.vectorResource(id = R.drawable.unselected_builds_icon),
-            contentDescription = "Location",
-            tint = Color(0xff566982)
-        )
-        Spacer(modifier = Modifier.width(16.dp))
-        Text(
-            text = complex.residential_complex_name,
-            fontSize = 16.sp,
-            color = Color(0xff010101),
-            fontWeight = FontWeight.W700
-        )
-        Spacer(modifier = Modifier.weight(1f))
-        Checkbox(
-            checked = isChecked.value,
             onCheckedChange = { checked ->
-                isChecked.value = checked
-                if (checked) {
-                    searchViewModel.addComplexId(complex.id)
-                } else {
-                    searchViewModel.removeComplexId(complex.id)
+                // Собираем строку в формате "город,район,микрорайон"
+                val cityId = when (selectedCity) {
+                    "г.Алматы" -> "750000000"
+                    "г.Астана" -> "710000000"
+                    "г.Шымкент" -> "790000000"
+                    "Алматинская область" -> "190000000"
+                    else -> null
                 }
-                searchViewModel.updateListFilter("residential_complex", searchViewModel.selectedComplexIds)
+
+                // Если город выбран, собираем полный путь
+                cityId?.let {
+                    val katoPath = "$cityId,${district.id},${microDistrict.id}"
+                    searchViewModel.updateListFilter1("kato_path", listOf(katoPath))
+                }
+
+                onDistrictClick(microDistrict)
             }
         )
     }
     CustomDivider()
 }
+
 @Composable
 @Preview(showBackground = true)
 fun PreviewChooseCityPage() {

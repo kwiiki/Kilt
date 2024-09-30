@@ -32,6 +32,9 @@ class ChooseCityViewModel @Inject constructor(
 
     private val _selectedMicroDistrict = mutableStateOf<MicroDistrict?>(null)
     val selectedMicroDistrict: State<MicroDistrict?> = _selectedMicroDistrict
+    private val _selectedMicroDistricts = mutableStateListOf<MicroDistrict>()
+    val selectedMicroDistricts: List<MicroDistrict> = _selectedMicroDistricts
+
 
     private val _microDistricts = mutableStateOf<List<MicroDistrict>?>(null)
     val microDistricts: State<List<MicroDistrict>?> get() = _microDistricts
@@ -65,6 +68,10 @@ class ChooseCityViewModel @Inject constructor(
             else -> _districts.value = null
         }
     }
+    fun getMicroDistrictsForDistrict(district: District): List<MicroDistrict> {
+        return _microDistricts.value?.filter { it.parent_id == district.id } ?: emptyList()
+    }
+
     private fun loadResidentialComplexes(city: String) {
         viewModelScope.launch {
             try {
@@ -75,6 +82,13 @@ class ChooseCityViewModel @Inject constructor(
                 Log.e("residentialList", "Error loading residential complexes", e)
                 _residentialComplexes.value = emptyList()
             }
+        }
+    }
+    fun toggleMicroDistrictSelection(microDistrict: MicroDistrict, isSelected: Boolean) {
+        if (isSelected) {
+            _selectedMicroDistricts.add(microDistrict)
+        } else {
+            _selectedMicroDistricts.remove(microDistrict)
         }
     }
     fun toggleRentBuySelection(isRent: Boolean) {
