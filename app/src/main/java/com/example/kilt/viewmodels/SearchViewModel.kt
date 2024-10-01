@@ -197,7 +197,6 @@ class SearchViewModel @Inject constructor(
         val newFilters = Filters(mutableMapOf(prop to FilterValue.SingleValue(value)))
         updateFilters(newFilters, prop)
     }
-
     fun updateListFilter1(prop: String, selectedValues1: List<String>) {
         val newFilters = Filters(mutableMapOf(prop to FilterValue.ListValue1(selectedValues1)))
         updateFilters(newFilters, prop)

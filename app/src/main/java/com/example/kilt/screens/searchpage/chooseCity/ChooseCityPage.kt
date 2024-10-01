@@ -5,7 +5,6 @@
 package com.example.kilt.screens.searchpage.chooseCity
 
 import android.content.pm.ActivityInfo
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -25,7 +24,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -62,12 +60,12 @@ import com.example.kilt.R
 import com.example.kilt.custom.CustomToggleButton
 import com.example.kilt.data.kato.District
 import com.example.kilt.data.kato.MicroDistrict
-import com.example.kilt.data.kato.ResidentialComplex
 import com.example.kilt.screens.searchpage.filter.CustomDivider
 import com.example.kilt.utills.LockScreenOrientation
 import com.example.kilt.viewmodels.ChooseCityViewModel
 import com.example.kilt.viewmodels.SearchViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChooseCityPage(
     navController: NavHostController,
@@ -198,7 +196,7 @@ fun ChooseCityPage(
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(vertical = 16.dp, horizontal = 16.dp),
+                                        .padding(horizontal = 16.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Icon(
@@ -252,7 +250,8 @@ fun ChooseCityPage(
                                         viewModel.selectMicroDistrict(microDistrict)
                                     },
                                     searchViewModel,
-                                    selectedCity = selectedCity.toString()
+                                    selectedCity = selectedCity.toString(),
+                                    chooseCityViewModel = viewModel,
                                 )
                             }
                         }
@@ -299,7 +298,8 @@ fun DistrictRow(
     onExpandClick: () -> Unit,
     onMicroDistrictClick: (MicroDistrict) -> Unit,
     searchViewModel: SearchViewModel,
-    selectedCity: String
+    selectedCity: String,
+    chooseCityViewModel:ChooseCityViewModel
 ) {
     Column(
         modifier = Modifier
@@ -308,7 +308,7 @@ fun DistrictRow(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { onExpandClick() }
+                .clickable { onExpandClick() } // Управляем сворачиванием/разворачиванием только района
                 .padding(vertical = 12.dp, horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -337,7 +337,7 @@ fun DistrictRow(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { }
+                    .clickable { /* Логика для выбора всего района */ }
                     .padding(vertical = 12.dp, horizontal = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -350,7 +350,7 @@ fun DistrictRow(
                 Spacer(modifier = Modifier.weight(1f))
                 Icon(
                     imageVector = Icons.Default.Check,
-                    contentDescription = "Expand/Collapse",
+                    contentDescription = "Выбрать весь район",
                     modifier = Modifier.size(30.dp),
                     tint = Color(0xff566982)
                 )
@@ -359,29 +359,49 @@ fun DistrictRow(
             microDistricts.forEach { microDistrict ->
                 MicroDistrictRow(
                     microDistrict = microDistrict,
-                    isChecked = false,
+                    isChecked = false, // Управляйте состоянием выделения микрорайона
                     onDistrictClick = { onMicroDistrictClick(microDistrict) },
-                    district = district, // Передаем район
-                    selectedCity = selectedCity, // Передаем город
-                    searchViewModel = searchViewModel // Передаем ViewModel
+                    district = district,
+                    selectedCity = selectedCity,
+                    searchViewModel = searchViewModel,
+                    chooseCityViewModel = chooseCityViewModel
                 )
             }
         }
     }
 }
+
 @Composable
 fun MicroDistrictRow(
     microDistrict: MicroDistrict,
     isChecked: Boolean,
     onDistrictClick: (MicroDistrict) -> Unit,
-    district: District, // Передаем информацию о районе
-    selectedCity: String, // Передаем выбранный город
-    searchViewModel: SearchViewModel // Передаем ViewModel для обновления фильтра
+    district: District,
+    selectedCity: String,
+    searchViewModel: SearchViewModel,
+    chooseCityViewModel: ChooseCityViewModel
 ) {
+    var isCheckedState by remember { mutableStateOf(isChecked) } // Состояние для чекбокса
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onDistrictClick(microDistrict) }
+            .clickable {
+                isCheckedState = !isCheckedState
+                // Собираем строку в формате "город,район,микрорайон"
+                val cityId = when (selectedCity) {
+                    "г.Алматы" -> "750000000"
+                    "г.Астана" -> "710000000"
+                    "г.Шымкент" -> "790000000"
+                    "Алматинская область" -> "190000000"
+                    else -> null
+                }
+                cityId?.let {
+                    val katoPath = "$cityId,${district.id},${microDistrict.id}"
+                    searchViewModel.updateListFilter1("kato_path", listOf(katoPath))
+                }
+                onDistrictClick(microDistrict)
+            }
             .padding(vertical = 12.dp, horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -399,28 +419,37 @@ fun MicroDistrictRow(
         )
         Spacer(modifier = Modifier.weight(1f))
         Checkbox(
-            checked = isChecked,
+            checked = isCheckedState,
             onCheckedChange = { checked ->
-                // Собираем строку в формате "город,район,микрорайон"
-                val cityId = when (selectedCity) {
-                    "г.Алматы" -> "750000000"
-                    "г.Астана" -> "710000000"
-                    "г.Шымкент" -> "790000000"
-                    "Алматинская область" -> "190000000"
-                    else -> null
-                }
-
-                // Если город выбран, собираем полный путь
-                cityId?.let {
-                    val katoPath = "$cityId,${district.id},${microDistrict.id}"
-                    searchViewModel.updateListFilter1("kato_path", listOf(katoPath))
-                }
-
-                onDistrictClick(microDistrict)
+                isCheckedState = checked
+                updateKatoPath(checked, selectedCity, district, microDistrict, searchViewModel,chooseCityViewModel)
             }
         )
     }
     CustomDivider()
+}
+
+private fun updateKatoPath(
+    isChecked: Boolean,
+    selectedCity: String,
+    district: District,
+    microDistrict: MicroDistrict,
+    searchViewModel: SearchViewModel,
+    chooseCityViewModel: ChooseCityViewModel
+) {
+    val cityId = when (selectedCity) {
+        "г.Алматы" -> "750000000"
+        "г.Астана" -> "710000000"
+        "г.Шымкент" -> "790000000"
+        "Алматинская область" -> "190000000"
+        else -> null
+    }
+
+    cityId?.let {
+        val katoPath = "$cityId,${district.id},${microDistrict.id}"
+        val newList = chooseCityViewModel.addOrRemoveKatoPath(katoPath, isChecked)
+        searchViewModel.updateListFilter1("kato_path",newList)
+    }
 }
 
 @Composable

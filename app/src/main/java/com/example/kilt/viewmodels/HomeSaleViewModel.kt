@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.kilt.data.Config
 import com.example.kilt.repository.ConfigRepository
 import com.example.kilt.repository.HomeSaleRepository
-import com.example.myapplication.data.HomeSale
+import com.example.kilt.data.HomeSale
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow

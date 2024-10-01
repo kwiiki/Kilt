@@ -1,10 +1,8 @@
 package com.example.kilt.repository
 
 import android.util.Log
-import com.example.kilt.data.Config
 import com.example.kilt.network.ApiService
-import com.example.myapplication.data.HomeSale
-import javax.inject.Inject
+import com.example.kilt.data.HomeSale
 
 class HomeSaleRepositoryImpl(
     private val apiService: ApiService

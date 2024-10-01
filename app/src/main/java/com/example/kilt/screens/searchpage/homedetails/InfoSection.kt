@@ -20,10 +20,10 @@ import androidx.compose.ui.unit.sp
 import com.example.kilt.data.Config
 import com.example.kilt.viewmodels.ConfigViewModel
 import com.example.kilt.viewmodels.HomeSaleViewModel
-import com.example.myapplication.data.HomeSale
+import com.example.kilt.data.HomeSale
 
 @Composable
-fun InfoSection(homeSale: HomeSale?, homeSaleViewModel: HomeSaleViewModel,configViewModel: ConfigViewModel) {
+fun InfoSection(homeSale: HomeSale?, homeSaleViewModel: HomeSaleViewModel, configViewModel: ConfigViewModel) {
     val homeSaleView by homeSaleViewModel.homeSale
     homeSaleViewModel.loadHomeSale()
     val config = homeSaleViewModel.config

@@ -32,6 +32,7 @@ class ChooseCityViewModel @Inject constructor(
 
     private val _selectedMicroDistrict = mutableStateOf<MicroDistrict?>(null)
     val selectedMicroDistrict: State<MicroDistrict?> = _selectedMicroDistrict
+
     private val _selectedMicroDistricts = mutableStateListOf<MicroDistrict>()
     val selectedMicroDistricts: List<MicroDistrict> = _selectedMicroDistricts
 
@@ -57,6 +58,9 @@ class ChooseCityViewModel @Inject constructor(
     private val _searchQuery = mutableStateOf("")
     val searchQuery: State<String> = _searchQuery
 
+    private val _katoPathList = mutableStateListOf<String>()
+    val katoPathList: List<String> = _katoPathList
+
     fun selectCity(city: String) {
         _selectedCity.value = city
         _currentScreen.value = 1   // Navigate to the district screen
@@ -68,8 +72,17 @@ class ChooseCityViewModel @Inject constructor(
             else -> _districts.value = null
         }
     }
-    fun getMicroDistrictsForDistrict(district: District): List<MicroDistrict> {
-        return _microDistricts.value?.filter { it.parent_id == district.id } ?: emptyList()
+
+
+    fun addOrRemoveKatoPath(katoPath: String, isChecked: Boolean):List<String> {
+        if (isChecked) {
+            if (!_katoPathList.contains(katoPath)) {
+                _katoPathList.add(katoPath)
+            }
+        } else {
+            _katoPathList.remove(katoPath)
+        }
+        return katoPathList
     }
 
     private fun loadResidentialComplexes(city: String) {
@@ -82,13 +95,6 @@ class ChooseCityViewModel @Inject constructor(
                 Log.e("residentialList", "Error loading residential complexes", e)
                 _residentialComplexes.value = emptyList()
             }
-        }
-    }
-    fun toggleMicroDistrictSelection(microDistrict: MicroDistrict, isSelected: Boolean) {
-        if (isSelected) {
-            _selectedMicroDistricts.add(microDistrict)
-        } else {
-            _selectedMicroDistricts.remove(microDistrict)
         }
     }
     fun toggleRentBuySelection(isRent: Boolean) {

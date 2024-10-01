@@ -7,7 +7,7 @@ import com.example.kilt.data.THomeSale
 import com.example.kilt.data.kato.KatoResponse
 import com.example.kilt.data.kato.MicroDistrictResponse
 import com.example.kilt.data.kato.ResidentialComplexResponse
-import com.example.myapplication.data.HomeSale
+import com.example.kilt.data.HomeSale
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
