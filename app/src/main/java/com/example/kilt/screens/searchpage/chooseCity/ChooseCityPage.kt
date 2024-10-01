@@ -1,4 +1,5 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class,
+@file:OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class,
     ExperimentalMaterial3Api::class
 )
 
@@ -123,7 +124,7 @@ fun ChooseCityPage(
                     )
                 }
             }
-            if(selectedCity!=null){
+            if (selectedCity != null) {
                 Row(
                     modifier = modifier
                         .fillMaxWidth()
@@ -136,7 +137,7 @@ fun ChooseCityPage(
                     CustomToggleButton(
                         text = "Район",
                         isSelected = isRentSelected,
-                        onClick = { viewModel.toggleRentBuySelection(true)},
+                        onClick = { viewModel.toggleRentBuySelection(true) },
                         modifier = Modifier.weight(1f)
                     )
                     CustomToggleButton(
@@ -147,8 +148,21 @@ fun ChooseCityPage(
                     )
                 }
             }
+            val city = when (selectedCity) {
+                null -> {
+                    "Город"
+                }
+
+                "Алматинская область" -> {
+                    "Алматинская область"
+                }
+
+                else -> {
+                    selectedCity
+                }
+            }
             Text(
-                text = selectedCity ?: "Город",
+                text = city.toString(),
                 color = Color(0xff010101),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.W700,
@@ -189,10 +203,11 @@ fun ChooseCityPage(
                         }
                     }
                 }
+
                 1 -> {
                     if (isRentSelected) {
                         LazyColumn(modifier = Modifier.fillMaxSize()) {
-                            item{
+                            item {
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -226,7 +241,10 @@ fun ChooseCityPage(
                                                     else -> null
                                                 }
                                                 cityId?.let {
-                                                    searchViewModel.updateListFilter1("kato_path", listOf(it))
+                                                    searchViewModel.updateListFilter1(
+                                                        "kato_path",
+                                                        listOf(it)
+                                                    )
                                                 }
                                             }
                                         }
@@ -246,9 +264,6 @@ fun ChooseCityPage(
                                             viewModel.selectDistrict(district)
                                         }
                                     },
-                                    onMicroDistrictClick = { microDistrict ->
-                                        viewModel.selectMicroDistrict(microDistrict)
-                                    },
                                     searchViewModel,
                                     selectedCity = selectedCity.toString(),
                                     chooseCityViewModel = viewModel,
@@ -262,7 +277,7 @@ fun ChooseCityPage(
                         LazyColumn(modifier = Modifier.fillMaxSize()) {
                             items(filteredComplexes.size) { index ->
                                 val residentialComplex = filteredComplexes[index]
-                                ResidentialComplexRow(complex = residentialComplex,searchViewModel)
+                                ResidentialComplexRow(complex = residentialComplex, searchViewModel)
                             }
                         }
                     }
@@ -290,16 +305,16 @@ fun ChooseCityPage(
         }
     }
 }
- @Composable
+
+@Composable
 fun DistrictRow(
     district: District,
     microDistricts: List<MicroDistrict>,
     isExpanded: Boolean,
     onExpandClick: () -> Unit,
-    onMicroDistrictClick: (MicroDistrict) -> Unit,
     searchViewModel: SearchViewModel,
     selectedCity: String,
-    chooseCityViewModel:ChooseCityViewModel
+    chooseCityViewModel: ChooseCityViewModel
 ) {
     Column(
         modifier = Modifier
@@ -312,11 +327,13 @@ fun DistrictRow(
                 .padding(vertical = 12.dp, horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                imageVector = ImageVector.vectorResource(id = R.drawable.pin_icon),
-                contentDescription = "Location",
-                tint = Color(0xff566982)
-            )
+            if (selectedCity != "Алматинская область") {
+                Icon(
+                    imageVector = ImageVector.vectorResource(id = R.drawable.pin_icon),
+                    contentDescription = "Location",
+                    tint = Color(0xff566982)
+                )
+            }
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = district.name,
@@ -334,13 +351,20 @@ fun DistrictRow(
         }
         CustomDivider()
         if (isExpanded) {
+            var isChecked by remember { mutableStateOf(false) }
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { /* Логика для выбора всего района */ }
+                    .clickable { isChecked = !isChecked } // Управляем кликом на весь район
                     .padding(vertical = 12.dp, horizontal = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(id = R.drawable.all_districk_icon),
+                    contentDescription = "Location",
+                    tint = Color(0xff566982)
+                )
+                Spacer(modifier = Modifier.width(16.dp))
                 Text(
                     text = "Выбрать весь район",
                     fontSize = 16.sp,
@@ -348,19 +372,31 @@ fun DistrictRow(
                     fontWeight = FontWeight.W700
                 )
                 Spacer(modifier = Modifier.weight(1f))
-                Icon(
-                    imageVector = Icons.Default.Check,
-                    contentDescription = "Выбрать весь район",
-                    modifier = Modifier.size(30.dp),
-                    tint = Color(0xff566982)
+                Checkbox(
+                    checked = isChecked,
+                    onCheckedChange = { checked ->
+                        isChecked = checked
+                        if (checked) {
+                            val cityId = when (selectedCity) {
+                                "г.Алматы" -> "750000000"
+                                "г.Астана" -> "710000000"
+                                "г.Шымкент" -> "790000000"
+                                "Алматинская область" -> "190000000"
+                                else -> null
+                            }
+                            if (cityId != null) {
+                                val katoPath = "$cityId,${district.id}"
+                                searchViewModel.updateListFilter1("kato_path", listOf(katoPath))
+                            }
+                        }
+                    }
                 )
             }
             CustomDivider()
             microDistricts.forEach { microDistrict ->
                 MicroDistrictRow(
                     microDistrict = microDistrict,
-                    isChecked = false, // Управляйте состоянием выделения микрорайона
-                    onDistrictClick = { onMicroDistrictClick(microDistrict) },
+                    isChecked = false,
                     district = district,
                     selectedCity = selectedCity,
                     searchViewModel = searchViewModel,
@@ -375,20 +411,17 @@ fun DistrictRow(
 fun MicroDistrictRow(
     microDistrict: MicroDistrict,
     isChecked: Boolean,
-    onDistrictClick: (MicroDistrict) -> Unit,
     district: District,
     selectedCity: String,
     searchViewModel: SearchViewModel,
     chooseCityViewModel: ChooseCityViewModel
 ) {
-    var isCheckedState by remember { mutableStateOf(isChecked) } // Состояние для чекбокса
-
+    var isCheckedState by remember { mutableStateOf(isChecked) }
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
                 isCheckedState = !isCheckedState
-                // Собираем строку в формате "город,район,микрорайон"
                 val cityId = when (selectedCity) {
                     "г.Алматы" -> "750000000"
                     "г.Астана" -> "710000000"
@@ -400,7 +433,6 @@ fun MicroDistrictRow(
                     val katoPath = "$cityId,${district.id},${microDistrict.id}"
                     searchViewModel.updateListFilter1("kato_path", listOf(katoPath))
                 }
-                onDistrictClick(microDistrict)
             }
             .padding(vertical = 12.dp, horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -422,7 +454,14 @@ fun MicroDistrictRow(
             checked = isCheckedState,
             onCheckedChange = { checked ->
                 isCheckedState = checked
-                updateKatoPath(checked, selectedCity, district, microDistrict, searchViewModel,chooseCityViewModel)
+                updateKatoPath(
+                    checked,
+                    selectedCity,
+                    district,
+                    microDistrict,
+                    searchViewModel,
+                    chooseCityViewModel
+                )
             }
         )
     }
@@ -444,11 +483,10 @@ private fun updateKatoPath(
         "Алматинская область" -> "190000000"
         else -> null
     }
-
     cityId?.let {
         val katoPath = "$cityId,${district.id},${microDistrict.id}"
         val newList = chooseCityViewModel.addOrRemoveKatoPath(katoPath, isChecked)
-        searchViewModel.updateListFilter1("kato_path",newList)
+        searchViewModel.updateListFilter1("kato_path", newList)
     }
 }
 
@@ -456,5 +494,9 @@ private fun updateKatoPath(
 @Preview(showBackground = true)
 fun PreviewChooseCityPage() {
     val navController = rememberNavController()
-    ChooseCityPage(navController = navController, searchViewModel = hiltViewModel(), modifier = Modifier)
+    ChooseCityPage(
+        navController = navController,
+        searchViewModel = hiltViewModel(),
+        modifier = Modifier
+    )
 }

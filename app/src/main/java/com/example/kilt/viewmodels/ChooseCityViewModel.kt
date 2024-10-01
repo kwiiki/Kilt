@@ -36,7 +36,6 @@ class ChooseCityViewModel @Inject constructor(
     private val _selectedMicroDistricts = mutableStateListOf<MicroDistrict>()
     val selectedMicroDistricts: List<MicroDistrict> = _selectedMicroDistricts
 
-
     private val _microDistricts = mutableStateOf<List<MicroDistrict>?>(null)
     val microDistricts: State<List<MicroDistrict>?> get() = _microDistricts
 
@@ -72,8 +71,6 @@ class ChooseCityViewModel @Inject constructor(
             else -> _districts.value = null
         }
     }
-
-
     fun addOrRemoveKatoPath(katoPath: String, isChecked: Boolean):List<String> {
         if (isChecked) {
             if (!_katoPathList.contains(katoPath)) {
@@ -84,7 +81,6 @@ class ChooseCityViewModel @Inject constructor(
         }
         return katoPathList
     }
-
     private fun loadResidentialComplexes(city: String) {
         viewModelScope.launch {
             try {
