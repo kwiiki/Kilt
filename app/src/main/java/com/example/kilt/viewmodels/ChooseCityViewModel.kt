@@ -202,6 +202,7 @@ class ChooseCityViewModel @Inject constructor(
         _expandedDistricts.clear()
         _selectedDistrict.value = null
         _selectedComplexIds.clear()
+        _selectedComplexNames.clear()
         Log.d("resetSelection", "resetSelection: ${_katoPathList.size}")
     }
 }

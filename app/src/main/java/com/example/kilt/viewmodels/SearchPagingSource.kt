@@ -12,7 +12,8 @@ class SearchPagingSource(
     private val filters: Filters,
     private val dealType: Int,
     private val propertyType: Int,
-    private val listingType: Int
+    private val listingType: Int,
+    private val sort: String
 ) : PagingSource<Int, PropertyItem>() {
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, PropertyItem> {
         try {
@@ -25,7 +26,7 @@ class SearchPagingSource(
                 propertyType = propertyType,
                 listingType = listingType,
                 page = currentPage,
-                sorting = "new"
+                sorting = sort
             )
             Log.d("request", "request: $request")
             val response = searchRepository.performSearch(request)
@@ -42,7 +43,6 @@ class SearchPagingSource(
             return LoadResult.Error(e)
         }
     }
-
     override fun getRefreshKey(state: PagingState<Int, PropertyItem>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
             val closestPage = state.closestPageToPosition(anchorPosition)

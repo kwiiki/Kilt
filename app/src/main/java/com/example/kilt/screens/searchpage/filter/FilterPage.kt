@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyRow
@@ -27,6 +28,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
@@ -79,7 +81,6 @@ fun FilterPage(
             onCloseFilterBottomSheet
         )
     }
-
 }
 
 @Composable
@@ -89,40 +90,47 @@ fun ShowAnnouncementsButton(
     onButtonClick: () -> Unit
 ) {
     val searchCount by searchViewModel.searchResultCount.collectAsState()
+    val loading = searchViewModel.isLoading
     Row(modifier = modifier.fillMaxWidth()) {
-        OutlinedButton(
-            onClick = {
-                searchViewModel.performSearch()
-                onButtonClick()
-            },
-            contentPadding = PaddingValues(0.dp),
-            colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.Transparent),
-            shape = RoundedCornerShape(12.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-                .background(gradient, RoundedCornerShape(12.dp))
-        ) {
-            Box(
+            OutlinedButton(
+                onClick = {
+                    searchViewModel.performSearch()
+                    onButtonClick()
+                },
+                contentPadding = PaddingValues(0.dp),
+                colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.Transparent),
+                shape = RoundedCornerShape(12.dp),
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp),
-                contentAlignment = Alignment.Center
+                    .fillMaxWidth()
+                    .height(50.dp)
+                    .background(gradient, RoundedCornerShape(12.dp))
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "Показать ${searchCount.toString()} вариантов",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = Color.White
-                    )
+                    if (loading.value) {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            CircularProgressIndicator(color = Color.Gray, modifier = Modifier.size(15.dp))
+                        }
+                    } else {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "Показать ${searchCount.toString()} вариантов",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = Color.White
+                            )
+                        }
+                    }
                 }
             }
         }
-    }
 }
 
 @Composable

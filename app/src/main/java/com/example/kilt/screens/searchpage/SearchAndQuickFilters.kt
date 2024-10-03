@@ -98,6 +98,7 @@ fun SearchAndQuickFilters(
                 }
             ) {
                 PriorityBottomSheet(
+                    searchViewModel = searchViewModel,
                     selectedOption = selectedOption,
                     onOptionSelected = { option ->
                         selectedOption = option

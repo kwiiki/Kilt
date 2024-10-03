@@ -25,7 +25,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateListOf
 import com.example.kilt.enums.TypeFilters
 
 
@@ -41,6 +40,10 @@ class SearchViewModel @Inject constructor(
 
     private val _propertyType = mutableStateOf(1)
     val propertyType: State<Int> = _propertyType
+
+    private val _sort = mutableStateOf("new")
+    val sort: State<String> = _sort
+
     private var isDataLoaded = false
 
     private val _searchResult = MutableStateFlow<SearchResponse?>(null)
@@ -49,7 +52,8 @@ class SearchViewModel @Inject constructor(
     private val _searchResultCount = MutableStateFlow<String?>("")
     val searchResultCount: StateFlow<String?> = _searchResultCount.asStateFlow()
 
-    private val _isLoading = MutableStateFlow(false)
+    private val _isLoading = mutableStateOf(false)
+    val isLoading:State<Boolean> = _isLoading
 
     private val _error = MutableStateFlow<String?>(null)
 
@@ -103,6 +107,11 @@ class SearchViewModel @Inject constructor(
         _filters.value = newFilters
     }
 
+    fun updateSort(newSort: String) {
+        _sort.value = newSort
+        performSearch()
+        resetListState()
+    }
     fun selectRent() {
         val listing = _listingType.value
         val property = if (listing == 2) 6 else _propertyType.value
@@ -143,7 +152,6 @@ class SearchViewModel @Inject constructor(
     }
     fun clearAllFilters() {
         _filters.value = Filters()
-//        _selectedLocations.value = emptyList()
         updateFiltersAndSearch()
     }
 
@@ -218,7 +226,7 @@ class SearchViewModel @Inject constructor(
                     propertyType = propertyType,
                     listingType = listingType,
                     page = 0,
-                    sorting = "new"
+                    sorting = _sort.toString()
                 )
                 Log.d("SearchViewModel", "getCountBySearchResult: $request")
                 val resultCount = searchRepository.getResultBySearchCount(request)
@@ -254,7 +262,8 @@ class SearchViewModel @Inject constructor(
                             _filters.value,
                             dealType,
                             propertyType,
-                            listingType
+                            listingType,
+                            _sort.value
                         )
                     }
                 )

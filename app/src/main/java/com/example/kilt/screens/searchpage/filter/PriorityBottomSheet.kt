@@ -13,29 +13,26 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.kilt.viewmodels.SearchViewModel
 
 @Composable
 fun PriorityBottomSheet(
+    searchViewModel: SearchViewModel,
     selectedOption: String?,
     onOptionSelected: (String) -> Unit
 ) {
     val options = listOf(
-        "Популярные",
-        "Новые предложения",
-        "Цена по возрастанию",
-        "Цена по убыванию"
+        "Популярные" to "default",
+        "Новые предложения" to "new",
+        "Цена по возрастанию" to "price_asc",
+        "Цена по убыванию" to "price_desc"
     )
-
     Column(
         modifier = Modifier
             .height(330.dp)
@@ -48,25 +45,25 @@ fun PriorityBottomSheet(
             fontWeight = FontWeight.W600,
             modifier = Modifier.padding(horizontal = 16.dp)
         )
-        options.forEach { option ->
+        options.forEach { (optionText, sortValue) ->
             Row(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
                     .fillMaxWidth()
                     .height(50.dp)
                     .clickable {
-                        onOptionSelected(option)
+                        onOptionSelected(optionText)
+                        searchViewModel.updateSort(sortValue)
                     },
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = option,
+                    text = optionText,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.W500
                 )
-
-                if (selectedOption == option) {
+                if (selectedOption == optionText) {
                     Icon(
                         Icons.Default.Check,
                         contentDescription = "CheckIcon"
