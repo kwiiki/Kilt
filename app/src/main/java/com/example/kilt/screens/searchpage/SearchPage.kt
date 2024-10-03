@@ -30,6 +30,7 @@ import androidx.navigation.NavHostController
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.kilt.R
+import com.example.kilt.viewmodels.ChooseCityViewModel
 import com.example.kilt.viewmodels.ConfigViewModel
 import com.example.kilt.viewmodels.HomeSaleViewModel
 import com.example.kilt.viewmodels.SearchViewModel
@@ -37,6 +38,7 @@ import com.example.kilt.viewmodels.SearchViewModel
 
 @Composable
 fun SearchPage(
+    chooseCityViewModel: ChooseCityViewModel,
     homeSaleViewModel: HomeSaleViewModel,
     configViewModel: ConfigViewModel,
     navController: NavHostController,
@@ -56,6 +58,7 @@ fun SearchPage(
         modifier = Modifier
     ) {
         SearchAndQuickFilters(
+            chooseCityViewModel,
             navController,
             configViewModel,
             searchViewModel,

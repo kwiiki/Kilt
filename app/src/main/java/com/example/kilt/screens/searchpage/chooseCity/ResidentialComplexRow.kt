@@ -23,14 +23,16 @@ import androidx.compose.ui.unit.sp
 import com.example.kilt.R
 import com.example.kilt.data.kato.ResidentialComplex
 import com.example.kilt.screens.searchpage.filter.CustomDivider
+import com.example.kilt.viewmodels.ChooseCityViewModel
 import com.example.kilt.viewmodels.SearchViewModel
 
 @Composable
 fun ResidentialComplexRow(
     complex: ResidentialComplex,
-    searchViewModel: SearchViewModel
+    searchViewModel: SearchViewModel,
+    chooseCityViewModel: ChooseCityViewModel
 ) {
-    val isChecked = remember { mutableStateOf(false) }
+    val isChecked = remember { mutableStateOf(chooseCityViewModel.isComplexSelected(complex.id)) }
 
     Row(
         modifier = Modifier
@@ -57,11 +59,13 @@ fun ResidentialComplexRow(
             onCheckedChange = { checked ->
                 isChecked.value = checked
                 if (checked) {
-                    searchViewModel.addComplexId(complex.id)
+                    chooseCityViewModel.addComplexId(complex.id)
+                    chooseCityViewModel.addComplexName(complex.residential_complex_name)
                 } else {
-                    searchViewModel.removeComplexId(complex.id)
+                    chooseCityViewModel.removeComplexId(complex.id)
+                    chooseCityViewModel.removeComplexName(complex.residential_complex_name)
                 }
-                searchViewModel.updateListFilter("residential_complex", searchViewModel.selectedComplexIds)
+                searchViewModel.updateListFilter("residential_complex", chooseCityViewModel.selectedComplexIds)
             }
         )
     }

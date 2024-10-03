@@ -6,6 +6,7 @@
 package com.example.kilt.screens.searchpage.chooseCity
 
 import android.content.pm.ActivityInfo
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -25,7 +26,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Button
@@ -51,12 +51,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.kilt.R
 import com.example.kilt.custom.CustomToggleButton
 import com.example.kilt.data.kato.District
@@ -71,13 +68,13 @@ import com.example.kilt.viewmodels.SearchViewModel
 fun ChooseCityPage(
     navController: NavHostController,
     searchViewModel: SearchViewModel,
-    viewModel: ChooseCityViewModel = hiltViewModel(),
+    viewModel: ChooseCityViewModel,
     modifier: Modifier
 ) {
     LockScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
     val selectedCity by viewModel.selectedCity
+    val selectCity by viewModel.selectCity
     val districts by viewModel.districts
-    val microDistricts by viewModel.microDistricts
     val currentScreen by viewModel.currentScreen
     val isRentSelected by viewModel.isRentSelected
     val isBuySelected by viewModel.isBuySelected
@@ -90,7 +87,6 @@ fun ChooseCityPage(
         "г.Шымкент",
         "Алматинская область"
     )
-
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = modifier.fillMaxSize()) {
             Row(
@@ -152,11 +148,9 @@ fun ChooseCityPage(
                 null -> {
                     "Город"
                 }
-
                 "Алматинская область" -> {
                     "Алматинская область"
                 }
-
                 else -> {
                     selectedCity
                 }
@@ -233,19 +227,27 @@ fun ChooseCityPage(
                                         onCheckedChange = { checked ->
                                             isChecked = checked
                                             if (checked) {
-                                                val cityId = when (selectedCity) {
-                                                    "г.Алматы" -> "75000000"
-                                                    "г.Астана" -> "710000000"
-                                                    "г.Шымкент" -> "79000000"
-                                                    "Алматинская область" -> "19000000"
-                                                    else -> null
+                                                selectedCity?.let { city ->
+                                                    val cityId = when (city) {
+                                                        "г.Алматы" -> "75000000"
+                                                        "г.Астана" -> "710000000"
+                                                        "г.Шымкент" -> "79000000"
+                                                        "Алматинская область" -> "19000000"
+                                                        else -> null
+                                                    }
+                                                    cityId?.let { id ->
+                                                        viewModel.selectCity(city)
+                                                        searchViewModel.updateListFilter1(
+                                                            "kato_path",
+                                                            listOf(id)
+                                                        )
+                                                    }
                                                 }
-                                                cityId?.let {
-                                                    searchViewModel.updateListFilter1(
-                                                        "kato_path",
-                                                        listOf(it)
-                                                    )
-                                                }
+                                            } else {
+                                                searchViewModel.updateListFilter1(
+                                                    "kato_path",
+                                                    emptyList()
+                                                )
                                             }
                                         }
                                     )
@@ -256,7 +258,8 @@ fun ChooseCityPage(
                                 val isExpanded = expandedDistricts.contains(district)
                                 DistrictRow(
                                     district = district,
-                                    microDistricts = microDistricts ?: emptyList(),
+                                    microDistricts = viewModel.microDistrictsByDistrict[district.id]
+                                        ?: emptyList(),
                                     isExpanded = isExpanded,
                                     onExpandClick = {
                                         viewModel.toggleDistrictExpansion(district)
@@ -277,7 +280,11 @@ fun ChooseCityPage(
                         LazyColumn(modifier = Modifier.fillMaxSize()) {
                             items(filteredComplexes.size) { index ->
                                 val residentialComplex = filteredComplexes[index]
-                                ResidentialComplexRow(complex = residentialComplex, searchViewModel)
+                                ResidentialComplexRow(
+                                    complex = residentialComplex,
+                                    searchViewModel,
+                                    chooseCityViewModel = viewModel
+                                )
                             }
                         }
                     }
@@ -306,197 +313,4 @@ fun ChooseCityPage(
     }
 }
 
-@Composable
-fun DistrictRow(
-    district: District,
-    microDistricts: List<MicroDistrict>,
-    isExpanded: Boolean,
-    onExpandClick: () -> Unit,
-    searchViewModel: SearchViewModel,
-    selectedCity: String,
-    chooseCityViewModel: ChooseCityViewModel
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { onExpandClick() } // Управляем сворачиванием/разворачиванием только района
-                .padding(vertical = 12.dp, horizontal = 16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            if (selectedCity != "Алматинская область") {
-                Icon(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.pin_icon),
-                    contentDescription = "Location",
-                    tint = Color(0xff566982)
-                )
-            }
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = district.name,
-                fontSize = 16.sp,
-                color = Color(0xff010101),
-                fontWeight = FontWeight.W700
-            )
-            Spacer(modifier = Modifier.weight(1f))
-            Icon(
-                imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                contentDescription = "Expand/Collapse",
-                modifier = Modifier.size(30.dp),
-                tint = Color(0xff566982)
-            )
-        }
-        CustomDivider()
-        if (isExpanded) {
-            var isChecked by remember { mutableStateOf(false) }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { isChecked = !isChecked } // Управляем кликом на весь район
-                    .padding(vertical = 12.dp, horizontal = 16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.all_districk_icon),
-                    contentDescription = "Location",
-                    tint = Color(0xff566982)
-                )
-                Spacer(modifier = Modifier.width(16.dp))
-                Text(
-                    text = "Выбрать весь район",
-                    fontSize = 16.sp,
-                    color = Color(0xff010101),
-                    fontWeight = FontWeight.W700
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                Checkbox(
-                    checked = isChecked,
-                    onCheckedChange = { checked ->
-                        isChecked = checked
-                        if (checked) {
-                            val cityId = when (selectedCity) {
-                                "г.Алматы" -> "750000000"
-                                "г.Астана" -> "710000000"
-                                "г.Шымкент" -> "790000000"
-                                "Алматинская область" -> "190000000"
-                                else -> null
-                            }
-                            if (cityId != null) {
-                                val katoPath = "$cityId,${district.id}"
-                                searchViewModel.updateListFilter1("kato_path", listOf(katoPath))
-                            }
-                        }
-                    }
-                )
-            }
-            CustomDivider()
-            microDistricts.forEach { microDistrict ->
-                MicroDistrictRow(
-                    microDistrict = microDistrict,
-                    isChecked = false,
-                    district = district,
-                    selectedCity = selectedCity,
-                    searchViewModel = searchViewModel,
-                    chooseCityViewModel = chooseCityViewModel
-                )
-            }
-        }
-    }
-}
 
-@Composable
-fun MicroDistrictRow(
-    microDistrict: MicroDistrict,
-    isChecked: Boolean,
-    district: District,
-    selectedCity: String,
-    searchViewModel: SearchViewModel,
-    chooseCityViewModel: ChooseCityViewModel
-) {
-    var isCheckedState by remember { mutableStateOf(isChecked) }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable {
-                isCheckedState = !isCheckedState
-                val cityId = when (selectedCity) {
-                    "г.Алматы" -> "750000000"
-                    "г.Астана" -> "710000000"
-                    "г.Шымкент" -> "790000000"
-                    "Алматинская область" -> "190000000"
-                    else -> null
-                }
-                cityId?.let {
-                    val katoPath = "$cityId,${district.id},${microDistrict.id}"
-                    searchViewModel.updateListFilter1("kato_path", listOf(katoPath))
-                }
-            }
-            .padding(vertical = 12.dp, horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            imageVector = ImageVector.vectorResource(id = R.drawable.pin_icon),
-            contentDescription = "Location",
-            tint = Color(0xff566982)
-        )
-        Spacer(modifier = Modifier.width(16.dp))
-        Text(
-            text = microDistrict.name,
-            fontSize = 16.sp,
-            color = Color(0xff010101),
-            fontWeight = FontWeight.W700
-        )
-        Spacer(modifier = Modifier.weight(1f))
-        Checkbox(
-            checked = isCheckedState,
-            onCheckedChange = { checked ->
-                isCheckedState = checked
-                updateKatoPath(
-                    checked,
-                    selectedCity,
-                    district,
-                    microDistrict,
-                    searchViewModel,
-                    chooseCityViewModel
-                )
-            }
-        )
-    }
-    CustomDivider()
-}
-
-private fun updateKatoPath(
-    isChecked: Boolean,
-    selectedCity: String,
-    district: District,
-    microDistrict: MicroDistrict,
-    searchViewModel: SearchViewModel,
-    chooseCityViewModel: ChooseCityViewModel
-) {
-    val cityId = when (selectedCity) {
-        "г.Алматы" -> "750000000"
-        "г.Астана" -> "710000000"
-        "г.Шымкент" -> "790000000"
-        "Алматинская область" -> "190000000"
-        else -> null
-    }
-    cityId?.let {
-        val katoPath = "$cityId,${district.id},${microDistrict.id}"
-        val newList = chooseCityViewModel.addOrRemoveKatoPath(katoPath, isChecked)
-        searchViewModel.updateListFilter1("kato_path", newList)
-    }
-}
-
-@Composable
-@Preview(showBackground = true)
-fun PreviewChooseCityPage() {
-    val navController = rememberNavController()
-    ChooseCityPage(
-        navController = navController,
-        searchViewModel = hiltViewModel(),
-        modifier = Modifier
-    )
-}

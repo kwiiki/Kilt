@@ -45,11 +45,13 @@ import com.example.kilt.R
 import com.example.kilt.screens.searchpage.filter.FilterPage
 import com.example.kilt.screens.searchpage.filter.PriorityBottomSheet
 import com.example.kilt.screens.searchpage.quickFilters.QuickFilters
+import com.example.kilt.viewmodels.ChooseCityViewModel
 import com.example.kilt.viewmodels.ConfigViewModel
 import com.example.kilt.viewmodels.SearchViewModel
 
 @Composable
 fun SearchAndQuickFilters(
+    chooseCityViewModel: ChooseCityViewModel,
     navController: NavHostController,
     configViewModel: ConfigViewModel,
     searchViewModel: SearchViewModel,
@@ -68,7 +70,7 @@ fun SearchAndQuickFilters(
     Column(modifier = modifier) {
         Spacer(modifier = Modifier.height(8.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {
-            SearchBar(navController,modifier = Modifier.fillMaxWidth(0.88f))
+            SearchBar(chooseCityViewModel,navController,modifier = Modifier.fillMaxWidth(0.88f))
             Spacer(modifier = Modifier.width(12.dp))
             Image(
                 imageVector = ImageVector.vectorResource(R.drawable.vec),

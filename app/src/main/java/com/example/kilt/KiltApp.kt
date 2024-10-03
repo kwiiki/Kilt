@@ -43,6 +43,7 @@ import com.example.kilt.screens.profile.ProfileScreen
 import com.example.kilt.screens.searchpage.SearchPage
 import com.example.kilt.screens.searchpage.chooseCity.ChooseCityPage
 import com.example.kilt.screens.searchpage.homedetails.HomeDetailsScreen
+import com.example.kilt.viewmodels.ChooseCityViewModel
 import com.example.kilt.viewmodels.ConfigViewModel
 import com.example.kilt.viewmodels.HomeSaleViewModel
 import com.example.kilt.viewmodels.SearchViewModel
@@ -56,6 +57,7 @@ fun KiltApp() {
     val searchViewModel: SearchViewModel = hiltViewModel()
     val configViewModel: ConfigViewModel = hiltViewModel()
     val homeSaleViewModel: HomeSaleViewModel = hiltViewModel()
+    val chooseCityViewModel: ChooseCityViewModel = hiltViewModel()
 
 
     val bottomBarRoutes = listOf(
@@ -90,6 +92,7 @@ fun KiltApp() {
             composable(BottomNavigationScreen.HomePage.route) { HomePage(navController) }
             composable(BottomNavigationScreen.SaleAndRent.route) {
                 SearchPage(
+                    chooseCityViewModel = chooseCityViewModel,
                     homeSaleViewModel = homeSaleViewModel,
                     configViewModel = configViewModel,
                     searchViewModel = searchViewModel,
@@ -107,7 +110,7 @@ fun KiltApp() {
                 val id = backStackEntry.arguments?.getString("id")
                 HomeDetailsScreen(configViewModel, navController, id)
             }
-            composable(Screen.ChooseCityPage.route){ ChooseCityPage(navController,searchViewModel, modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp))  }
+            composable(Screen.ChooseCityPage.route){ ChooseCityPage(navController,searchViewModel,chooseCityViewModel, modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp))  }
         }
     }
 }

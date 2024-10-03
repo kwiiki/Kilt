@@ -3,6 +3,7 @@ package com.example.kilt.viewmodels
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
@@ -60,6 +61,20 @@ class ChooseCityViewModel @Inject constructor(
     private val _katoPathList = mutableStateListOf<String>()
     val katoPathList: List<String> = _katoPathList
 
+    private val _isExpanded = mutableStateOf<Boolean>(false)
+    val isExpanded:State<Boolean> = _isExpanded
+
+    val selectCity = mutableStateOf<String?>(null)
+
+    private val _microDistrictsByDistrict = mutableStateMapOf<String, List<MicroDistrict>>()
+    val microDistrictsByDistrict: Map<String, List<MicroDistrict>> = _microDistrictsByDistrict
+
+    private val _selectedComplexNames = mutableStateListOf<String>()
+    val selectedComplexNames: List<String> = _selectedComplexNames
+
+    private val _selectedComplexIds = mutableStateListOf<Int>()
+    val selectedComplexIds: List<Int> = _selectedComplexIds
+
     fun selectCity(city: String) {
         _selectedCity.value = city
         _currentScreen.value = 1   // Navigate to the district screen
@@ -71,6 +86,30 @@ class ChooseCityViewModel @Inject constructor(
             else -> _districts.value = null
         }
     }
+    fun addComplexId(id: Int) {
+        if (!_selectedComplexIds.contains(id)) {
+            _selectedComplexIds.add(id)
+        }
+    }
+
+    fun removeComplexId(id: Int) {
+        _selectedComplexIds.remove(id)
+    }
+
+    fun isComplexSelected(complexId: Int): Boolean {
+        return selectedComplexIds.contains(complexId)
+    }
+
+    fun addComplexName(name:String) {
+        if (!_selectedComplexNames.contains(name)) {
+            _selectedComplexNames.add(name)
+        }
+    }
+
+    fun removeComplexName(name: String) {
+        _selectedComplexNames.remove(name)
+    }
+
     fun addOrRemoveKatoPath(katoPath: String, isChecked: Boolean):List<String> {
         if (isChecked) {
             if (!_katoPathList.contains(katoPath)) {
@@ -100,7 +139,16 @@ class ChooseCityViewModel @Inject constructor(
             loadResidentialComplexes(_selectedCity.value!!)
         }
     }
-
+    fun toggleMicroDistrictSelection(microDistrict: MicroDistrict, isSelected: Boolean) {
+        Log.d("selectedMicro", "toggleMicroDistrictSelection: ${_selectedMicroDistricts.size}")
+        if (isSelected) {
+            if (!_selectedMicroDistricts.contains(microDistrict)) {
+                _selectedMicroDistricts.add(microDistrict)
+            }
+        } else {
+            _selectedMicroDistricts.remove(microDistrict)
+        }
+    }
     fun updateSearchQuery(query: String) {
         _searchQuery.value = query
     }
@@ -116,7 +164,6 @@ class ChooseCityViewModel @Inject constructor(
                     )
                 }.sortedBy { it.name }
             } catch (e: Exception) {
-                _districts.value = emptyList()
             }
         }
     }
@@ -128,13 +175,12 @@ class ChooseCityViewModel @Inject constructor(
         }
     }
     fun selectDistrict(district: District) {
-        _selectedDistrict.value = district
+//        _selectedDistrict.value = district
         viewModelScope.launch {
             try {
                 val response = katoRepository.getMicroDistrict(district.id)
-                _microDistricts.value = response.list.sortedBy { it.name }
+                _microDistrictsByDistrict[district.id] = response.list.sortedBy { it.name }
             } catch (e: Exception) {
-                _microDistricts.value = emptyList()
             }
         }
     }
@@ -146,17 +192,16 @@ class ChooseCityViewModel @Inject constructor(
             _selectedCity.value = null
         }
     }
-    fun selectMicroDistrict(microDistrict: MicroDistrict) {
-        _selectedMicroDistrict.value = microDistrict
-        viewModelScope.launch {
-            val microDistricts = katoRepository.getMicroDistrict(microDistrict.id)
-            _microDistricts.value = microDistricts.list
-        }
-    }
     fun resetSelection() {
         _currentScreen.value = 0
         _isBuySelected.value = false
         _isRentSelected.value = true
         _selectedCity.value = null
+        _katoPathList.clear()
+        _selectedMicroDistricts.clear()
+        _expandedDistricts.clear()
+        _selectedDistrict.value = null
+        _selectedComplexIds.clear()
+        Log.d("resetSelection", "resetSelection: ${_katoPathList.size}")
     }
 }

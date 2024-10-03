@@ -62,9 +62,6 @@ class SearchViewModel @Inject constructor(
     private val _searchResultsFlow = MutableStateFlow<PagingData<PropertyItem>>(PagingData.empty())
     val searchResultsFlow = _searchResultsFlow.asStateFlow()
 
-    private val _selectedComplexIds = mutableStateListOf<Int>()
-    val selectedComplexIds: List<Int> = _selectedComplexIds
-
     private fun resetListState() {
         _listState.value = LazyListState()
     }
@@ -131,17 +128,6 @@ class SearchViewModel @Inject constructor(
             updateFilters(_dealType.value, 1, type)
         }
     }
-
-    fun addComplexId(id: Int) {
-        if (!_selectedComplexIds.contains(id)) {
-            _selectedComplexIds.add(id)
-        }
-    }
-
-    fun removeComplexId(id: Int) {
-        _selectedComplexIds.remove(id)
-    }
-
     fun getRangeFilterValues(prop: String): Pair<Int, Int> {
         return when (val filterValue = _filters.value.filterMap[prop]) {
             is FilterValue.RangeValue -> Pair(filterValue.from, filterValue.to)
@@ -157,6 +143,7 @@ class SearchViewModel @Inject constructor(
     }
     fun clearAllFilters() {
         _filters.value = Filters()
+//        _selectedLocations.value = emptyList()
         updateFiltersAndSearch()
     }
 
@@ -173,7 +160,6 @@ class SearchViewModel @Inject constructor(
             debouncedSearch()
         }
     }
-
     private fun updateFilters(deal: Int, listing: Int, property: Int) {
         _dealType.value = deal
         _listingType.value = listing
@@ -226,7 +212,6 @@ class SearchViewModel @Inject constructor(
                 val propertyType =
                     (_filters.value.filterMap[TypeFilters.PROPERTY_TYPE.value] as? FilterValue.SingleValue)?.value
                         ?: 1
-
                 val request = searchRepository.createSearchRequest(
                     filters = _filters.value,
                     dealType = dealType,

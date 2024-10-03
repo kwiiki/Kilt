@@ -52,6 +52,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.kilt.data.config.FilterItem
 import com.example.kilt.screens.searchpage.homedetails.gradient
@@ -149,7 +150,7 @@ fun FilterContent(navController: NavHostController,configViewModel: ConfigViewMo
                 searchViewModel = searchViewModel
             )
             CustomDivider()
-            LocationSection(navController,modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
+            LocationSection(chooseCityViewModel = hiltViewModel(),navController,modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
             CustomDivider()
             OnlyOwnersSection()
             CustomDivider()
