@@ -58,6 +58,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.kilt.data.config.FilterItem
 import com.example.kilt.screens.searchpage.homedetails.gradient
+import com.example.kilt.viewmodels.ChooseCityViewModel
 import com.example.kilt.viewmodels.ConfigViewModel
 import com.example.kilt.viewmodels.SearchViewModel
 
@@ -65,13 +66,14 @@ import com.example.kilt.viewmodels.SearchViewModel
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun FilterPage(
+    chooseCityViewModel: ChooseCityViewModel,
     navController: NavHostController,
     configViewModel: ConfigViewModel,
     searchViewModel: SearchViewModel,
     onCloseFilterBottomSheet: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
-        FilterContent(navController,configViewModel = configViewModel, searchViewModel)
+        FilterContent(chooseCityViewModel = chooseCityViewModel,navController,configViewModel = configViewModel, searchViewModel)
         ShowAnnouncementsButton(
             searchViewModel,
             Modifier
@@ -134,7 +136,7 @@ fun ShowAnnouncementsButton(
 }
 
 @Composable
-fun FilterContent(navController: NavHostController,configViewModel: ConfigViewModel, searchViewModel: SearchViewModel) {
+fun FilterContent(chooseCityViewModel: ChooseCityViewModel,navController: NavHostController,configViewModel: ConfigViewModel, searchViewModel: SearchViewModel) {
     val config by configViewModel.config.collectAsState()
     val listingProps by configViewModel.listingProps.collectAsState()
     val scrollState = rememberScrollState()
@@ -158,7 +160,7 @@ fun FilterContent(navController: NavHostController,configViewModel: ConfigViewMo
                 searchViewModel = searchViewModel
             )
             CustomDivider()
-            LocationSection(chooseCityViewModel = hiltViewModel(),navController,modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
+            LocationSection(chooseCityViewModel = chooseCityViewModel,navController,modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
             CustomDivider()
             OnlyOwnersSection()
             CustomDivider()

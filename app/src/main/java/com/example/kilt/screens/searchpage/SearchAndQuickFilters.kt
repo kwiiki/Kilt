@@ -148,7 +148,8 @@ fun SearchAndQuickFilters(
                         textAlign = TextAlign.Center
                     )
                     TextButton(
-                        onClick = { searchViewModel.clearAllFilters()},
+                        onClick = { searchViewModel.clearAllFilters()
+                                    chooseCityViewModel.resetSelection()},
                         modifier = Modifier.padding(end = 16.dp)
                     ) {
                         Text(
@@ -162,6 +163,7 @@ fun SearchAndQuickFilters(
             }
         ) {
             FilterPage(
+                chooseCityViewModel = chooseCityViewModel,
                 navController,
                 configViewModel,
                 searchViewModel,

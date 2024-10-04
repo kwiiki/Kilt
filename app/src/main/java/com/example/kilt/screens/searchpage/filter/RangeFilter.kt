@@ -92,7 +92,7 @@ fun RangeFilter(
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     unfocusedBorderColor = Color(0xFFcfcfcf),
                     focusedBorderColor = Color(0xFFcfcfcf),
-                    cursorColor = if (isFocused) LocalContentColor.current else Color.Transparent
+//                    cursorColor = if (isFocused) LocalContentColor.current else Color.Transparent
                 ),
                 trailingIcon = {
                     if (trailingText.isNotEmpty()) {
@@ -127,7 +127,7 @@ fun RangeFilter(
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     unfocusedBorderColor = Color(0xFFcfcfcf),
                     focusedBorderColor = Color(0xFFcfcfcf),
-                    cursorColor = if (isFocused) LocalContentColor.current else Color.Transparent
+//                    cursorColor = if (isFocused) LocalContentColor.current else Color.Transparent
                 ),
                 trailingIcon = {
                     if (trailingText.isNotEmpty()) {

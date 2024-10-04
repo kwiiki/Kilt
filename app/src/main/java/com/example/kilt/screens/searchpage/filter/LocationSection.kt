@@ -29,7 +29,7 @@ import com.example.kilt.navigation.NavPath
 import com.example.kilt.viewmodels.ChooseCityViewModel
 
 @Composable
-fun LocationSection(chooseCityViewModel: ChooseCityViewModel = hiltViewModel(),navController: NavHostController,modifier: Modifier) {
+fun LocationSection(chooseCityViewModel: ChooseCityViewModel ,navController: NavHostController,modifier: Modifier) {
     Column(modifier = Modifier.padding()) {
         Box(
             modifier = modifier
@@ -47,6 +47,7 @@ fun LocationSection(chooseCityViewModel: ChooseCityViewModel = hiltViewModel(),n
             val selectedResidentialComplex = chooseCityViewModel.selectedComplexNames.joinToString(" / ") { it }
             val selectedCity = chooseCityViewModel.selectCity.value
             val selectedDistrict = chooseCityViewModel.selectedDistrict.value?.name
+            Log.d("selectedDistrict", "SearchBar: $selectedCity")
             val selectedMicroDistricts = chooseCityViewModel.selectedMicroDistricts
                 .joinToString(" / ") { it.name }
             val locationText = when {
@@ -58,6 +59,7 @@ fun LocationSection(chooseCityViewModel: ChooseCityViewModel = hiltViewModel(),n
             }
             val font = FontWeight.W600
             val defaultFont = FontWeight.W300
+
             Text(
                 text = locationText,
                 color = if (locationText != "Город, район, ЖК") Color(0xff010101) else Color(

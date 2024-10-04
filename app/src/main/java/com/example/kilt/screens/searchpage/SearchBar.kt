@@ -49,7 +49,6 @@ fun SearchBar(
                 )
                 .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
-
             val selectedResidentialComplex = chooseCityViewModel.selectedComplexNames.joinToString(" / ") { it }
             val selectedCity = chooseCityViewModel.selectCity.value
             val selectedDistrict = chooseCityViewModel.selectedDistrict.value?.name

@@ -66,6 +66,9 @@ class ChooseCityViewModel @Inject constructor(
 
     val selectCity = mutableStateOf<String?>(null)
 
+    private val _isCheckMap = mutableStateMapOf<String, Boolean>()
+    val isCheckMap: Map<String, Boolean> = _isCheckMap
+
     private val _microDistrictsByDistrict = mutableStateMapOf<String, List<MicroDistrict>>()
     val microDistrictsByDistrict: Map<String, List<MicroDistrict>> = _microDistrictsByDistrict
 
@@ -86,12 +89,21 @@ class ChooseCityViewModel @Inject constructor(
             else -> _districts.value = null
         }
     }
+    fun setIsCheck(city: String, checked: Boolean) {
+        _isCheckMap.clear()
+        _isCheckMap[city] = checked
+    }
+    fun selectCityForTextView(city:String){
+         selectCity.value = city
+    }
+    fun removeCityForTextView(){
+        selectCity.value = null
+    }
     fun addComplexId(id: Int) {
         if (!_selectedComplexIds.contains(id)) {
             _selectedComplexIds.add(id)
         }
     }
-
     fun removeComplexId(id: Int) {
         _selectedComplexIds.remove(id)
     }
@@ -175,7 +187,7 @@ class ChooseCityViewModel @Inject constructor(
         }
     }
     fun selectDistrict(district: District) {
-//        _selectedDistrict.value = district
+        _selectedDistrict.value = district
         viewModelScope.launch {
             try {
                 val response = katoRepository.getMicroDistrict(district.id)
@@ -203,6 +215,8 @@ class ChooseCityViewModel @Inject constructor(
         _selectedDistrict.value = null
         _selectedComplexIds.clear()
         _selectedComplexNames.clear()
+        selectCity.value = null
+        _isCheckMap.clear()
         Log.d("resetSelection", "resetSelection: ${_katoPathList.size}")
     }
 }

@@ -278,6 +278,7 @@ class SearchViewModel @Inject constructor(
                 Log.d("SearchViewModel", "Finished performSearch")
             }
         }
+        getCountBySearchResult()
     }
 }
 
