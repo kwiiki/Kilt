@@ -61,9 +61,6 @@ class ChooseCityViewModel @Inject constructor(
     private val _katoPathList = mutableStateListOf<String>()
     val katoPathList: List<String> = _katoPathList
 
-    private val _isExpanded = mutableStateOf<Boolean>(false)
-    val isExpanded:State<Boolean> = _isExpanded
-
     val selectCity = mutableStateOf<String?>(null)
 
     private val _isCheckMap = mutableStateMapOf<String, Boolean>()
@@ -77,6 +74,15 @@ class ChooseCityViewModel @Inject constructor(
 
     private val _selectedComplexIds = mutableStateListOf<Int>()
     val selectedComplexIds: List<Int> = _selectedComplexIds
+
+    private val _isLoading = mutableStateOf(false)
+    val isLoading: State<Boolean> = _isLoading
+
+    private val _loadingDistricts = mutableStateMapOf<String, Boolean>()
+    val loadingDistricts: Map<String, Boolean> = _loadingDistricts
+
+    private val _expandedDistrictsMap = mutableStateMapOf<String, Boolean>()
+    val expandedDistrictsMap: Map<String, Boolean> = _expandedDistrictsMap
 
     fun selectCity(city: String) {
         _selectedCity.value = city
@@ -179,23 +185,53 @@ class ChooseCityViewModel @Inject constructor(
             }
         }
     }
-    fun toggleDistrictExpansion(district: District) {
-        if (_expandedDistricts.contains(district)) {
-            _expandedDistricts.remove(district)
-        } else {
-            _expandedDistricts.add(district)
-        }
+//    fun toggleDistrictExpansion(district: District) {
+//        val isCurrentlyExpanded = _expandedDistrictsMap[district.id] ?: false
+//        _expandedDistrictsMap[district.id] = !isCurrentlyExpanded
+//        if (_expandedDistricts.contains(district)) {
+//            _expandedDistricts.remove(district)
+//        } else {
+//            _expandedDistricts.add(district)
+//        }
+//        if (!isCurrentlyExpanded) {
+//            selectDistrict(district)
+//        }
+//    }
+fun toggleDistrictExpansion(district: District) {
+    val isCurrentlyExpanded = _expandedDistrictsMap[district.id] ?: false
+    _expandedDistrictsMap[district.id] = !isCurrentlyExpanded
+    if (!isCurrentlyExpanded) {
+        selectDistrict(district)
     }
+}
+
     fun selectDistrict(district: District) {
+        _loadingDistricts[district.id] = true
         _selectedDistrict.value = district
         viewModelScope.launch {
             try {
                 val response = katoRepository.getMicroDistrict(district.id)
                 _microDistrictsByDistrict[district.id] = response.list.sortedBy { it.name }
             } catch (e: Exception) {
+                // Обработка ошибки
+            } finally {
+                _loadingDistricts[district.id] = false
             }
         }
     }
+//    fun selectDistrict(district: District) {
+//        _loadingDistricts[district.id] = true
+//        _selectedDistrict.value = district
+//        viewModelScope.launch {
+//            try {
+//                val response = katoRepository.getMicroDistrict(district.id)
+//                _microDistrictsByDistrict[district.id] = response.list.sortedBy { it.name }
+//            } catch (e: Exception) {
+//            } finally {
+//                _loadingDistricts[district.id] = false
+//            }
+//        }
+//    }
     fun goBack() {
         if (_currentScreen.value > 0) {
             _currentScreen.value -= 1
@@ -217,6 +253,7 @@ class ChooseCityViewModel @Inject constructor(
         _selectedComplexNames.clear()
         selectCity.value = null
         _isCheckMap.clear()
+        _expandedDistrictsMap.clear()
         Log.d("resetSelection", "resetSelection: ${_katoPathList.size}")
     }
 }
