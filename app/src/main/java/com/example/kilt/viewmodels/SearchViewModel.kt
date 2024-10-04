@@ -185,6 +185,8 @@ class SearchViewModel @Inject constructor(
     fun updateRangeFilter(prop: String, from: Int, to: Int) {
         val newFilters = Filters(mutableMapOf(prop to FilterValue.RangeValue(from, to)))
         updateFilters(newFilters, prop)
+        getCountBySearchResult()
+
     }
 
     private fun updateSingleFilter(prop: String, value: Int) {

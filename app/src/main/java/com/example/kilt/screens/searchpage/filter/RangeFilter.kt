@@ -4,6 +4,7 @@
 
 package com.example.kilt.screens.searchpage.filter
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,6 +29,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
@@ -43,21 +45,23 @@ fun RangeFilter(
     title: String,
     searchViewModel: SearchViewModel,
     onFocusChanged: (Boolean) -> Unit,
-    isFocused: Boolean
 ) {
     val (initialMin, initialMax) = searchViewModel.getRangeFilterValues(prop)
     var minValue by remember { mutableStateOf(if (initialMin > 0) initialMin.toString() else "") }
     var maxValue by remember { mutableStateOf(if (initialMax < Int.MAX_VALUE && initialMax > 0) initialMax.toString() else "") }
 
     val focusManager = LocalFocusManager.current
-    var isFocused by remember { mutableStateOf(false) }
     val trailingText = when (prop) {
         "price" -> "тг."
         "area", "living_area", "land_area", "kitchen_area" -> "м²"
         else -> ""
     }
 
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column(
+        modifier = Modifier
+            .padding(16.dp)
+            .clickable(onClick = { focusManager.clearFocus() })
+    ) {
         Text(
             text = title,
             fontSize = 18.sp,
@@ -84,7 +88,7 @@ fun RangeFilter(
                     .height(45.dp)
                     .onFocusChanged { focusState ->
                         onFocusChanged(focusState.isFocused)
-                    },
+                    }.alpha(0.6f),
                 singleLine = true,
                 shape = RoundedCornerShape(16.dp),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -92,7 +96,6 @@ fun RangeFilter(
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     unfocusedBorderColor = Color(0xFFcfcfcf),
                     focusedBorderColor = Color(0xFFcfcfcf),
-//                    cursorColor = if (isFocused) LocalContentColor.current else Color.Transparent
                 ),
                 trailingIcon = {
                     if (trailingText.isNotEmpty()) {
@@ -119,7 +122,7 @@ fun RangeFilter(
                     .height(45.dp)
                     .onFocusChanged { focusState ->
                         onFocusChanged(focusState.isFocused)
-                    },
+                    }.alpha(0.6f),
                 singleLine = true,
                 shape = RoundedCornerShape(16.dp),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -127,7 +130,6 @@ fun RangeFilter(
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     unfocusedBorderColor = Color(0xFFcfcfcf),
                     focusedBorderColor = Color(0xFFcfcfcf),
-//                    cursorColor = if (isFocused) LocalContentColor.current else Color.Transparent
                 ),
                 trailingIcon = {
                     if (trailingText.isNotEmpty()) {
@@ -142,11 +144,6 @@ fun RangeFilter(
         }
     }
     CustomDivider()
-//    LaunchedEffect(minValue, maxValue) {
-//        val min = minValue.toIntOrNull() ?: 0
-//        val max = maxValue.toIntOrNull() ?: 0
-//        searchViewModel.updateRangeFilter(prop, min, max)
-//    }
     val filters by searchViewModel.filters.collectAsState()
     LaunchedEffect(filters) {
         val (min, max) = searchViewModel.getRangeFilterValues(prop)
