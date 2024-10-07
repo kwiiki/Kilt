@@ -194,8 +194,8 @@ fun ChooseCityPage(
         }
         Button(
             onClick = {
-                navController.popBackStack()
                 searchViewModel.performSearch()
+                navController.popBackStack()
             },
             modifier = Modifier
                 .fillMaxWidth()

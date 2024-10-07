@@ -51,13 +51,13 @@ fun SearchBar(
         ) {
             val selectedResidentialComplex = chooseCityViewModel.selectedComplexNames.joinToString(" / ") { it }
             val selectedCity = chooseCityViewModel.selectCity.value
-            val selectedDistrict = chooseCityViewModel.selectedDistrict.value?.name
+            val selectedDistrict = chooseCityViewModel.selectDistricts.joinToString(" / ") { it }
             Log.d("selectedDistrict", "SearchBar: $selectedDistrict")
             val selectedMicroDistricts = chooseCityViewModel.selectedMicroDistricts
                 .joinToString(" / ") { it.name }
             val locationText = when {
                 selectedMicroDistricts.isNotEmpty() -> selectedMicroDistricts
-                selectedDistrict != null -> selectedDistrict
+                selectedDistrict.isNotEmpty() -> selectedDistrict
                 selectedCity != null -> selectedCity
                 selectedResidentialComplex.isNotEmpty() -> selectedResidentialComplex
                 else -> "Город, район, ЖК"

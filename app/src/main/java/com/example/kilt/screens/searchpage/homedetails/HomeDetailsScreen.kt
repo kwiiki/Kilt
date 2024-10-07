@@ -108,7 +108,7 @@ fun HomeDetailsScreen(
                     }
                 }
             ) {
-                BottomSheetContent(propertyItem?.price.toString(),
+                BottomSheetContent(homeSale?.listing?.price.toString(),
                     onHideButtonClick = {
                         scope.launch { bottomSheetState.hide() }.invokeOnCompletion {
                             if (!bottomSheetState.isVisible) openBottomSheet = false
@@ -208,7 +208,7 @@ fun HomeDetailsScreen(
                                 .height(2.dp)
                                 .background(Color(0xffDBDFE4))
                         )
-                        Calculator(onClick = { openBottomSheet = true })
+                        Calculator(onClick = { openBottomSheet = true },homeSale?.listing?.price.toString())
                         Spacer(
                             modifier = Modifier
                                 .fillMaxWidth()

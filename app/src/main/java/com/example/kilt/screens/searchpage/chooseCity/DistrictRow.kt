@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -48,8 +49,16 @@ fun DistrictRow(
 ) {
 
     var isDistrictChecked by remember { mutableStateOf(false) }
-    val isExpanded by remember { derivedStateOf { chooseCityViewModel.expandedDistrictsMap[district.id] ?: false } }
-    val isLoading by remember { derivedStateOf { chooseCityViewModel.loadingDistricts[district.id] ?: false } }
+    val isExpanded by remember {
+        derivedStateOf {
+            chooseCityViewModel.expandedDistrictsMap[district.id] ?: false
+        }
+    }
+    val isLoading by remember {
+        derivedStateOf {
+            chooseCityViewModel.loadingDistricts[district.id] ?: false
+        }
+    }
 
     Column(
         modifier = Modifier.fillMaxWidth()
@@ -95,46 +104,15 @@ fun DistrictRow(
                         .padding(top = 8.dp)
                 )
             } else {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { isDistrictChecked = !isDistrictChecked }
-                        .padding(vertical = 12.dp, horizontal = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(id = R.drawable.all_districk_icon),
-                        contentDescription = "Location",
-                        tint = Color(0xff566982)
-                    )
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Text(
-                        text = "Выбрать весь район",
-                        fontSize = 16.sp,
-                        color = Color(0xff010101),
-                        fontWeight = FontWeight.W700
-                    )
-                    Spacer(modifier = Modifier.weight(1f))
-                    Checkbox(
-                        checked = isDistrictChecked,
-                        onCheckedChange = { checked ->
-                            isDistrictChecked = checked
-                            if (checked) {
-                                val cityId = when (selectedCity) {
-                                    "г.Алматы" -> "750000000"
-                                    "г.Астана" -> "710000000"
-                                    "г.Шымкент" -> "790000000"
-                                    "Алматинская область" -> "190000000"
-                                    else -> null
-                                }
-                                val katoPath = "$cityId,${district.id}"
-                                searchViewModel.updateListFilter1("kato_path", listOf(katoPath))
-                            }
-                        }
-                    )
-                }
+                ChooseAllDistrictRow(
+                    district,
+                    selectedCity,
+                    searchViewModel = searchViewModel,
+                    chooseCityViewModel = chooseCityViewModel
+                )
                 CustomDivider()
-                val districtMicroDistricts = chooseCityViewModel.microDistrictsByDistrict[district.id] ?: emptyList()
+                val districtMicroDistricts =
+                    chooseCityViewModel.microDistrictsByDistrict[district.id] ?: emptyList()
                 districtMicroDistricts.forEach { microDistrict ->
                     MicroDistrictRow(
                         microDistrict = microDistrict,

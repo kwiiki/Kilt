@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
-
 package com.example.kilt.screens.searchpage.homedetails
 
 import androidx.compose.foundation.background
@@ -21,12 +19,9 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,7 +38,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -51,13 +45,10 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.example.kilt.R
 import java.math.BigDecimal
-import java.math.MathContext
 import java.math.RoundingMode
-import kotlin.math.pow
-import kotlin.math.roundToInt
 
 @Composable
-fun Calculator(onClick: () -> Unit) {
+fun Calculator(onClick: () -> Unit, price: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -292,7 +283,6 @@ fun InputField(
             BasicTextField(
                 value = textFieldValue,
                 onValueChange = { newValue ->
-                    // Filter to allow only digits, excluding '0' as the first character
                     val digitsOnly = newValue.filter { it.isDigit() }
                     if (digitsOnly.isNotEmpty() && digitsOnly != "0") {
                         val formattedValue = formatNumber(digitsOnly)
