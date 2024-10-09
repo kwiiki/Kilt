@@ -107,6 +107,9 @@ dependencies {
 
     implementation ("com.google.accompanist:accompanist-pager:0.28.0")
     implementation ("com.google.accompanist:accompanist-pager-indicators:0.28.0")
+
+    implementation("com.google.firebase:firebase-messaging-ktx:24.0.2")
+    implementation("com.google.accompanist:accompanist-permissions:0.30.1")
 //    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1")
 //    implementation ("androidx.datastore:datastore-preferences:1.0.0")
 //    implementation ("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")

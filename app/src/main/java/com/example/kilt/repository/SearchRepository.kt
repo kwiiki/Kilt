@@ -11,7 +11,7 @@ interface SearchRepository {
     suspend fun getResultBySearchCount(request: THomeSale): Count
     fun getPropertyById(id: String, searchResult: SearchResponse?): PropertyItem?
     fun updateFilters(currentFilters: Filters, newFilters: Filters, prop: String): Filters
-    fun updateRangeFilter(currentFilters: Filters, prop: String, min: Int, max: Int): Filters
+    fun updateRangeFilter(currentFilters: Filters, prop: String, min: Long, max: Long): Filters
     fun updateListFilter(currentFilters: Filters, prop: String, selectedValues: List<Int>): Filters
     suspend fun createSearchRequest(filters: Filters, dealType: Int, propertyType: Int, listingType: Int, page: Int, sorting: String): THomeSale
 }

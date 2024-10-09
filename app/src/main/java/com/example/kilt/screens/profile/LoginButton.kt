@@ -23,10 +23,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import com.example.kilt.navigation.NavPath
 
 
 @Composable
-fun LoginButton(modifier: Modifier) {
+fun LoginButton(navController: NavHostController,modifier: Modifier) {
     Spacer(modifier = Modifier.height(8.dp))
     val gradient = Brush.verticalGradient(
         colors = listOf(Color(0xFF3244E4), Color(0xFF1B278F)),
@@ -36,7 +38,7 @@ fun LoginButton(modifier: Modifier) {
 
     Row(modifier = modifier.fillMaxWidth()) {
         OutlinedButton(
-            onClick = {},
+            onClick = {navController.navigate(NavPath.LOGIN.name)},
             contentPadding = PaddingValues(0.dp),
             colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.Transparent),
             shape = RoundedCornerShape(12.dp),

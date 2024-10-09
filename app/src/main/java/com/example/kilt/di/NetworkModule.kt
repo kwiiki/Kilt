@@ -1,7 +1,10 @@
 
 package com.example.kilt.di
 
+import com.example.kilt.data.OtpResult
 import com.example.kilt.network.ApiService
+import com.example.kilt.network.OtpResultAdapter
+import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,13 +19,16 @@ import javax.inject.Singleton
 object NetworkModule {
 
     private const val BASE_URL = "https://kiltapp.kz/api/v1/"
+    val gson = GsonBuilder()
+        .registerTypeAdapter(OtpResult::class.java, OtpResultAdapter())
+        .create()
 
     @Provides
     @Singleton
     fun provideRetrofit(): Retrofit {
         return Retrofit.Builder()
             .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
     }
 

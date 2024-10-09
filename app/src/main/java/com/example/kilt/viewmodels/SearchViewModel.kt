@@ -137,10 +137,10 @@ class SearchViewModel @Inject constructor(
             updateFilters(_dealType.value, 1, type)
         }
     }
-    fun getRangeFilterValues(prop: String): Pair<Int, Int> {
+    fun getRangeFilterValues(prop: String): Pair<Long, Long> {
         return when (val filterValue = _filters.value.filterMap[prop]) {
             is FilterValue.RangeValue -> Pair(filterValue.from, filterValue.to)
-            else -> Pair(0, Int.MAX_VALUE)
+            else -> Pair(0, Long.MAX_VALUE)
         }
     }
 
@@ -182,7 +182,7 @@ class SearchViewModel @Inject constructor(
         getCountBySearchResult()
     }
 
-    fun updateRangeFilter(prop: String, from: Int, to: Int) {
+    fun updateRangeFilter(prop: String, from: Long, to: Long) {
         val newFilters = Filters(mutableMapOf(prop to FilterValue.RangeValue(from, to)))
         updateFilters(newFilters, prop)
         getCountBySearchResult()

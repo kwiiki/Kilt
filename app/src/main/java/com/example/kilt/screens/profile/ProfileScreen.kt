@@ -16,7 +16,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Icon
@@ -32,17 +34,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.example.kilt.R
 
 
-@Composable
-@Preview(showBackground = true)
-fun PreviewProfileScreen() {
-    ProfileScreen()
-}
 
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(navController: NavHostController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -61,7 +59,7 @@ fun ProfileScreen() {
 
         )
 
-        LoginSection()
+        LoginSection(navController)
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -70,7 +68,7 @@ fun ProfileScreen() {
 }
 
 @Composable
-fun LoginSection() {
+fun LoginSection(navController: NavHostController) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -84,7 +82,9 @@ fun LoginSection() {
             fontWeight = FontWeight.W400
         )
         Spacer(modifier = Modifier.height(8.dp))
-        LoginButton(Modifier.padding(horizontal = 8.dp))
+        LoginButton(navController,Modifier.padding(horizontal = 8.dp))
+        Spacer(modifier = Modifier.height(8.dp))
+        RegistrationButton(Modifier.padding(horizontal = 8.dp))
     }
 }
 
@@ -95,30 +95,19 @@ fun SettingsSection() {
             icon = ImageVector.vectorResource(id = R.drawable.document_icon), // Replace with your custom icon
             title = "Блог"
         )
-        SettingItem(
-            icon = ImageVector.vectorResource(id = R.drawable.notification_icon), // Replace with your custom icon
-            title = "Push уведомления",
-
-        )
-
         Text(
             text = "О проекте",
             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
             modifier = Modifier.padding(vertical = 16.dp),
             fontSize = 24.sp
         )
-
         SettingItem(
             icon = null,
-            title = "Партнеры"
+            title = "Политика конфиденциальности"
         )
         SettingItem(
             icon = null,
-            title = "О приложении"
-        )
-        SettingItem(
-            icon = null,
-            title = "Мои объявления"
+            title = "Пользовательское соглашение"
         )
         SettingItem(
             icon = null,
@@ -126,11 +115,7 @@ fun SettingsSection() {
         )
         SettingItem(
             icon = null,
-            title = "Правила сайта"
-        )
-        SettingItem(
-            icon = null,
-            title = "Пользовательское соглашение"
+            title = "Правила"
         )
     }
 }
@@ -162,7 +147,7 @@ fun SettingItem(icon: ImageVector?, title: String) {
         )
         Spacer(modifier = Modifier.weight(1f))
         Icon(
-            imageVector = Icons.AutoMirrored.Filled.ArrowForward, // Use a right arrow icon
+            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight, // Use a right arrow icon
             contentDescription = null,
             tint = Color.Gray
         )

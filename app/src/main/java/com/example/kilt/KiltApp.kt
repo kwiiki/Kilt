@@ -38,7 +38,9 @@ import com.example.kilt.navigation.Screen
 import com.example.kilt.screens.blog.BlogPage
 import com.example.kilt.screens.blog.News
 import com.example.kilt.screens.favorite.FavoritesScreen
-import com.example.kilt.screens.home.HomePage
+import com.example.kilt.screens.home.HomePageContent
+import com.example.kilt.screens.profile.EnterCodePage
+import com.example.kilt.screens.profile.LoginPage
 import com.example.kilt.screens.profile.ProfileScreen
 import com.example.kilt.screens.searchpage.SearchPage
 import com.example.kilt.screens.searchpage.chooseCity.ChooseCityPage
@@ -46,6 +48,7 @@ import com.example.kilt.screens.searchpage.homedetails.HomeDetailsScreen
 import com.example.kilt.viewmodels.ChooseCityViewModel
 import com.example.kilt.viewmodels.ConfigViewModel
 import com.example.kilt.viewmodels.HomeSaleViewModel
+import com.example.kilt.viewmodels.LoginViewModel
 import com.example.kilt.viewmodels.SearchViewModel
 
 
@@ -58,6 +61,7 @@ fun KiltApp() {
     val configViewModel: ConfigViewModel = hiltViewModel()
     val homeSaleViewModel: HomeSaleViewModel = hiltViewModel()
     val chooseCityViewModel: ChooseCityViewModel = hiltViewModel()
+    val loginViewModel: LoginViewModel = hiltViewModel()
 
 
     val bottomBarRoutes = listOf(
@@ -89,7 +93,12 @@ fun KiltApp() {
 //            enterTransition = { fadeIn(animationSpec = tween(0)) },
 //            exitTransition = { fadeOut(animationSpec = tween(0)) }
         ) {
-            composable(BottomNavigationScreen.HomePage.route) { HomePage(navController) }
+            composable(BottomNavigationScreen.HomePage.route) {
+                HomePageContent(
+                    navController,
+                    searchViewModel = searchViewModel
+                )
+            }
             composable(BottomNavigationScreen.SaleAndRent.route) {
                 SearchPage(
                     chooseCityViewModel = chooseCityViewModel,
@@ -100,7 +109,7 @@ fun KiltApp() {
                 )
             }
             composable(BottomNavigationScreen.Favorites.route) { FavoritesScreen(navController) }
-            composable(BottomNavigationScreen.Profile.route) { ProfileScreen() }
+            composable(BottomNavigationScreen.Profile.route) { ProfileScreen(navController) }
             composable(Screen.BlogPage.route) { BlogPage(navController) }
             composable(Screen.News.route) { News(navController) }
             composable(
@@ -110,7 +119,18 @@ fun KiltApp() {
                 val id = backStackEntry.arguments?.getString("id")
                 HomeDetailsScreen(configViewModel, navController, id)
             }
-            composable(Screen.ChooseCityPage.route){ ChooseCityPage(navController,searchViewModel,chooseCityViewModel, modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp))  }
+            composable(Screen.ChooseCityPage.route) {
+                ChooseCityPage(
+                    navController,
+                    searchViewModel,
+                    chooseCityViewModel,
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
+                )
+            }
+            composable(Screen.LoginPage.route){
+                LoginPage(navController = navController, loginViewModel = loginViewModel)
+            }
+            composable(Screen.EnterCodePage.route){ EnterCodePage()}
         }
     }
 }

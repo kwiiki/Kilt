@@ -3,9 +3,11 @@ package com.example.kilt.di
 import com.example.kilt.repository.ConfigRepository
 import com.example.kilt.repository.HomeSaleRepository
 import com.example.kilt.repository.KatoRepository
+import com.example.kilt.repository.LoginRepository
 import com.example.kilt.repository.SearchRepository
 import com.example.kilt.viewmodels.ChooseCityViewModel
 import com.example.kilt.viewmodels.HomeSaleViewModel
+import com.example.kilt.viewmodels.LoginViewModel
 import com.example.kilt.viewmodels.SearchViewModel
 import dagger.Module
 import dagger.Provides
@@ -39,5 +41,13 @@ object ViewModelModule {
         katoRepository: KatoRepository
     ): ChooseCityViewModel {
         return ChooseCityViewModel(katoRepository)
+    }
+
+    @Provides
+    @ViewModelScoped
+    fun provideLoginViewModel(
+        loginRepository: LoginRepository
+    ): LoginViewModel {
+        return LoginViewModel(loginRepository)
     }
 }

@@ -3,6 +3,7 @@ package com.example.kilt.screens.blog
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,8 +17,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -31,6 +34,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.kilt.R
 import com.example.kilt.data.Blog
+import com.example.kilt.navigation.NavPath
 
 
 val blogs: List<Blog> = listOf(
@@ -54,15 +58,18 @@ fun BlogPage(navController: NavHostController) {
             .fillMaxSize()
             .padding(vertical = 16.dp),
     ) {
-        Row(modifier = Modifier.padding(horizontal = 16.dp)) {
-
-            Icon(
-                Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Arrow to Back",
-                tint = Color(0xff566982),
-
+        Row(
+            modifier = Modifier.padding(start = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(onClick = { navController.popBackStack() }) {
+                Icon(
+                    Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Arrow to Back",
+                    tint = Color(0xff566982),
                 )
-            Spacer(modifier = Modifier.fillMaxWidth(0.45f))
+            }
+            Spacer(modifier = Modifier.fillMaxWidth(0.38f))
             Text(
                 text = "Блог",
                 fontSize = 16.sp,
@@ -73,7 +80,6 @@ fun BlogPage(navController: NavHostController) {
 
         LazyColumn(
             modifier = Modifier
-//                .padding(8.dp)
         ) {
             items(blogs) { blog ->
                 BlogItems(blog, navController)
@@ -85,12 +91,11 @@ fun BlogPage(navController: NavHostController) {
 
 @Composable
 fun BlogItems(blog: Blog, navController: NavHostController) {
-    val img = painterResource(id = R.drawable.rectangle2)
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = Modifier
             .padding(horizontal = 8.dp)
-            .clickable { navController.navigate("News") }) {
+            .clickable { navController.navigate(NavPath.NEWS.name) }) {
         Image(
             painter = painterResource(id = blog.img), contentDescription = null,
             modifier = Modifier
@@ -110,8 +115,6 @@ fun BlogItems(blog: Blog, navController: NavHostController) {
             text = blog.title, fontSize = 18.sp, fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.height(12.dp))
-
-
     }
 }
 

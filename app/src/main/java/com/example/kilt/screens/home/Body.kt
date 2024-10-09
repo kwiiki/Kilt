@@ -29,71 +29,23 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.kilt.R
 import com.example.kilt.custom.CustomToggleButton
+import com.example.kilt.viewmodels.SearchViewModel
 
 
 @Composable
-fun Body(modifier: Modifier) {
-    val font = FontFamily(Font(R.font.lato_bold))
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(60.dp)
-            .background(color = Color(0xffF5F5F5), shape = RoundedCornerShape(15.dp))
-            .border(0.dp, Color(0xFFFFFFFF), RoundedCornerShape(15.dp))
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(color = Color(0xffF5F5F5), shape = RoundedCornerShape(15.dp)),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                modifier = Modifier
-                    .border(2.dp, Color.Blue, RoundedCornerShape(15.dp))
-                    .background(Color.White, RoundedCornerShape(15.dp))
-                    .padding(horizontal = 25.dp)
-            ) {
-                Button(
-                    onClick = { /* TODO */ },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                    modifier = Modifier
-                ) {
-                    Text(
-                        "Арендовать",
-                        color = Color(0xff110D28),
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.width(10.dp))
-            Box(
-                modifier = Modifier
-                    .background(Color(0xffF5F5F5), RoundedCornerShape(15.dp))
+fun ButtonRow(searchViewModel: SearchViewModel,modifier: Modifier) {
 
-            ) {
-                Button(
-                    onClick = { /* TODO */ },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                    modifier = Modifier
-                        .padding(horizontal = 14.dp)
-                        .align(alignment = Alignment.Center)
-                ) {
-                    Text("Купить", fontFamily = font, color = Color(0xff110D28), fontSize = 16.sp)
-                }
-            }
-        }
-    }
-}
-@Composable
-fun ButtonRow(modifier: Modifier) {
-    var isRentSelected by remember { mutableStateOf(true) }
-    var isBuySelected by remember { mutableStateOf(false) }
+    val dealType by searchViewModel.dealType
+
+    val isRentSelected = dealType == 1
+    val isBuySelected = dealType == 2
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -107,8 +59,7 @@ fun ButtonRow(modifier: Modifier) {
             text = "Арендовать",
             isSelected = isRentSelected,
             onClick = {
-                isRentSelected = true
-                isBuySelected = false
+                searchViewModel.selectRent()
             },
             modifier = Modifier.weight(1f)
         )
@@ -116,8 +67,7 @@ fun ButtonRow(modifier: Modifier) {
             text = "Купить",
             isSelected = isBuySelected,
             onClick = {
-                isRentSelected = false
-                isBuySelected = true
+                searchViewModel.selectBuy()
             },
             modifier = Modifier.weight(1f)
         )
@@ -131,28 +81,29 @@ fun CustomToggleButton1(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val gradient = Brush.verticalGradient(
-        colors = listOf(Color(0xFFF2F2F2), Color(0xFFF2F2F2)),
-        startY = 0f,
-        endY = 300f
-    )
     val backgroundBrush = if (isSelected) Brush.verticalGradient(
-        colors = listOf(Color(0xFF3244E4), Color(0xFF1B278F))
-    ) else gradient
-    val textColor = if (isSelected) Color(0xffFFFFFF) else Color(0xff566982)
+        colors = listOf(Color.White, Color.White)
+    ) else Brush.verticalGradient(
+        colors = listOf(Color(0xFFF2F2F2), Color(0xFFF2F2F2))
+    )
+
+    val borderColor = if (isSelected) Color.Blue else Color.Transparent
+    val textColor = if (isSelected) Color.Black else Color(0xff566982)
+
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
             .height(48.dp)
             .clip(RoundedCornerShape(12.dp))
-            .background(color = Color.White, RoundedCornerShape(1.5.dp))
-            .border(2.dp, Color.Blue, RoundedCornerShape(15.dp))
+            .background(brush = backgroundBrush)
+            .border(1.2.dp, borderColor, RoundedCornerShape(12.dp))
             .clickable { onClick() }
             .padding(horizontal = 24.dp),
     ) {
         Text(
             text = text,
-            color = Color.Black,
+            color = textColor,
+            fontWeight = FontWeight.W600
         )
     }
 }
@@ -161,11 +112,11 @@ fun CustomToggleButton1(
 @Composable
 @Preview(showBackground = true)
 fun PreviewBottomRow(){
-    ButtonRow(modifier = Modifier)
+    ButtonRow(searchViewModel = hiltViewModel(), modifier = Modifier)
 }
 
-@Composable
-@Preview(showBackground = true)
-fun PreviewBody() {
-    Body(Modifier.padding(horizontal = 16.dp))
-}
+//@Composable
+//@Preview(showBackground = true)
+//fun PreviewBody() {
+//    Body(Modifier.padding(horizontal = 16.dp))
+//}

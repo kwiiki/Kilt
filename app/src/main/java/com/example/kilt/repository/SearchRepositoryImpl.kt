@@ -40,8 +40,8 @@ class SearchRepositoryImpl(
     override fun updateRangeFilter(
         currentFilters: Filters,
         prop: String,
-        min: Int,
-        max: Int
+        min: Long,
+        max: Long
     ): Filters {
         val updatedMap = currentFilters.filterMap.toMutableMap()
         updatedMap[prop] = FilterValue.RangeValue(from = min, to = max)
@@ -85,7 +85,7 @@ class SearchRepositoryImpl(
                 is FilterValue.RangeValue -> mapOf(
                     "from" to value.from,
                     "to" to value.to
-                ).filterValues { it != 0 }.takeIf { it.isNotEmpty() }
+                ).filterValues { it != 0L }.takeIf { it.isNotEmpty() }
             }
         }.filterValues { value ->
             when (value) {

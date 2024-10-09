@@ -8,6 +8,10 @@ import com.example.kilt.data.kato.KatoResponse
 import com.example.kilt.data.kato.MicroDistrictResponse
 import com.example.kilt.data.kato.ResidentialComplexResponse
 import com.example.kilt.data.HomeSale
+import com.example.kilt.data.OtpRequest
+import com.example.kilt.data.OtpResult
+import com.example.kilt.data.PhoneRequest
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -35,5 +39,12 @@ interface ApiService {
 
     @GET("residential-complex/all")
     suspend fun getResidentialComplex(@Query("starts") city: String): ResidentialComplexResponse
+
+    @POST("users/generate-otp-new")
+    suspend fun generateOtp(@Body request: OtpRequest): OtpResult
+
+    @POST("users/generate-otp-new")
+    suspend fun checkOtp(@Body request: OtpRequest): Response<Any>
+
 }
 

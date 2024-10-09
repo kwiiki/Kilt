@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Kilt</string>
+    <string name="failure">Номер телефона введён неверно,либо вы не зарегистрированы.Пожалуйсто, зарегистрируйтесь</string>
 </resources>

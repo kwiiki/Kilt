@@ -1,43 +1,91 @@
 package com.example.kilt.screens.home
 
-import androidx.compose.foundation.ScrollState
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
+import com.example.kilt.data.shardePrefernce.PreferencesHelper
+import com.example.kilt.viewmodels.SearchViewModel
+
 
 @Composable
-fun HomePageContent(
-    scrollState: ScrollState,
-    images: List<String>,
-    viewedStories: List<Boolean>,
-    onStorySelected: (Int) -> Unit,
-    navController: NavHostController
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(scrollState)
-    ) {
+fun HomePageContent(navController: NavHostController,searchViewModel: SearchViewModel) {
+    val context = LocalContext.current
+    val preferencesHelper = remember { PreferencesHelper(context) }
+    val images = remember {
+        listOf(
+            "https://cdn.dummyjson.com/products/images/beauty/Eyeshadow%20Palette%20with%20Mirror/1.png",
+            "https://cdn.dummyjson.com/products/images/beauty/Powder%20Canister/thumbnail.png",
+            "https://cdn.dummyjson.com/products/images/beauty/Powder%20Canister/1.png",
+            "https://cdn.dummyjson.com/products/images/beauty/Eyeshadow%20Palette%20with%20Mirror/1.png"
+        )
+    }
+    val viewedStories = remember {
+        mutableStateListOf<Boolean>().apply {
+            addAll(
+                preferencesHelper.getViewedStories(images.size)
+            )
+        }
+    }
 
-        TopBar()
-        StoryPreviews(stories = images, viewedStories = viewedStories, onStoryClick = onStorySelected)
-        Body(Modifier.padding(horizontal = 16.dp))
-        Spacer(modifier = Modifier.height(8.dp))
-        FindButton(Modifier.padding(horizontal = 16.dp))
-        Spacer(modifier = Modifier.height(24.dp))
-        LazyRowForBlog(Modifier.padding(horizontal = 8.dp),navController)
-        Spacer(modifier = Modifier.height(16.dp))
-        AddAnnouncementButton(Modifier.padding(horizontal = 16.dp))
-        Spacer(modifier = Modifier.height(16.dp))
+    var selectedStory by remember { mutableStateOf<Int?>(null) }
+
+    if (selectedStory == null) {
+        HomePage(
+            scrollState = rememberScrollState(),
+            images = images,
+            viewedStories = viewedStories,
+            onStorySelected = { index -> selectedStory = index },
+            navController,
+            searchViewModel = searchViewModel
+        )
+    } else {
+        InstagramStory(
+            images = images,
+            currentStoryIndex = selectedStory!!,
+            onClose = {
+                handleStoryClose(selectedStory!!, viewedStories, preferencesHelper)
+                selectedStory = null
+            },
+            onStoryComplete = { index ->
+                handleStoryComplete(
+                    index,
+                    viewedStories,
+                    preferencesHelper
+                )
+            }
+        )
     }
 }
 
+fun handleStoryClose(
+    currentIndex: Int,
+    viewedStories: MutableList<Boolean>,
+    preferencesHelper: PreferencesHelper
+) {
+    for (i in 0..currentIndex) {
+        viewedStories[i] = true
+    }
+    preferencesHelper.setViewedStories(viewedStories)
+}
+
+fun handleStoryComplete(
+    index: Int,
+    viewedStories: MutableList<Boolean>,
+    preferencesHelper: PreferencesHelper
+) {
+    viewedStories[index] = true
+    preferencesHelper.setViewedStories(viewedStories)
+}
+
+
+@Composable
+@Preview(showBackground = true)
+fun PreviewHomePage() {
+}

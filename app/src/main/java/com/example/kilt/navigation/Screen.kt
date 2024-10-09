@@ -5,4 +5,6 @@ sealed class Screen(val route:String) {
     data object News:Screen(route = NavPath.NEWS.name)
     data object HomeDetails:Screen(route = "${NavPath.HOMEDETAILS.name}/{id}")
     data object ChooseCityPage:Screen(route = NavPath.CHOOSECITYPAGE.name)
+    data object LoginPage:Screen(route = NavPath.LOGIN.name)
+    data object EnterCodePage:Screen(route = NavPath.ENTERCODEPAGE.name)
 }
