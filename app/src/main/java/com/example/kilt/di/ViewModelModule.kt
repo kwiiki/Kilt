@@ -1,5 +1,7 @@
 package com.example.kilt.di
 
+import android.app.Application
+import android.content.Context
 import com.example.kilt.repository.ConfigRepository
 import com.example.kilt.repository.HomeSaleRepository
 import com.example.kilt.repository.KatoRepository
@@ -13,6 +15,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.scopes.ViewModelScoped
 
 @Module
@@ -43,11 +46,13 @@ object ViewModelModule {
         return ChooseCityViewModel(katoRepository)
     }
 
+
     @Provides
     @ViewModelScoped
     fun provideLoginViewModel(
-        loginRepository: LoginRepository
+        loginRepository: LoginRepository,
+        @ApplicationContext context: Context
     ): LoginViewModel {
-        return LoginViewModel(loginRepository)
+        return LoginViewModel(loginRepository, context.applicationContext as Application)
     }
 }

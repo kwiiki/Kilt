@@ -20,8 +20,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -29,8 +27,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -40,26 +36,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.TextRange
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.kilt.data.authentification.OtpResult
 import com.example.kilt.navigation.NavPath
 import com.example.kilt.screens.searchpage.homedetails.gradient
 import com.example.kilt.viewmodels.LoginViewModel
 
 @Composable
-fun LoginPage(navController: NavHostController, loginViewModel: LoginViewModel) {
+fun AgencyPage(navController: NavHostController,loginViewModel: LoginViewModel){
     val scrollState = rememberScrollState()
     val imeVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
     val bottomPadding = if (imeVisible) 1.dp else 16.dp
@@ -79,6 +68,7 @@ fun LoginPage(navController: NavHostController, loginViewModel: LoginViewModel) 
                 is OtpResult.Success -> {
                     navController.navigate(NavPath.ENTERCODEPAGE.name)
                 }
+
                 is OtpResult.Failure -> {
                     errorMessage = it.error.msg
                     showError = true
@@ -137,7 +127,7 @@ fun LoginPage(navController: NavHostController, loginViewModel: LoginViewModel) 
                         fontSize = 14.sp,
                         modifier = Modifier.align(Alignment.Start)
                     )
-                } else if(isError){
+                } else if (isError) {
                     Text(
                         text = "Введите корректный номер",
                         color = Color.Red,
@@ -154,7 +144,6 @@ fun LoginPage(navController: NavHostController, loginViewModel: LoginViewModel) 
                 .padding(bottom = bottomPadding, start = 16.dp, end = 16.dp)
                 .windowInsetsPadding(WindowInsets.ime)
         ) {
-
             OutlinedButton(
                 onClick = {
                     if (loginUiState.phone.length < 10) {
@@ -193,113 +182,8 @@ fun LoginPage(navController: NavHostController, loginViewModel: LoginViewModel) 
             }
             if (showError) {
                 Spacer(modifier = Modifier.height(8.dp))
-                RegistrationButton(navController = navController,modifier = Modifier)
+                RegistrationButton(navController = navController, modifier = Modifier)
             }
         }
     }
-}
-@Composable
-fun PhoneNumberTextField(
-    value: String,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    focusManager: FocusManager
-) {
-    var textFieldValueState by remember {
-        mutableStateOf(
-            TextFieldValue(
-                text = formatPhoneNumber(value),
-                selection = TextRange(formatPhoneNumber(value).length)
-            )
-        )
-    }
-
-    val isError by remember { mutableStateOf(false) }
-    val errorMessage by remember { mutableStateOf("") }
-
-    OutlinedTextField(
-        value = textFieldValueState,
-        onValueChange = { newValue ->
-            val oldText = textFieldValueState.text
-            val newText = newValue.text
-            val oldSelection = textFieldValueState.selection.start
-            val newSelection = newValue.selection.start
-
-            val unformattedNewText = newText.substringAfter("+7").filter { it.isDigit() }
-
-            // Validation for phone number length (10 digits)
-            if (unformattedNewText.length <= 10) {
-                val formattedNewText = formatPhoneNumber(unformattedNewText)
-
-                val oldFormattedCursorPosition =
-                    oldText.take(oldSelection).count { it.isDigit() } - 1 // -1 for the leading "7"
-                val newUnformattedCursorPosition =
-                    newText.take(newSelection).count { it.isDigit() } - 1 // -1 for the leading "7"
-
-                val cursorOffset = newUnformattedCursorPosition - oldFormattedCursorPosition
-
-                val newCursorPosition = formattedNewText.mapIndexed { index, c ->
-                    if (c.isDigit() && index > 1) index else -1 // Skip "+7"
-                }.filter { it != -1 }.getOrNull(oldFormattedCursorPosition + cursorOffset)
-                    ?: formattedNewText.length
-
-                textFieldValueState = TextFieldValue(
-                    text = formattedNewText,
-                    selection = TextRange(newCursorPosition)
-                )
-                onValueChange(unformattedNewText)
-            }
-        },
-        modifier = modifier,
-        singleLine = true,
-        isError = isError,
-        shape = RoundedCornerShape(12.dp),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-        keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
-        colors = OutlinedTextFieldDefaults.colors(
-            unfocusedBorderColor = if (isError) Color.Red else Color(0xFFcfcfcf),
-            focusedBorderColor = if (isError) Color.Red else Color(0xFFcfcfcf),
-            cursorColor = Color.Black,
-            errorBorderColor = Color.Red // Error border color
-        )
-    )
-
-    // Display error message if validation fails
-    if (isError) {
-        Text(
-            text = errorMessage,
-            color = Color.Red,
-            fontSize = 12.sp,
-            modifier = Modifier.padding(start = 16.dp)
-        )
-    }
-}
-
-fun formatPhoneNumber(digits: String): String {
-    return buildString {
-        append("+7")
-        if (digits.isNotEmpty()) {
-            append("(")
-            append(digits.take(3))
-            if (digits.length > 3) {
-                append(") ")
-                append(digits.substring(3, minOf(digits.length, 6)))
-                if (digits.length > 6) {
-                    append(" ")
-                    append(digits.substring(6, minOf(digits.length, 8)))
-                    if (digits.length > 8) {
-                        append(" ")
-                        append(digits.substring(8, minOf(digits.length, 10)))
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-@Preview(showBackground = true)
-fun PreviewLoginPage() {
-    val navController = rememberNavController()
-    LoginPage(navController = navController, loginViewModel = hiltViewModel())
 }

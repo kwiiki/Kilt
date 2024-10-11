@@ -4,6 +4,7 @@ plugins {
     id ("com.google.dagger.hilt.android")
     id ("kotlin-kapt")
     id ("dagger.hilt.android.plugin")
+    id("com.google.gms.google-services")
 //    kotlin("plugin.serialization") version "2.0.20"
 }
 
@@ -108,8 +109,14 @@ dependencies {
     implementation ("com.google.accompanist:accompanist-pager:0.28.0")
     implementation ("com.google.accompanist:accompanist-pager-indicators:0.28.0")
 
+
+    implementation(platform("com.google.firebase:firebase-bom:33.4.0"))
     implementation("com.google.firebase:firebase-messaging-ktx:24.0.2")
+    implementation("com.google.firebase:firebase-analytics:22.1.2")
     implementation("com.google.accompanist:accompanist-permissions:0.30.1")
+
+    implementation ("com.google.android.gms:play-services-auth:21.2.0")
+    implementation ("com.google.android.gms:play-services-auth-api-phone:18.1.0")
 //    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1")
 //    implementation ("androidx.datastore:datastore-preferences:1.0.0")
 //    implementation ("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")

@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "483642235129",
+    "project_id": "kilt-notifications",
+    "storage_bucket": "kilt-notifications.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:483642235129:android:859e6f7333c165ff66aa28",
+        "android_client_info": {
+          "package_name": "com.example.kilt"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "483642235129-l6vdbtsq1pug231ksnpk7gfsuhbtukrl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBtr3gc7w2PrH4xckkbBFLCRpXAInH695Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "483642235129-l6vdbtsq1pug231ksnpk7gfsuhbtukrl.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "483642235129-ebvg5kldcne6fhusklsmks0gepqbiart.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.kiltapp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

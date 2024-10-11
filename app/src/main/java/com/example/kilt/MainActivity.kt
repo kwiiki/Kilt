@@ -1,5 +1,7 @@
 package com.example.kilt
 
+import android.content.IntentFilter
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -81,23 +83,37 @@ import com.example.kilt.data.config.SuitsForItem
 import com.example.kilt.data.config.ToiletSeparationItem
 import com.example.kilt.data.config.WindowsItem
 import com.example.kilt.viewmodels.HomeSaleViewModel
+import com.example.kilt.viewmodels.LoginViewModel
 import com.example.kilt.viewmodels.SearchViewModel
+import com.google.android.gms.auth.api.phone.SmsRetriever
 import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    private val loginViewModel: LoginViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+//        val intentFilter = IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION)
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+//            registerReceiver(loginViewModel.smsVerificationReceiver, intentFilter, RECEIVER_NOT_EXPORTED)
+//        } else {
+//            registerReceiver(loginViewModel.smsVerificationReceiver, intentFilter)
+//        }
+
         setContent {
             val navController = rememberNavController()
             KiltApp()
         }
     }
+//    override fun onDestroy() {
+//        super.onDestroy()
+//        unregisterReceiver(loginViewModel.smsVerificationReceiver)
+//    }
 }
-
-
 
 
 

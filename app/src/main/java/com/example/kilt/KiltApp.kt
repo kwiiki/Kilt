@@ -39,9 +39,12 @@ import com.example.kilt.screens.blog.BlogPage
 import com.example.kilt.screens.blog.News
 import com.example.kilt.screens.favorite.FavoritesScreen
 import com.example.kilt.screens.home.HomePageContent
+import com.example.kilt.screens.profile.AgencyPage
 import com.example.kilt.screens.profile.EnterCodePage
 import com.example.kilt.screens.profile.LoginPage
+import com.example.kilt.screens.profile.OwnerPage
 import com.example.kilt.screens.profile.ProfileScreen
+import com.example.kilt.screens.profile.RegistrationPage
 import com.example.kilt.screens.searchpage.SearchPage
 import com.example.kilt.screens.searchpage.chooseCity.ChooseCityPage
 import com.example.kilt.screens.searchpage.homedetails.HomeDetailsScreen
@@ -130,7 +133,10 @@ fun KiltApp() {
             composable(Screen.LoginPage.route){
                 LoginPage(navController = navController, loginViewModel = loginViewModel)
             }
-            composable(Screen.EnterCodePage.route){ EnterCodePage()}
+            composable(Screen.EnterCodePage.route){ EnterCodePage(navController,loginViewModel = loginViewModel)}
+            composable(Screen.RegistrationPage.route){ RegistrationPage(navController,loginViewModel = loginViewModel) }
+            composable(Screen.OwnerPage.route){ OwnerPage(navController,loginViewModel = loginViewModel) }
+            composable(Screen.AgencyPage.route){ AgencyPage(navController,loginViewModel = loginViewModel) }
         }
     }
 }

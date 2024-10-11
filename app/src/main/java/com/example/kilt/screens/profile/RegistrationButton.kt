@@ -23,13 +23,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.example.kilt.navigation.NavPath
 
 
 @Composable
-fun RegistrationButton(modifier: Modifier){
+fun RegistrationButton(navController: NavController,modifier: Modifier){
     Row(modifier = modifier.fillMaxWidth()) {
         OutlinedButton(
-            onClick = {},
+            onClick = {navController.navigate(NavPath.REGISTRATIONPAGE.name)},
             contentPadding = PaddingValues(0.dp),
             colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.Transparent),
             shape = RoundedCornerShape(12.dp),

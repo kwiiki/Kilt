@@ -1,7 +1,7 @@
 
 package com.example.kilt.di
 
-import com.example.kilt.data.OtpResult
+import com.example.kilt.data.authentification.OtpResult
 import com.example.kilt.network.ApiService
 import com.example.kilt.network.OtpResultAdapter
 import com.google.gson.GsonBuilder

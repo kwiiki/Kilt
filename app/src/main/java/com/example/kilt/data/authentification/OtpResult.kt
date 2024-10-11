@@ -1,4 +1,4 @@
-package com.example.kilt.data
+package com.example.kilt.data.authentification
 
 sealed class OtpResult {
     data class Success(val id: Int, val phone: String, val type: String, val createdAt: String) : OtpResult()

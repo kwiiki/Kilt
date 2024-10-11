@@ -58,11 +58,8 @@ fun ProfileScreen(navController: NavHostController) {
             fontWeight = FontWeight.W800
 
         )
-
         LoginSection(navController)
-
         Spacer(modifier = Modifier.height(24.dp))
-
         SettingsSection()
     }
 }
@@ -84,7 +81,7 @@ fun LoginSection(navController: NavHostController) {
         Spacer(modifier = Modifier.height(8.dp))
         LoginButton(navController,Modifier.padding(horizontal = 8.dp))
         Spacer(modifier = Modifier.height(8.dp))
-        RegistrationButton(Modifier.padding(horizontal = 8.dp))
+        RegistrationButton(navController,Modifier.padding(horizontal = 8.dp))
     }
 }
 
