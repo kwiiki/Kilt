@@ -1,24 +1,11 @@
-package com.example.kilt.screens.profile
+package com.example.kilt.screens.profile.registration
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.ime
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -30,6 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,18 +35,43 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.kilt.R
+import com.example.kilt.data.authentification.BioOtpResult
 import com.example.kilt.enums.UserType
 import com.example.kilt.navigation.NavPath
 import com.example.kilt.screens.searchpage.homedetails.gradient
-import com.example.kilt.viewmodels.LoginViewModel
-import androidx.compose.runtime.remember
+import com.example.kilt.viewmodels.AuthViewModel
 
 @SuppressLint("UnrememberedMutableInteractionSource")
 @Composable
-fun RegistrationPage(navController: NavHostController, loginViewModel: LoginViewModel) {
-    var selectedUserType by remember { mutableStateOf<UserType?>(null) }
+fun RegistrationPage(navController: NavHostController, authViewModel: AuthViewModel) {
+
+    val registrationUiState by authViewModel.registrationUiState
+    val selectedUserType = registrationUiState.userType
     val scrollState = rememberScrollState()
     val interactionSource = remember { MutableInteractionSource() }
+    val bioOtpResult by authViewModel.bioOtpResult
+    var showError by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
+
+    LaunchedEffect(bioOtpResult) {
+        bioOtpResult?.let {
+            Log.d("loginPage", "LoginPage: $it")
+            when (it) {
+                is BioOtpResult.Success -> {
+                    navController.navigate(NavPath.AUTHENTICATEDPROFILESCREEN.name)
+                }
+
+                is BioOtpResult.Failure -> {
+                    errorMessage = it.message
+                    showError = true
+                }
+
+                is BioOtpResult.RegisteredUser -> {
+                    navController.navigate(NavPath.ENTERFOURCODEPAGE.name)
+                }
+            }
+        }
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -98,7 +111,6 @@ fun RegistrationPage(navController: NavHostController, loginViewModel: LoginView
                 )
             }
         }
-
         Column(
             modifier = Modifier
                 .align(Alignment.TopStart)
@@ -113,22 +125,22 @@ fun RegistrationPage(navController: NavHostController, loginViewModel: LoginView
                         .clickable(
                             interactionSource = interactionSource,
                             indication = null
-                        ) { selectedUserType = UserType.OWNER }
-                        .padding(vertical = 8.dp)// Добавляем одинаковые отступы для всех Row
+                        ) { authViewModel.updateUserType(UserType.OWNER)}
+                        .padding(vertical = 8.dp)
                 ) {
                     Text(
                         text = UserType.OWNER.ruText,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.W700,
                         color = if (selectedUserType == UserType.OWNER) Color(0xFF3F4FE0) else Color.Black,
-                        modifier = Modifier.weight(1f) // Используем Modifier для управления текстом
+                        modifier = Modifier.weight(1f)
                     )
                     if (selectedUserType == UserType.OWNER) {
                         Icon(
                             imageVector = ImageVector.vectorResource(id = R.drawable.check_icon),
                             contentDescription = "Selected",
                             tint = Color(0xFF3F4FE0),
-                            modifier = Modifier.size(24.dp) // Фиксируем размер иконки
+                            modifier = Modifier.size(24.dp)
                         )
                     }
                 }
@@ -139,7 +151,7 @@ fun RegistrationPage(navController: NavHostController, loginViewModel: LoginView
                         .clickable(
                             interactionSource = interactionSource,
                             indication = null
-                        ){ selectedUserType = UserType.AGENT }
+                        ){ authViewModel.updateUserType(UserType.AGENT) }
                         .padding(vertical = 8.dp)
                 ) {
                     Text(
@@ -154,7 +166,7 @@ fun RegistrationPage(navController: NavHostController, loginViewModel: LoginView
                             imageVector = ImageVector.vectorResource(id = R.drawable.check_icon),
                             contentDescription = "Selected",
                             tint = Color(0xFF3F4FE0),
-                            modifier = Modifier.size(24.dp) // Фиксируем размер иконки
+                            modifier = Modifier.size(24.dp)
                         )
                     }
                 }
@@ -165,7 +177,7 @@ fun RegistrationPage(navController: NavHostController, loginViewModel: LoginView
                         .clickable(
                             interactionSource = interactionSource,
                             indication = null
-                        ){ selectedUserType = UserType.AGENCY }
+                        ){ authViewModel.updateUserType(UserType.AGENCY) }
                         .padding(vertical = 8.dp)
                 ) {
                     Text(
@@ -222,9 +234,6 @@ fun RegistrationPage(navController: NavHostController, loginViewModel: LoginView
                         UserType.AGENCY -> {
                             navController.navigate(NavPath.AGENCYPAGE.name)
                         }
-                        else -> {
-                            // handle case where no selection is made (optional)
-                        }
                     }
                 },
                 contentPadding = PaddingValues(0.dp),
@@ -255,34 +264,8 @@ fun RegistrationPage(navController: NavHostController, loginViewModel: LoginView
         }
     }
 }
-
-@Composable
-fun UserTypeRow(text: String, isSelected: Boolean, onClick: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() },
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = text,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.W700,
-            color = if (isSelected) Color(0xFF3F4FE0) else Color(0xFF010101)
-        )
-        Spacer(modifier = Modifier.weight(1f))
-        if (isSelected) {
-            Icon(
-                imageVector = ImageVector.vectorResource(id = R.drawable.check_icon),
-                contentDescription = null,
-                tint = Color(0xFF3F4FE0)
-            )
-        }
-    }
-}
-
 @Composable
 @Preview(showBackground = true)
 fun PreviewRegistrationPage() {
-    RegistrationPage(navController = rememberNavController(), loginViewModel = hiltViewModel())
+    RegistrationPage(navController = rememberNavController(), authViewModel = hiltViewModel())
 }

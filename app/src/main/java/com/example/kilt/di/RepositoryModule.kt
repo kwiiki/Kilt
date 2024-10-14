@@ -10,6 +10,8 @@ import com.example.kilt.repository.KatoRepository
 import com.example.kilt.repository.KatoRepositoryImpl
 import com.example.kilt.repository.LoginRepository
 import com.example.kilt.repository.LoginRepositoryImpl
+import com.example.kilt.repository.RegistrationRepository
+import com.example.kilt.repository.RegistrationRepositoryImpl
 import com.example.kilt.repository.SearchRepository
 import com.example.kilt.repository.SearchRepositoryImpl
 import dagger.Module
@@ -58,5 +60,11 @@ object RepositoryModule {
     @Singleton
     fun provideLoginRepository(apiService: ApiService): LoginRepository {
         return LoginRepositoryImpl(apiService)
+    }
+
+    @Provides
+    @Singleton
+    fun provideRegistrationRepository(apiService: ApiService): RegistrationRepository {
+        return RegistrationRepositoryImpl(apiService)
     }
 }

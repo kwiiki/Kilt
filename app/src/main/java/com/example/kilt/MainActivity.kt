@@ -82,8 +82,8 @@ import com.example.kilt.data.config.RentPeriodItem
 import com.example.kilt.data.config.SuitsForItem
 import com.example.kilt.data.config.ToiletSeparationItem
 import com.example.kilt.data.config.WindowsItem
+import com.example.kilt.screens.profile.AuthenticatedProfileScreen
 import com.example.kilt.viewmodels.HomeSaleViewModel
-import com.example.kilt.viewmodels.LoginViewModel
 import com.example.kilt.viewmodels.SearchViewModel
 import com.google.android.gms.auth.api.phone.SmsRetriever
 import dagger.hilt.android.AndroidEntryPoint
@@ -91,7 +91,6 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private val loginViewModel: LoginViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -105,7 +104,6 @@ class MainActivity : ComponentActivity() {
 //        }
 
         setContent {
-            val navController = rememberNavController()
             KiltApp()
         }
     }

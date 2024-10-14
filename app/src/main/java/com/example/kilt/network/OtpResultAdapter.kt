@@ -24,7 +24,6 @@ class OtpResultAdapter : JsonDeserializer<OtpResult> {
                 createdAt = jsonObject.get("createdAt").asString
             )
         } else if (jsonObject.has("error")) {
-            // Deserialization for Failure
             val errorMessage = jsonObject.getAsJsonObject("error").get("msg").asString
             OtpResult.Failure(ErrorResponse(errorMessage))
         } else {

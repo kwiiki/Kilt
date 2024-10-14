@@ -1,6 +1,9 @@
 package com.example.kilt
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -39,19 +42,21 @@ import com.example.kilt.screens.blog.BlogPage
 import com.example.kilt.screens.blog.News
 import com.example.kilt.screens.favorite.FavoritesScreen
 import com.example.kilt.screens.home.HomePageContent
-import com.example.kilt.screens.profile.AgencyPage
-import com.example.kilt.screens.profile.EnterCodePage
-import com.example.kilt.screens.profile.LoginPage
-import com.example.kilt.screens.profile.OwnerPage
+import com.example.kilt.screens.profile.AuthenticatedProfileScreen
+import com.example.kilt.screens.profile.registration.AgencyPage
+import com.example.kilt.screens.profile.EnterFourCodePage
+import com.example.kilt.screens.profile.EnterSixCodePage
+import com.example.kilt.screens.profile.login.LoginPage
+import com.example.kilt.screens.profile.registration.OwnerPage
 import com.example.kilt.screens.profile.ProfileScreen
-import com.example.kilt.screens.profile.RegistrationPage
+import com.example.kilt.screens.profile.registration.RegistrationPage
 import com.example.kilt.screens.searchpage.SearchPage
 import com.example.kilt.screens.searchpage.chooseCity.ChooseCityPage
 import com.example.kilt.screens.searchpage.homedetails.HomeDetailsScreen
 import com.example.kilt.viewmodels.ChooseCityViewModel
 import com.example.kilt.viewmodels.ConfigViewModel
 import com.example.kilt.viewmodels.HomeSaleViewModel
-import com.example.kilt.viewmodels.LoginViewModel
+import com.example.kilt.viewmodels.AuthViewModel
 import com.example.kilt.viewmodels.SearchViewModel
 
 
@@ -64,14 +69,14 @@ fun KiltApp() {
     val configViewModel: ConfigViewModel = hiltViewModel()
     val homeSaleViewModel: HomeSaleViewModel = hiltViewModel()
     val chooseCityViewModel: ChooseCityViewModel = hiltViewModel()
-    val loginViewModel: LoginViewModel = hiltViewModel()
+    val authViewModel:AuthViewModel = hiltViewModel()
 
 
     val bottomBarRoutes = listOf(
         BottomNavigationScreen.HomePage.route,
         BottomNavigationScreen.SaleAndRent.route,
         BottomNavigationScreen.Favorites.route,
-        BottomNavigationScreen.Profile.route
+        BottomNavigationScreen.Profile.route,
     )
 
     Scaffold(
@@ -93,8 +98,8 @@ fun KiltApp() {
             navController = navController,
             startDestination = BottomNavigationScreen.HomePage.route,
             modifier = Modifier.padding(innerPadding),
-//            enterTransition = { fadeIn(animationSpec = tween(0)) },
-//            exitTransition = { fadeOut(animationSpec = tween(0)) }
+            enterTransition = { fadeIn(animationSpec = tween(0)) },
+            exitTransition = { fadeOut(animationSpec = tween(0)) }
         ) {
             composable(BottomNavigationScreen.HomePage.route) {
                 HomePageContent(
@@ -130,13 +135,13 @@ fun KiltApp() {
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
                 )
             }
-            composable(Screen.LoginPage.route){
-                LoginPage(navController = navController, loginViewModel = loginViewModel)
-            }
-            composable(Screen.EnterCodePage.route){ EnterCodePage(navController,loginViewModel = loginViewModel)}
-            composable(Screen.RegistrationPage.route){ RegistrationPage(navController,loginViewModel = loginViewModel) }
-            composable(Screen.OwnerPage.route){ OwnerPage(navController,loginViewModel = loginViewModel) }
-            composable(Screen.AgencyPage.route){ AgencyPage(navController,loginViewModel = loginViewModel) }
+            composable(Screen.LoginPage.route){ LoginPage(navController = navController, authViewModel = authViewModel)}
+            composable(Screen.EnterFourCodePage.route){ EnterFourCodePage(navController,authViewModel = authViewModel)}
+            composable(Screen.RegistrationPage.route){ RegistrationPage(navController,authViewModel = authViewModel) }
+            composable(Screen.OwnerPage.route){ OwnerPage(navController,authViewModel = authViewModel) }
+            composable(Screen.AgencyPage.route){ AgencyPage(navController,authViewModel = authViewModel) }
+            composable(Screen.AuthenticatedProfileScreen.route){ AuthenticatedProfileScreen(navController,authViewModel = authViewModel) }
+            composable(Screen.EnterSixCodePage.route){ EnterSixCodePage(navController,authViewModel = authViewModel) }
         }
     }
 }
@@ -147,7 +152,7 @@ fun BottomNavigationBar(navController: NavHostController) {
         BottomNavigationScreen.HomePage,
         BottomNavigationScreen.SaleAndRent,
         BottomNavigationScreen.Favorites,
-        BottomNavigationScreen.Profile
+        BottomNavigationScreen.Profile,
     )
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route

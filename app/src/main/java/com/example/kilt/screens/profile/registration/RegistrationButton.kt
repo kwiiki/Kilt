@@ -1,4 +1,4 @@
-package com.example.kilt.screens.profile
+package com.example.kilt.screens.profile.registration
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background

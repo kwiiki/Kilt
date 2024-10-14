@@ -1,6 +1,5 @@
-package com.example.kilt.screens.profile
+package com.example.kilt.screens.profile.registration
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -29,7 +28,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,40 +40,39 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.kilt.data.authentification.OtpResult
-import com.example.kilt.navigation.NavPath
+import com.example.kilt.screens.profile.login.PhoneNumberTextField
 import com.example.kilt.screens.searchpage.homedetails.gradient
-import com.example.kilt.viewmodels.LoginViewModel
+import com.example.kilt.viewmodels.AuthViewModel
 
 @Composable
-fun AgencyPage(navController: NavHostController,loginViewModel: LoginViewModel){
+fun AgencyPage(navController: NavHostController, authViewModel: AuthViewModel){
     val scrollState = rememberScrollState()
     val imeVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
     val bottomPadding = if (imeVisible) 1.dp else 16.dp
     val focusManager = LocalFocusManager.current
-    val otpResult by loginViewModel.otpResult
+//    val otpResult by loginViewModel.otpResult
 
-    val loginUiState = loginViewModel.loginUiState.value
+    val registrationUiState = authViewModel.registrationUiState.value
 
     var showError by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
     var isError by remember { mutableStateOf(false) }
 
-    LaunchedEffect(otpResult) {
-        otpResult?.let {
-            Log.d("loginPage", "LoginPage: $it")
-            when (it) {
-                is OtpResult.Success -> {
-                    navController.navigate(NavPath.ENTERCODEPAGE.name)
-                }
-
-                is OtpResult.Failure -> {
-                    errorMessage = it.error.msg
-                    showError = true
-                }
-            }
-        }
-    }
+//    LaunchedEffect(otpResult) {
+//        otpResult?.let {
+//            Log.d("loginPage", "LoginPage: $it")
+//            when (it) {
+//                is OtpResult.Success -> {
+//                    navController.navigate(NavPath.ENTERCODEPAGE.name)
+//                }
+//
+//                is OtpResult.Failure -> {
+//                    errorMessage = it.error.msg
+//                    showError = true
+//                }
+//            }
+//        }
+//    }
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -113,8 +110,8 @@ fun AgencyPage(navController: NavHostController,loginViewModel: LoginViewModel){
                     modifier = Modifier.align(Alignment.Start)
                 )
                 PhoneNumberTextField(
-                    value = loginUiState.phone,
-                    onValueChange = { loginUiState.phone = it },
+                    value = registrationUiState.phone,
+                    onValueChange = { registrationUiState.phone = it },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
@@ -146,11 +143,11 @@ fun AgencyPage(navController: NavHostController,loginViewModel: LoginViewModel){
         ) {
             OutlinedButton(
                 onClick = {
-                    if (loginUiState.phone.length < 10) {
+                    if (registrationUiState.phone.length < 10) {
                         isError = true
                         errorMessage = "Введите корректный номер"
                     } else {
-                        loginViewModel.sendPhoneNumber("+7${loginUiState.phone}")
+//                        loginViewModel.sendPhoneNumber("+7${loginUiState.phone}")
                         isError = false
                         errorMessage = ""
                     }

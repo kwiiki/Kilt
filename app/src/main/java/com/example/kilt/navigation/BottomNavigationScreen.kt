@@ -14,7 +14,6 @@ sealed class BottomNavigationScreen(
         unselectedIcon = { painterResource(id = R.drawable.unselected_profile_icon) },
         selectedIcon = { painterResource(id = R.drawable.selected_profile_icon) }
     )
-
     data object HomePage : BottomNavigationScreen(
         route = NavPath.HOME.name,
         unselectedIcon = { painterResource(id = R.drawable.unselected_home_icon) },

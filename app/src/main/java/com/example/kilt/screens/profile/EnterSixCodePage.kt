@@ -1,22 +1,20 @@
 package com.example.kilt.screens.profile
 
 import android.util.Log
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -31,7 +29,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,39 +37,38 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.kilt.data.authentification.CheckOtpResult
+import com.example.kilt.data.authentification.BioCheckOTPResult
 import com.example.kilt.navigation.NavPath
-import com.example.kilt.viewmodels.LoginViewModel
+import com.example.kilt.viewmodels.AuthViewModel
 
 @Composable
-fun EnterCodePage(navController: NavHostController,loginViewModel: LoginViewModel) {
-    val scrollState = rememberScrollState()
-    val imeVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
-    val loginUiState = loginViewModel.loginUiState.value
-    val checkOtpResult by loginViewModel.checkOtpResult
+fun EnterSixCodePage(
+    navController: NavHostController,
+    authViewModel: AuthViewModel
+) {
+    val registrationUiState = authViewModel.registrationUiState
+    val bioCheckOTPResult by authViewModel.bioCheckOTPResult
     var showError by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
 
-    LaunchedEffect(checkOtpResult) {
-        checkOtpResult?.let {
+    LaunchedEffect(bioCheckOTPResult) {
+        bioCheckOTPResult?.let {
             Log.d("loginPage", "LoginPage: $it")
             when (it) {
-                is CheckOtpResult.Success -> {
-                    navController.navigate(NavPath.PROFILE.name)
+                is BioCheckOTPResult.Success -> {
+                    navController.navigate(NavPath.AUTHENTICATEDPROFILESCREEN.name)
                 }
-                is CheckOtpResult.Failure -> {
+                is BioCheckOTPResult.Failure -> {
                     errorMessage = it.error.msg
                     showError = true
                 }
             }
         }
     }
-
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(scrollState)
         ) {
             Row(
                 modifier = Modifier.padding(vertical = 16.dp),
@@ -110,7 +106,7 @@ fun EnterCodePage(navController: NavHostController,loginViewModel: LoginViewMode
                     modifier = Modifier.align(Alignment.Start)
                 )
                 val regex = """(\d)(\d{3})(\d{3})(\d{2})(\d{2})""".toRegex()
-                val number = "7${loginUiState.phone}"
+                val number = "7${registrationUiState.value.phone}"
                 val output = regex.replace(number, "$1 $2 $3 $4 $5")
                 Text(
                     text = "Код отправлен на номер: +$output",
@@ -119,15 +115,21 @@ fun EnterCodePage(navController: NavHostController,loginViewModel: LoginViewMode
                     modifier = Modifier.align(Alignment.Start)
                 )
                 OutlinedTextField(
-                    value = loginUiState.code,
+                    value = registrationUiState.value.code,
                     onValueChange = { newCode ->
-                        if (newCode.length <= 4) {
-                            loginViewModel.updateCode(newCode)
+                        if (newCode.length <= 6) {
+                            authViewModel.updateForSixCode(newCode)
                         }
                     },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(
+                            width = 1.dp,
+                            color = Color(0xFFDBDFE4),
+                            RoundedCornerShape(12.dp)
+                        )
                 )
             }
         }
@@ -136,7 +138,9 @@ fun EnterCodePage(navController: NavHostController,loginViewModel: LoginViewMode
 
 @Composable
 @Preview(showBackground = true)
-fun PreviewEnterCodePage() {
-    val navController = rememberNavController()
-    EnterCodePage(navController, loginViewModel = hiltViewModel())
+fun PreviewEnterSixCode() {
+    EnterSixCodePage(
+        navController = rememberNavController(),
+        authViewModel = hiltViewModel()
+    )
 }

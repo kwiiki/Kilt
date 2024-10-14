@@ -9,8 +9,10 @@ import com.example.kilt.data.kato.KatoResponse
 import com.example.kilt.data.kato.MicroDistrictResponse
 import com.example.kilt.data.kato.ResidentialComplexResponse
 import com.example.kilt.data.HomeSale
+import com.example.kilt.data.authentification.BioCheckOTPResult
 import com.example.kilt.data.authentification.BioOtpCheckRequest
 import com.example.kilt.data.authentification.BioOtpRequest
+import com.example.kilt.data.authentification.BioOtpResult
 import com.example.kilt.data.authentification.CheckOtpResult
 import com.example.kilt.data.authentification.OtpRequest
 import com.example.kilt.data.authentification.OtpResult
@@ -50,10 +52,10 @@ interface ApiService {
     suspend fun checkOtp(@Body request: CheckOtpRequest): CheckOtpResult
 
     @POST("users/bio-otp")
-    suspend fun bioOtp(@Body request: BioOtpRequest):Response<Any>
+    suspend fun bioOtp(@Body request: BioOtpRequest):BioOtpResult
 
     @POST("users/bio-otp-check")
-    suspend fun bioOtpCheck(@Body request: BioOtpCheckRequest):Response<Any>
+    suspend fun bioOtpCheck(@Body request: BioOtpCheckRequest): BioCheckOTPResult
 
 }
 

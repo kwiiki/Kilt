@@ -1,4 +1,4 @@
-package com.example.kilt.screens.profile
+package com.example.kilt.screens.profile.login
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

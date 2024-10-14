@@ -1,4 +1,4 @@
-package com.example.kilt.screens.profile
+package com.example.kilt.screens.profile.login
 
 import android.util.Log
 import androidx.compose.foundation.background
@@ -41,12 +41,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -55,18 +59,19 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.kilt.data.authentification.OtpResult
 import com.example.kilt.navigation.NavPath
+import com.example.kilt.screens.profile.registration.RegistrationButton
 import com.example.kilt.screens.searchpage.homedetails.gradient
-import com.example.kilt.viewmodels.LoginViewModel
+import com.example.kilt.viewmodels.AuthViewModel
 
 @Composable
-fun LoginPage(navController: NavHostController, loginViewModel: LoginViewModel) {
+fun LoginPage(navController: NavHostController, authViewModel: AuthViewModel) {
     val scrollState = rememberScrollState()
     val imeVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
     val bottomPadding = if (imeVisible) 1.dp else 16.dp
     val focusManager = LocalFocusManager.current
-    val otpResult by loginViewModel.otpResult
+    val otpResult by authViewModel.otpResult
 
-    val loginUiState = loginViewModel.loginUiState.value
+    val loginUiState = authViewModel.registrationUiState.value
 
     var showError by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
@@ -77,7 +82,7 @@ fun LoginPage(navController: NavHostController, loginViewModel: LoginViewModel) 
             Log.d("loginPage", "LoginPage: $it")
             when (it) {
                 is OtpResult.Success -> {
-                    navController.navigate(NavPath.ENTERCODEPAGE.name)
+                    navController.navigate(NavPath.ENTERFOURCODEPAGE.name)
                 }
                 is OtpResult.Failure -> {
                     errorMessage = it.error.msg
@@ -100,7 +105,8 @@ fun LoginPage(navController: NavHostController, loginViewModel: LoginViewModel) 
                     modifier = Modifier
                         .size(40.dp)
                         .padding(8.dp)
-                        .clickable { navController.popBackStack() }
+                        .clickable { navController.popBackStack()
+                                        authViewModel.clear()}
                 )
             }
             Spacer(modifier = Modifier.height(8.dp))
@@ -161,7 +167,7 @@ fun LoginPage(navController: NavHostController, loginViewModel: LoginViewModel) 
                         isError = true
                         errorMessage = "Введите корректный номер"
                     } else {
-                        loginViewModel.sendPhoneNumber("+7${loginUiState.phone}")
+                        authViewModel.sendPhoneNumber("+7${loginUiState.phone}")
                         isError = false
                         errorMessage = ""
                     }
@@ -208,12 +214,12 @@ fun PhoneNumberTextField(
     var textFieldValueState by remember {
         mutableStateOf(
             TextFieldValue(
-                text = formatPhoneNumber(value),
-                selection = TextRange(formatPhoneNumber(value).length)
+                text = if (value.isNotEmpty()) formatPhoneNumber(value) else "",
+                selection = TextRange(if (value.isNotEmpty()) formatPhoneNumber(value).length else 0)
             )
         )
     }
-
+    var isFocused by remember { mutableStateOf(false) }
     val isError by remember { mutableStateOf(false) }
     val errorMessage by remember { mutableStateOf("") }
 
@@ -221,25 +227,24 @@ fun PhoneNumberTextField(
         value = textFieldValueState,
         onValueChange = { newValue ->
             val oldText = textFieldValueState.text
-            val newText = newValue.text
+            val newText = if (isFocused && !newValue.text.startsWith("+7")) "+7${newValue.text}" else newValue.text
             val oldSelection = textFieldValueState.selection.start
             val newSelection = newValue.selection.start
 
             val unformattedNewText = newText.substringAfter("+7").filter { it.isDigit() }
 
-            // Validation for phone number length (10 digits)
             if (unformattedNewText.length <= 10) {
-                val formattedNewText = formatPhoneNumber(unformattedNewText)
+                val formattedNewText = if (isFocused) formatPhoneNumber(unformattedNewText) else unformattedNewText
 
                 val oldFormattedCursorPosition =
-                    oldText.take(oldSelection).count { it.isDigit() } - 1 // -1 for the leading "7"
+                    oldText.take(oldSelection).count { it.isDigit() } - if (isFocused) 1 else 0
                 val newUnformattedCursorPosition =
-                    newText.take(newSelection).count { it.isDigit() } - 1 // -1 for the leading "7"
+                    newText.take(newSelection).count { it.isDigit() } - if (isFocused) 1 else 0
 
                 val cursorOffset = newUnformattedCursorPosition - oldFormattedCursorPosition
 
                 val newCursorPosition = formattedNewText.mapIndexed { index, c ->
-                    if (c.isDigit() && index > 1) index else -1 // Skip "+7"
+                    if (c.isDigit() && (if (isFocused) index > 1 else true)) index else -1
                 }.filter { it != -1 }.getOrNull(oldFormattedCursorPosition + cursorOffset)
                     ?: formattedNewText.length
 
@@ -250,7 +255,22 @@ fun PhoneNumberTextField(
                 onValueChange(unformattedNewText)
             }
         },
-        modifier = modifier,
+        modifier = modifier.onFocusChanged { focusState ->
+            if (focusState.isFocused && !isFocused) {
+                isFocused = true
+                if (!textFieldValueState.text.startsWith("+7")) {
+                    textFieldValueState = TextFieldValue(
+                        text = "+7${textFieldValueState.text}",
+                        selection = TextRange(textFieldValueState.text.length + 2)
+                    )
+                }
+            } else if (!focusState.isFocused) {
+                isFocused = false
+                if (textFieldValueState.text == "+7") {
+                    textFieldValueState = TextFieldValue(text = "")
+                }
+            }
+        },
         singleLine = true,
         isError = isError,
         shape = RoundedCornerShape(12.dp),
@@ -260,11 +280,21 @@ fun PhoneNumberTextField(
             unfocusedBorderColor = if (isError) Color.Red else Color(0xFFcfcfcf),
             focusedBorderColor = if (isError) Color.Red else Color(0xFFcfcfcf),
             cursorColor = Color.Black,
-            errorBorderColor = Color.Red // Error border color
-        )
+            errorBorderColor = Color.Red
+        ),
+        label = {
+            Text(
+                buildAnnotatedString {
+                    withStyle(style = SpanStyle(color = Color.Gray)) {
+                        append("Номер телефона")
+                    }
+                    withStyle(style = SpanStyle(color = Color.Red)) {
+                        append("*")
+                    }
+                }
+            )
+        },
     )
-
-    // Display error message if validation fails
     if (isError) {
         Text(
             text = errorMessage,
@@ -274,7 +304,6 @@ fun PhoneNumberTextField(
         )
     }
 }
-
 fun formatPhoneNumber(digits: String): String {
     return buildString {
         append("+7")
@@ -301,5 +330,5 @@ fun formatPhoneNumber(digits: String): String {
 @Preview(showBackground = true)
 fun PreviewLoginPage() {
     val navController = rememberNavController()
-    LoginPage(navController = navController, loginViewModel = hiltViewModel())
+    LoginPage(navController = navController, authViewModel = hiltViewModel())
 }

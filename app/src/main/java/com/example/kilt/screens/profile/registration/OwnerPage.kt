@@ -1,4 +1,4 @@
-package com.example.kilt.screens.profile
+package com.example.kilt.screens.profile.registration
 
 import android.util.Log
 import androidx.compose.foundation.background
@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -42,43 +43,52 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.kilt.data.authentification.OtpResult
+import com.example.kilt.data.authentification.BioOtpResult
 import com.example.kilt.navigation.NavPath
+import com.example.kilt.screens.profile.login.PhoneNumberTextField
+import com.example.kilt.screens.profile.login.formatPhoneNumber
 import com.example.kilt.screens.searchpage.homedetails.gradient
-import com.example.kilt.viewmodels.LoginViewModel
+import com.example.kilt.viewmodels.AuthViewModel
 
 @Composable
-fun OwnerPage(navController: NavHostController, loginViewModel: LoginViewModel) {
+fun OwnerPage(navController: NavHostController, authViewModel: AuthViewModel) {
     val scrollState = rememberScrollState()
     val imeVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
     val bottomPadding = if (imeVisible) 1.dp else 16.dp
     val focusManager = LocalFocusManager.current
-    val otpResult by loginViewModel.otpResult
+    val bioOtpResult by authViewModel.bioOtpResult
 
-    val loginUiState = loginViewModel.loginUiState.value
+    val registrationUiState = authViewModel.registrationUiState.value
 
     var showError by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
     var isError by remember { mutableStateOf(false) }
 
-    var iin by remember { mutableStateOf("") }
-
-    LaunchedEffect(otpResult) {
-        otpResult?.let {
+    LaunchedEffect(bioOtpResult) {
+        bioOtpResult?.let {
             Log.d("loginPage", "LoginPage: $it")
             when (it) {
-                is OtpResult.Success -> {
-                    navController.navigate(NavPath.ENTERCODEPAGE.name)
+                is BioOtpResult.Success -> {
+                    navController.navigate(NavPath.ENTERSIXCODEPAGE.name)
                 }
-
-                is OtpResult.Failure -> {
-                    errorMessage = it.error.msg
+                is BioOtpResult.Failure -> {
+                    errorMessage = it.message
                     showError = true
+                }
+                is BioOtpResult.RegisteredUser ->{
+                    Log.d("lool", "OwnerPage: ${registrationUiState.phone}")
+                    navController.navigate(NavPath.ENTERFOURCODEPAGE.name)
+                    authViewModel.sendPhoneNumber(registrationUiState.phone)
                 }
             }
         }
@@ -97,7 +107,8 @@ fun OwnerPage(navController: NavHostController, loginViewModel: LoginViewModel) 
                     modifier = Modifier
                         .size(40.dp)
                         .padding(8.dp)
-                        .clickable { navController.popBackStack() }
+                        .clickable { navController.popBackStack()
+                                        authViewModel.clear()}
                 )
             }
             Spacer(modifier = Modifier.height(8.dp))
@@ -121,33 +132,43 @@ fun OwnerPage(navController: NavHostController, loginViewModel: LoginViewModel) 
                     modifier = Modifier.align(Alignment.Start)
                 )
                 PhoneNumberTextField(
-                    value = loginUiState.phone,
-                    onValueChange = { loginUiState.phone = it },
+                    value = registrationUiState.phone,
+                    onValueChange = { authViewModel.updatePhone(it) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
                     focusManager = focusManager
                 )
                 OutlinedTextField(
-                    value = iin,
-                    onValueChange = {
-                        if (it.length <= 12) iin = it
-                    },
-                    label = { Text("ИИН", color = Color(0xFFcfcfcf)) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    value = registrationUiState.iin,
+                    onValueChange = { if (it.length <= 12) authViewModel.updateIin(it) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
                     singleLine = true,
+                    isError = isError,
+                    shape = RoundedCornerShape(12.dp),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                    keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
                     colors = OutlinedTextFieldDefaults.colors(
                         unfocusedBorderColor = if (isError) Color.Red else Color(0xFFcfcfcf),
                         focusedBorderColor = if (isError) Color.Red else Color(0xFFcfcfcf),
                         cursorColor = Color.Black,
-                        errorBorderColor = Color.Red // Error border color
+                        errorBorderColor = Color.Red
                     ),
-                    shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp)
+                    label = {
+                        Text(
+                            buildAnnotatedString {
+                                withStyle(style = SpanStyle(color = Color.Gray)) {
+                                    append("ИИН")
+                                }
+                                withStyle(style = SpanStyle(color = Color.Red)) {
+                                    append("*")
+                                }
+                            }
+                        )
+                    }
                 )
-
                 if (showError) {
                     Text(
                         text = errorMessage,
@@ -165,6 +186,22 @@ fun OwnerPage(navController: NavHostController, loginViewModel: LoginViewModel) 
                 }
             }
         }
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 85.dp)
+                .padding(horizontal = 30.dp),
+        ) {
+            Text(
+                text = "При регистрации аккаунта я даю согласие на обработку своих персональных данных, принимаю условия пользовательского соглашения и Политики конфиденциальности.",
+                fontSize = 12.sp,
+                lineHeight = 20.sp,
+                color = Color(0xff566982),
+                fontWeight = FontWeight.W700,
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -172,14 +209,14 @@ fun OwnerPage(navController: NavHostController, loginViewModel: LoginViewModel) 
                 .padding(bottom = bottomPadding, start = 16.dp, end = 16.dp)
                 .windowInsetsPadding(WindowInsets.ime)
         ) {
-
             OutlinedButton(
                 onClick = {
-                    if (loginUiState.phone.length < 10) {
+                    if (registrationUiState.phone.length < 10) {
                         isError = true
                         errorMessage = "Введите корректный номер"
                     } else {
-                        loginViewModel.sendPhoneNumber("+7${loginUiState.phone}")
+                        // Вызываем метод для отправки запроса
+                        authViewModel.bioOtp()
                         isError = false
                         errorMessage = ""
                     }
