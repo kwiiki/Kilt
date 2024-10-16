@@ -117,7 +117,7 @@ fun KiltApp() {
                 )
             }
             composable(BottomNavigationScreen.Favorites.route) { FavoritesScreen(navController) }
-            composable(BottomNavigationScreen.Profile.route) { ProfileScreen(navController) }
+            composable(BottomNavigationScreen.Profile.route) { ProfileScreen(navController,authViewModel) }
             composable(Screen.BlogPage.route) { BlogPage(navController) }
             composable(Screen.News.route) { News(navController) }
             composable(
@@ -140,7 +140,6 @@ fun KiltApp() {
             composable(Screen.RegistrationPage.route){ RegistrationPage(navController,authViewModel = authViewModel) }
             composable(Screen.OwnerPage.route){ OwnerPage(navController,authViewModel = authViewModel) }
             composable(Screen.AgencyPage.route){ AgencyPage(navController,authViewModel = authViewModel) }
-            composable(Screen.AuthenticatedProfileScreen.route){ AuthenticatedProfileScreen(navController,authViewModel = authViewModel) }
             composable(Screen.EnterSixCodePage.route){ EnterSixCodePage(navController,authViewModel = authViewModel) }
         }
     }

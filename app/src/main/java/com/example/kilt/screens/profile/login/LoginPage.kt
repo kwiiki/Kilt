@@ -71,7 +71,7 @@ fun LoginPage(navController: NavHostController, authViewModel: AuthViewModel) {
     val focusManager = LocalFocusManager.current
     val otpResult by authViewModel.otpResult
 
-    val loginUiState = authViewModel.registrationUiState.value
+    val registrationUiState = authViewModel.registrationUiState.value
 
     var showError by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
@@ -129,8 +129,8 @@ fun LoginPage(navController: NavHostController, authViewModel: AuthViewModel) {
                     modifier = Modifier.align(Alignment.Start)
                 )
                 PhoneNumberTextField(
-                    value = loginUiState.phone,
-                    onValueChange = { loginUiState.phone = it },
+                    value = registrationUiState.phone,
+                    onValueChange = { registrationUiState.phone = it },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
@@ -160,14 +160,13 @@ fun LoginPage(navController: NavHostController, authViewModel: AuthViewModel) {
                 .padding(bottom = bottomPadding, start = 16.dp, end = 16.dp)
                 .windowInsetsPadding(WindowInsets.ime)
         ) {
-
             OutlinedButton(
                 onClick = {
-                    if (loginUiState.phone.length < 10) {
+                    if (registrationUiState.phone.length < 10) {
                         isError = true
                         errorMessage = "Введите корректный номер"
                     } else {
-                        authViewModel.sendPhoneNumber("+7${loginUiState.phone}")
+                        authViewModel.sendPhoneNumber("+7${registrationUiState.phone}")
                         isError = false
                         errorMessage = ""
                     }

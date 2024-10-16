@@ -11,6 +11,9 @@ class PreferencesHelper(context: Context) {
 
     companion object {
         private const val VIEWED_STORIES_KEY = "viewed_stories"
+        private const val USER_AUTHENTICATED_KEY = "user_authenticated"
+        private const val USER_IDENTIFIED_KEY = "user_identified"
+
     }
 
     fun getViewedStories(count: Int): List<Boolean> {
@@ -24,4 +27,23 @@ class PreferencesHelper(context: Context) {
             putString(VIEWED_STORIES_KEY, viewedStoriesString)
         }
     }
+    fun isUserAuthenticated(): Boolean {
+        return sharedPreferences.getBoolean(USER_AUTHENTICATED_KEY, false)
+    }
+
+    fun setUserAuthenticated(isAuthenticated: Boolean) {
+        sharedPreferences.edit {
+            putBoolean(USER_AUTHENTICATED_KEY, isAuthenticated)
+        }
+    }
+    fun isUserIdentified(): Boolean {
+        return sharedPreferences.getBoolean(USER_IDENTIFIED_KEY, false)
+    }
+
+    fun setUserIdentified(isIdentified: Boolean) {
+        sharedPreferences.edit {
+            putBoolean(USER_IDENTIFIED_KEY, isIdentified)
+        }
+    }
+
 }

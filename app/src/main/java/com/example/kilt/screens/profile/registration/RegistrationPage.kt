@@ -58,21 +58,18 @@ fun RegistrationPage(navController: NavHostController, authViewModel: AuthViewMo
             Log.d("loginPage", "LoginPage: $it")
             when (it) {
                 is BioOtpResult.Success -> {
-                    navController.navigate(NavPath.AUTHENTICATEDPROFILESCREEN.name)
+                    navController.navigate(NavPath.PROFILE.name)
                 }
-
                 is BioOtpResult.Failure -> {
                     errorMessage = it.message
                     showError = true
                 }
-
                 is BioOtpResult.RegisteredUser -> {
                     navController.navigate(NavPath.ENTERFOURCODEPAGE.name)
                 }
             }
         }
     }
-
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier

@@ -88,7 +88,7 @@ fun OwnerPage(navController: NavHostController, authViewModel: AuthViewModel) {
                 is BioOtpResult.RegisteredUser ->{
                     Log.d("lool", "OwnerPage: ${registrationUiState.phone}")
                     navController.navigate(NavPath.ENTERFOURCODEPAGE.name)
-                    authViewModel.sendPhoneNumber(registrationUiState.phone)
+                    authViewModel.sendPhoneNumber("+7${registrationUiState.phone}")
                 }
             }
         }
@@ -215,7 +215,6 @@ fun OwnerPage(navController: NavHostController, authViewModel: AuthViewModel) {
                         isError = true
                         errorMessage = "Введите корректный номер"
                     } else {
-                        // Вызываем метод для отправки запроса
                         authViewModel.bioOtp()
                         isError = false
                         errorMessage = ""

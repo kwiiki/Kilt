@@ -15,6 +15,9 @@ import com.example.kilt.data.authentification.CheckOtpResult
 import com.example.kilt.data.authentification.DeviceInfo
 import com.example.kilt.data.authentification.ErrorResponse
 import com.example.kilt.data.authentification.OtpResult
+import com.example.kilt.data.authentification.UserWithMetadata
+import com.example.kilt.data.dataStore.UserDataStoreManager
+import com.example.kilt.data.shardePrefernce.PreferencesHelper
 import com.example.kilt.enums.UserType
 import com.example.kilt.repository.LoginRepository
 import com.example.kilt.repository.RegistrationRepository
@@ -22,7 +25,9 @@ import com.example.kilt.screens.profile.registration.RegistrationUiState
 import com.google.android.datatransport.BuildConfig
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -30,7 +35,11 @@ import javax.inject.Inject
 class AuthViewModel @Inject constructor(
     private val registrationRepository: RegistrationRepository,
     private val loginRepository: LoginRepository,
+    private val userDataStoreManager: UserDataStoreManager,
+    private val preferencesHelper: PreferencesHelper
    ):ViewModel() {
+
+    val user: Flow<UserWithMetadata?> = userDataStoreManager.userDataFlow
 
     private val _registrationUiState = mutableStateOf(RegistrationUiState())
     val registrationUiState:State<RegistrationUiState> = _registrationUiState
@@ -47,11 +56,38 @@ class AuthViewModel @Inject constructor(
     private val _checkOtpResult = mutableStateOf<CheckOtpResult?>(null)
     val checkOtpResult: State<CheckOtpResult?> = _checkOtpResult
 
+    private val _isUserAuthenticated = mutableStateOf(preferencesHelper.isUserAuthenticated())
+    val isUserAuthenticated: State<Boolean> = _isUserAuthenticated
+
+    private val _isUserIdentified = mutableStateOf(preferencesHelper.isUserIdentified())
+    val isUserIdentified: State<Boolean> = _isUserIdentified
+
+    private val _timerCount = mutableStateOf(59)
+    val timerCount: State<Int> = _timerCount
+
+    private var timerJob: Job? = null
+
     fun sendPhoneNumber(phoneNumber: String) {
         viewModelScope.launch {
             try {
                 val result = loginRepository.generateOtp(phoneNumber)
-                Log.d("sendPhoneNumber", "sendPhoneNumber: $result")
+                _otpResult.value = when (result) {
+                    is OtpResult.Success -> result
+                    is OtpResult.Failure -> OtpResult.Failure(ErrorResponse("Номер телефона введён неверно,либо вы не зарегистрированы.Пожалуйсто, зарегистрируйтесь"))
+                }
+            } catch (e: Exception) {
+                Log.e("LoginViewModel", "Error generating OTP", e)
+                _otpResult.value =
+                    OtpResult.Failure(ErrorResponse("Номер телефона введён неверно,либо вы не зарегистрированы.Пожалуйсто, зарегистрируйтесь"))
+            }
+        }
+    }
+    fun generateOTP(phoneNumber: String){
+        viewModelScope.launch {
+            try {
+                Log.d("wd", "sendPhoneNumber: $phoneNumber")
+                val result = registrationRepository.generateOTP(phoneNumber)
+                Log.d("wd", "sendPhoneNumber: $result")
                 _otpResult.value = when (result) {
                     is OtpResult.Success -> result
                     is OtpResult.Failure -> OtpResult.Failure(ErrorResponse("Номер телефона введён неверно,либо вы не зарегистрированы.Пожалуйсто, зарегистрируйтесь"))
@@ -75,16 +111,13 @@ class AuthViewModel @Inject constructor(
                         Log.d("checkOtp", "checkOtp: $firebaseToken")
                         Log.d("checkOtp", "checkOtp: $phoneNumber")
                         Log.d("checkOtp", "checkOtp: $otpCode")
-                        // Создаем объект запроса
                         val checkOtpRequest = CheckOtpRequest(
                             otp = CheckOtp(phone = phoneNumber, code = otpCode.trim()),
                             fcmToken = firebaseToken,
                             referal = """"""
                         )
-                        // Отправляем запрос через репозиторий
                         viewModelScope.launch {
                             val result = loginRepository.checkOtp(checkOtpRequest)
-                            delay(3000)
                             _checkOtpResult.value = when (result) {
                                 is CheckOtpResult.Success -> result
                                 is CheckOtpResult.Failure -> CheckOtpResult.Failure(
@@ -93,7 +126,6 @@ class AuthViewModel @Inject constructor(
                                     )
                                 )
                             }
-
                         }
                     } else {
                         Log.e("FirebaseToken", "Ошибка получения токена Firebase")
@@ -163,7 +195,6 @@ class AuthViewModel @Inject constructor(
                         Log.d("bioOTP", "bioOTP: $firebaseToken")
                         Log.d("bioOTP", "bioOTP: $phoneNumber")
                         Log.d("bioOTP", "bioOTP: $otpCode")
-                        // Создаем объект запроса
                         val bioOtpCheckRequest = BioOtpCheckRequest(
                             fcmToken = firebaseToken,
                             referal = """""",
@@ -171,11 +202,9 @@ class AuthViewModel @Inject constructor(
                             iin = iin,
                             code = otpCode
                         )
-                        // Отправляем запрос через репозиторий
                         viewModelScope.launch {
                             Log.d("bioOTP", "bioOTP: sec")
                             val result = registrationRepository.bioOtpCheck(bioOtpCheckRequest)
-                            delay(3000)
                             Log.d("bioOTP", "bioOTP: $result")
                             _bioCheckOTPResult.value = when (result) {
                                 is BioCheckOTPResult.Success -> result
@@ -190,6 +219,74 @@ class AuthViewModel @Inject constructor(
             } catch (e: Exception) {
                 _bioCheckOTPResult.value = BioCheckOTPResult.Failure(ErrorResponse("Не удалось отправить код"))
             }
+        }
+    }
+    fun handleCheckOtpResult(result: CheckOtpResult.Success) {
+        viewModelScope.launch {
+            userDataStoreManager.saveUserData(
+                user = result.user,
+                bonus = result.bonus,
+                created = result.created,
+                expired = result.expired,
+                token = result.token
+            )
+            _isUserAuthenticated.value = true
+            preferencesHelper.setUserAuthenticated(true)
+        }
+    }
+
+    fun handleBioCheckOtpResult(result: BioCheckOTPResult.Success) {
+        viewModelScope.launch {
+            userDataStoreManager.saveUserData(
+                user = result.user,
+                bonus = result.bonus,
+                created = result.created,
+                expired = result.expired,
+                token = result.token
+            )
+            _isUserAuthenticated.value = true
+            preferencesHelper.setUserAuthenticated(true)
+        }
+    }
+
+    fun setUserAuthenticated(isAuthenticated: Boolean) {
+        _isUserAuthenticated.value = isAuthenticated
+        preferencesHelper.setUserAuthenticated(isAuthenticated)
+    }
+    fun setUserIdentified(isIdentified: Boolean) {
+        _isUserIdentified.value = isIdentified
+        preferencesHelper.setUserIdentified(isIdentified)
+    }
+    fun logout() {
+        viewModelScope.launch {
+            userDataStoreManager.clearUserData() // Кнопка для выхода из аккаунта
+            preferencesHelper.setUserAuthenticated(false)
+            preferencesHelper.setUserIdentified(false)
+            _isUserAuthenticated.value = false
+            _isUserIdentified.value = false
+        }
+    }
+    fun startTimer() {
+        timerJob?.cancel()
+        timerJob = viewModelScope.launch {
+            while (_timerCount.value > 0) {
+                delay(1000)
+                _timerCount.value -= 1
+                Log.d("TimerDebug", "Timer count in ViewModel: ${_timerCount.value}")
+            }
+        }
+    }
+
+    private fun resetTimer() {
+        _timerCount.value = 59
+        startTimer()
+    }
+
+    fun resendCode() {
+        viewModelScope.launch {
+            Log.d("checkPhone", "resendCode: ${registrationUiState.value.phone}")
+            sendPhoneNumber("+7${registrationUiState.value.phone}")
+            resetTimer()
         }
     }
     fun updateForSixCode(newCode: String) {

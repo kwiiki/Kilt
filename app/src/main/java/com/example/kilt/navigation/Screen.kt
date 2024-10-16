@@ -11,5 +11,4 @@ sealed class Screen(val route:String) {
     data object RegistrationPage:Screen(route = NavPath.REGISTRATIONPAGE.name)
     data object OwnerPage:Screen(route = NavPath.OWNERPAGE.name)
     data object AgencyPage:Screen(route = NavPath.AGENCYPAGE.name)
-    data object AuthenticatedProfileScreen:Screen(route = NavPath.AUTHENTICATEDPROFILESCREEN.name)
 }

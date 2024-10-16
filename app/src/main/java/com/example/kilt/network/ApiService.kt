@@ -16,7 +16,8 @@ import com.example.kilt.data.authentification.BioOtpResult
 import com.example.kilt.data.authentification.CheckOtpResult
 import com.example.kilt.data.authentification.OtpRequest
 import com.example.kilt.data.authentification.OtpResult
-import retrofit2.Response
+import com.example.kilt.data.authentification.UniversalUserUpdateRequest
+import com.example.kilt.data.authentification.UniversalUserUpdateResult
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -46,6 +47,9 @@ interface ApiService {
     suspend fun getResidentialComplex(@Query("starts") city: String): ResidentialComplexResponse
 
     @POST("users/generate-otp-new")
+    suspend fun generateOtpNew(@Body request: OtpRequest): OtpResult
+
+    @POST("users/generate-otp")
     suspend fun generateOtp(@Body request: OtpRequest): OtpResult
 
     @POST("users/check-otp")
@@ -57,5 +61,7 @@ interface ApiService {
     @POST("users/bio-otp-check")
     suspend fun bioOtpCheck(@Body request: BioOtpCheckRequest): BioCheckOTPResult
 
+    @POST("universal/User/update")
+    suspend fun universalUserUpdate(@Body request: UniversalUserUpdateRequest):UniversalUserUpdateResult
 }
 

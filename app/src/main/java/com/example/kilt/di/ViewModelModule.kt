@@ -1,5 +1,8 @@
 package com.example.kilt.di
 
+import android.content.Context
+import com.example.kilt.data.dataStore.UserDataStoreManager
+import com.example.kilt.data.shardePrefernce.PreferencesHelper
 import com.example.kilt.repository.ConfigRepository
 import com.example.kilt.repository.HomeSaleRepository
 import com.example.kilt.repository.KatoRepository
@@ -14,7 +17,9 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.scopes.ViewModelScoped
+import javax.inject.Singleton
 
 @Module
 @InstallIn(ViewModelComponent::class)
@@ -47,7 +52,14 @@ object ViewModelModule {
 
     @Provides
     @ViewModelScoped
-    fun provideRegistrationViewModel(registrationRepository: RegistrationRepository,loginRepository: LoginRepository): AuthViewModel {
-        return AuthViewModel(registrationRepository,loginRepository)
+    fun provideAuthViewModel(
+        registrationRepository: RegistrationRepository,
+        loginRepository: LoginRepository,
+        userDataStoreManager: UserDataStoreManager,
+        preferencesHelper: PreferencesHelper
+    ): AuthViewModel {
+        return AuthViewModel(registrationRepository, loginRepository, userDataStoreManager,preferencesHelper)
     }
+
+
 }

@@ -9,7 +9,7 @@ import com.example.kilt.network.ApiService
 
 class LoginRepositoryImpl(private val apiService: ApiService):LoginRepository {
     override suspend fun generateOtp(phone: String): OtpResult {
-            return apiService.generateOtp(OtpRequest(Otp(phone)))
+            return apiService.generateOtpNew(OtpRequest(Otp(phone)))
     }
     override suspend fun checkOtp(checkOtpRequest: CheckOtpRequest): CheckOtpResult {
         return apiService.checkOtp(checkOtpRequest)

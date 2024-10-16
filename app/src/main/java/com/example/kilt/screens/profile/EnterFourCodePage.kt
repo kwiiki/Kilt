@@ -1,6 +1,12 @@
 package com.example.kilt.screens.profile
 
 import android.util.Log
+import androidx.compose.animation.animateColor
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,20 +18,27 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.TextFieldColors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -45,19 +58,25 @@ fun EnterFourCodePage(navController: NavHostController, authViewModel: AuthViewM
     val checkOtpResult by authViewModel.checkOtpResult
     var showError by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
+    val timerCount by authViewModel.timerCount
 
+    LaunchedEffect(Unit) {
+        authViewModel.startTimer()
+    }
     LaunchedEffect(checkOtpResult) {
         checkOtpResult?.let {
             Log.d("loginPage", "LoginPage: $it")
             when (it) {
                 is CheckOtpResult.Success -> {
-                    navController.navigate(NavPath.AUTHENTICATEDPROFILESCREEN.name)
+                    navController.navigate(NavPath.PROFILE.name)
+                    authViewModel.setUserAuthenticated(true)
+                    authViewModel.handleCheckOtpResult(it)
                 }
                 is CheckOtpResult.Failure -> {
                     errorMessage = it.error.msg
                     showError = true
                 }
-                }
+            }
         }
     }
     Box(modifier = Modifier.fillMaxSize()) {
@@ -91,7 +110,7 @@ fun EnterFourCodePage(navController: NavHostController, authViewModel: AuthViewM
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
+                horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Text(
@@ -118,9 +137,40 @@ fun EnterFourCodePage(navController: NavHostController, authViewModel: AuthViewM
                     },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth(0.5f)
+                        .clip(RoundedCornerShape(14.dp))
+                        .border(
+                            width = 1.dp,
+                            color = Color(0xFFDBDFE4),
+                            shape = RoundedCornerShape(14.dp)
+                        )
+                        .height(50.dp),
                 )
             }
+            Spacer(modifier = Modifier.height(12.dp))
+            val textColor by remember {
+                derivedStateOf {
+                    if (timerCount > 0) Color(0xff8794A5) else Color(0xff010101)
+                }
+            }
+            Text(
+                text = if (timerCount > 0)
+                    "Отправить код повторно через $timerCount сек"
+                else
+                    "Отправить код повторно",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.W400,
+                lineHeight = 20.sp,
+                color = textColor,
+                modifier = Modifier
+                    .padding(start = 16.dp)
+                    .clickable(enabled = timerCount == 0) {
+                        if (timerCount == 0) {
+                            authViewModel.resendCode()
+                        }
+                    }
+            )
         }
     }
 }
