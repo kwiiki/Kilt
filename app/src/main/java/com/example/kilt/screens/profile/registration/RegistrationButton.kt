@@ -28,10 +28,14 @@ import com.example.kilt.navigation.NavPath
 
 
 @Composable
-fun RegistrationButton(navController: NavController,modifier: Modifier){
+fun RegistrationButton(
+    navController: NavController,
+    modifier: Modifier,
+    onClick: () -> Unit = { navController.navigate(NavPath.REGISTRATIONPAGE.name) }
+) {
     Row(modifier = modifier.fillMaxWidth()) {
         OutlinedButton(
-            onClick = {navController.navigate(NavPath.REGISTRATIONPAGE.name)},
+            onClick = onClick,
             contentPadding = PaddingValues(0.dp),
             colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.Transparent),
             shape = RoundedCornerShape(12.dp),

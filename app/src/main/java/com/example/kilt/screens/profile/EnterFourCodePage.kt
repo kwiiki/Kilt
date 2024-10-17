@@ -1,12 +1,8 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.example.kilt.screens.profile
 
 import android.util.Log
-import androidx.compose.animation.animateColor
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,25 +16,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.TextFieldColors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -51,6 +44,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.kilt.data.authentification.CheckOtpResult
 import com.example.kilt.navigation.NavPath
 import com.example.kilt.viewmodels.AuthViewModel
+
 
 @Composable
 fun EnterFourCodePage(navController: NavHostController, authViewModel: AuthViewModel) {
@@ -72,6 +66,7 @@ fun EnterFourCodePage(navController: NavHostController, authViewModel: AuthViewM
                     authViewModel.setUserAuthenticated(true)
                     authViewModel.handleCheckOtpResult(it)
                 }
+
                 is CheckOtpResult.Failure -> {
                     errorMessage = it.error.msg
                     showError = true
@@ -89,13 +84,15 @@ fun EnterFourCodePage(navController: NavHostController, authViewModel: AuthViewM
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    Icons.AutoMirrored.Filled.ArrowBack,
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = null,
                     tint = Color(0xFF566982),
                     modifier = Modifier
                         .size(40.dp)
                         .padding(8.dp)
-                        .clickable { navController.popBackStack() }
+                        .clickable {
+                            navController.navigate(NavPath.LOGIN.name)
+                        }
                 )
                 Spacer(modifier = Modifier.fillMaxWidth(0.15f))
                 Text(
@@ -139,13 +136,13 @@ fun EnterFourCodePage(navController: NavHostController, authViewModel: AuthViewM
                     singleLine = true,
                     modifier = Modifier
                         .fillMaxWidth(0.5f)
-                        .clip(RoundedCornerShape(14.dp))
-                        .border(
-                            width = 1.dp,
-                            color = Color(0xFFDBDFE4),
-                            shape = RoundedCornerShape(14.dp)
-                        )
                         .height(50.dp),
+                    shape = RoundedCornerShape(14.dp),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = Color(0xFFDBDFE4),
+                        unfocusedBorderColor = Color(0xFFDBDFE4),
+                        cursorColor = Color(0xFFDBDFE4)
+                    )
                 )
             }
             Spacer(modifier = Modifier.height(12.dp))

@@ -33,7 +33,6 @@ fun HomePageContent(navController: NavHostController,searchViewModel: SearchView
             )
         }
     }
-
     var selectedStory by remember { mutableStateOf<Int?>(null) }
 
     if (selectedStory == null) {

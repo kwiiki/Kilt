@@ -44,11 +44,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -56,12 +54,11 @@ import androidx.navigation.NavHostController
 import com.example.kilt.data.authentification.BioOtpResult
 import com.example.kilt.navigation.NavPath
 import com.example.kilt.screens.profile.login.PhoneNumberTextField
-import com.example.kilt.screens.profile.login.formatPhoneNumber
 import com.example.kilt.screens.searchpage.homedetails.gradient
 import com.example.kilt.viewmodels.AuthViewModel
 
 @Composable
-fun OwnerPage(navController: NavHostController, authViewModel: AuthViewModel) {
+fun RegistrationForOwnerPage(navController: NavHostController, authViewModel: AuthViewModel) {
     val scrollState = rememberScrollState()
     val imeVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
     val bottomPadding = if (imeVisible) 1.dp else 16.dp

@@ -60,6 +60,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.example.kilt.data.config.Conveniences
@@ -83,6 +84,7 @@ import com.example.kilt.data.config.SuitsForItem
 import com.example.kilt.data.config.ToiletSeparationItem
 import com.example.kilt.data.config.WindowsItem
 import com.example.kilt.screens.profile.AuthenticatedProfileScreen
+import com.example.kilt.screens.profile.EnterFourCodePage
 import com.example.kilt.viewmodels.HomeSaleViewModel
 import com.example.kilt.viewmodels.SearchViewModel
 import com.google.android.gms.auth.api.phone.SmsRetriever
@@ -105,6 +107,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             KiltApp()
+//            EnterFourCodePage(navController = rememberNavController(), authViewModel = hiltViewModel())
         }
     }
 //    override fun onDestroy() {

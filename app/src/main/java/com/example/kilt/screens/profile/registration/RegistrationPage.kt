@@ -52,10 +52,8 @@ fun RegistrationPage(navController: NavHostController, authViewModel: AuthViewMo
     val bioOtpResult by authViewModel.bioOtpResult
     var showError by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
-
     LaunchedEffect(bioOtpResult) {
         bioOtpResult?.let {
-            Log.d("loginPage", "LoginPage: $it")
             when (it) {
                 is BioOtpResult.Success -> {
                     navController.navigate(NavPath.PROFILE.name)

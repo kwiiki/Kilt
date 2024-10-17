@@ -2,6 +2,7 @@ package com.example.kilt.viewmodels
 
 import android.util.Log
 import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -30,6 +31,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
@@ -38,9 +42,7 @@ class AuthViewModel @Inject constructor(
     private val userDataStoreManager: UserDataStoreManager,
     private val preferencesHelper: PreferencesHelper
    ):ViewModel() {
-
     val user: Flow<UserWithMetadata?> = userDataStoreManager.userDataFlow
-
     private val _registrationUiState = mutableStateOf(RegistrationUiState())
     val registrationUiState:State<RegistrationUiState> = _registrationUiState
 
@@ -62,7 +64,7 @@ class AuthViewModel @Inject constructor(
     private val _isUserIdentified = mutableStateOf(preferencesHelper.isUserIdentified())
     val isUserIdentified: State<Boolean> = _isUserIdentified
 
-    private val _timerCount = mutableStateOf(59)
+    private val _timerCount = mutableIntStateOf(59)
     val timerCount: State<Int> = _timerCount
 
     private var timerJob: Job? = null
@@ -102,39 +104,28 @@ class AuthViewModel @Inject constructor(
     private fun checkOtp() {
         viewModelScope.launch {
             try {
-                FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        val firebaseToken = task.result
-                        val phoneNumber = "+7${_registrationUiState.value.phone}"
-                        val otpCode = _registrationUiState.value.code
+                val firebaseToken = getFirebaseToken()
+                val phoneNumber = "+7${_registrationUiState.value.phone}"
+                val otpCode = _registrationUiState.value.code.trim()
 
-                        Log.d("checkOtp", "checkOtp: $firebaseToken")
-                        Log.d("checkOtp", "checkOtp: $phoneNumber")
-                        Log.d("checkOtp", "checkOtp: $otpCode")
-                        val checkOtpRequest = CheckOtpRequest(
-                            otp = CheckOtp(phone = phoneNumber, code = otpCode.trim()),
-                            fcmToken = firebaseToken,
-                            referal = """"""
-                        )
-                        viewModelScope.launch {
-                            val result = loginRepository.checkOtp(checkOtpRequest)
-                            _checkOtpResult.value = when (result) {
-                                is CheckOtpResult.Success -> result
-                                is CheckOtpResult.Failure -> CheckOtpResult.Failure(
-                                    ErrorResponse(
-                                        result.error.msg
-                                    )
-                                )
-                            }
-                        }
-                    } else {
-                        Log.e("FirebaseToken", "Ошибка получения токена Firebase")
-                        _otpResult.value =
-                            OtpResult.Failure(ErrorResponse("Введите корректный код "))
-                    }
+                Log.d("checkOtp", "firebaseToken: $firebaseToken")
+                Log.d("checkOtp", "phoneNumber: $phoneNumber")
+                Log.d("checkOtp", "otpCode: $otpCode")
+
+                val checkOtpRequest = CheckOtpRequest(
+                    otp = CheckOtp(phone = phoneNumber, code = otpCode),
+                    fcmToken = firebaseToken,
+                    referal = ""
+                )
+
+                val result = loginRepository.checkOtp(checkOtpRequest)
+                _checkOtpResult.value = when (result) {
+                    is CheckOtpResult.Success -> handleSuccessfulOtp(result)
+                    is CheckOtpResult.Failure -> CheckOtpResult.Failure(ErrorResponse(result.error.msg))
                 }
             } catch (e: Exception) {
-                _otpResult.value = OtpResult.Failure(ErrorResponse("Не удалось отправить код"))
+                Log.e("checkOtp", "Failed to check OTP", e)
+                _checkOtpResult.value = CheckOtpResult.Failure(ErrorResponse("Не удалось проверить код"))
             }
         }
     }
@@ -182,42 +173,38 @@ class AuthViewModel @Inject constructor(
             }
         }
     }
-    private fun bioOtpCheck(){
+    private fun bioOtpCheck() {
         viewModelScope.launch {
             try {
-                FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        val firebaseToken = task.result
-                        val phoneNumber = "7${registrationUiState.value.phone}"
-                        val otpCode = registrationUiState.value.code
-                        val iin = registrationUiState.value.iin
+                val firebaseToken = getFirebaseToken()
+                val phoneNumber = "7${registrationUiState.value.phone}"
+                val otpCode = registrationUiState.value.code
+                val iin = registrationUiState.value.iin
 
-                        Log.d("bioOTP", "bioOTP: $firebaseToken")
-                        Log.d("bioOTP", "bioOTP: $phoneNumber")
-                        Log.d("bioOTP", "bioOTP: $otpCode")
-                        val bioOtpCheckRequest = BioOtpCheckRequest(
-                            fcmToken = firebaseToken,
-                            referal = """""",
-                            phone = phoneNumber,
-                            iin = iin,
-                            code = otpCode
-                        )
-                        viewModelScope.launch {
-                            Log.d("bioOTP", "bioOTP: sec")
-                            val result = registrationRepository.bioOtpCheck(bioOtpCheckRequest)
-                            Log.d("bioOTP", "bioOTP: $result")
-                            _bioCheckOTPResult.value = when (result) {
-                                is BioCheckOTPResult.Success -> result
-                                is BioCheckOTPResult.Failure -> BioCheckOTPResult.Failure(ErrorResponse(result.error.msg))
-                            }
-                        }
-                    } else {
-                        Log.e("FirebaseToken", "Ошибка получения токена Firebase")
-                        _bioCheckOTPResult.value = BioCheckOTPResult.Failure(ErrorResponse("Введите корректный код "))
-                    }
+                Log.d("bioOTP", "firebaseToken: $firebaseToken")
+                Log.d("bioOTP", "phoneNumber: $phoneNumber")
+                Log.d("bioOTP", "otpCode: $otpCode")
+                Log.d("bioOTP", "iin: $iin")
+
+                val bioOtpCheckRequest = BioOtpCheckRequest(
+                    fcmToken = firebaseToken,
+                    referal = "",
+                    phone = phoneNumber,
+                    iin = iin,
+                    code = otpCode
+                )
+
+                Log.d("bioOTP", "Sending bioOtpCheck request")
+                val result = registrationRepository.bioOtpCheck(bioOtpCheckRequest)
+                Log.d("bioOTP", "bioOtpCheck result: $result")
+
+                _bioCheckOTPResult.value = when (result) {
+                    is BioCheckOTPResult.Success -> handleSuccessfulBioOtp(result)
+                    is BioCheckOTPResult.Failure -> BioCheckOTPResult.Failure(ErrorResponse(result.error.msg))
                 }
             } catch (e: Exception) {
-                _bioCheckOTPResult.value = BioCheckOTPResult.Failure(ErrorResponse("Не удалось отправить код"))
+                Log.e("bioOTP", "Failed to check Bio OTP", e)
+                _bioCheckOTPResult.value = BioCheckOTPResult.Failure(ErrorResponse("Не удалось проверить код"))
             }
         }
     }
@@ -253,6 +240,52 @@ class AuthViewModel @Inject constructor(
         _isUserAuthenticated.value = isAuthenticated
         preferencesHelper.setUserAuthenticated(isAuthenticated)
     }
+    private suspend fun getFirebaseToken(): String = suspendCoroutine { continuation ->
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                continuation.resume(task.result)
+            } else {
+                continuation.resumeWithException(task.exception ?: Exception("Failed to get Firebase token"))
+            }
+        }
+    }
+
+    private suspend fun handleSuccessfulOtp(result: CheckOtpResult.Success): CheckOtpResult {
+        val userId = result.user.id
+        val userType = registrationUiState.value.userType.value
+        Log.d("user-type", "userType: $userType")
+
+        return try {
+            val updateResult = registrationRepository.universalUserUpdate(userId = userId, userType = userType)
+            Log.d("universalUserUpdate", "User update result: $updateResult")
+            if (updateResult.success) {
+                result
+            } else {
+                CheckOtpResult.Failure(ErrorResponse("Ошибка обновления пользователя"))
+            }
+        } catch (e: Exception) {
+            Log.e("universalUserUpdate", "User update failed", e)
+            CheckOtpResult.Failure(ErrorResponse("Ошибка обновления пользователя"))
+        }
+    }
+    private suspend fun handleSuccessfulBioOtp(result: BioCheckOTPResult.Success): BioCheckOTPResult {
+        val userId = result.user.id
+        val userType = registrationUiState.value.userType.value
+        Log.d("user-type", "userType: $userType")
+
+        return try {
+            val updateResult = registrationRepository.universalUserUpdate(userId = userId, userType = userType)
+            Log.d("universalUserUpdate", "User update result: $updateResult")
+            if (updateResult.success) {
+                result
+            } else {
+                BioCheckOTPResult.Failure(ErrorResponse("Ошибка обновления пользователя"))
+            }
+        } catch (e: Exception) {
+            Log.e("universalUserUpdate", "User update failed", e)
+            BioCheckOTPResult.Failure(ErrorResponse("Ошибка обновления пользователя"))
+        }
+    }
     fun setUserIdentified(isIdentified: Boolean) {
         _isUserIdentified.value = isIdentified
         preferencesHelper.setUserIdentified(isIdentified)
@@ -269,16 +302,16 @@ class AuthViewModel @Inject constructor(
     fun startTimer() {
         timerJob?.cancel()
         timerJob = viewModelScope.launch {
-            while (_timerCount.value > 0) {
+            while (_timerCount.intValue > 0) {
                 delay(1000)
-                _timerCount.value -= 1
+                _timerCount.intValue -= 1
                 Log.d("TimerDebug", "Timer count in ViewModel: ${_timerCount.value}")
             }
         }
     }
 
     private fun resetTimer() {
-        _timerCount.value = 59
+        _timerCount.intValue = 59
         startTimer()
     }
 

@@ -39,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -49,7 +50,7 @@ import com.example.kilt.screens.searchpage.homedetails.gradient
 import com.example.kilt.viewmodels.AuthViewModel
 
 @Composable
-fun AgencyPage(navController: NavHostController, authViewModel: AuthViewModel){
+fun RegistrationForAgencyPage(navController: NavHostController, authViewModel: AuthViewModel){
     val scrollState = rememberScrollState()
     val imeVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
     val bottomPadding = if (imeVisible) 1.dp else 16.dp
@@ -136,6 +137,22 @@ fun AgencyPage(navController: NavHostController, authViewModel: AuthViewModel){
                     )
                 }
             }
+        }
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 85.dp)
+                .padding(horizontal = 30.dp),
+        ) {
+            Text(
+                text = "При регистрации аккаунта я даю согласие на обработку своих персональных данных, принимаю условия пользовательского соглашения и Политики конфиденциальности.",
+                fontSize = 12.sp,
+                lineHeight = 20.sp,
+                color = Color(0xff566982),
+                fontWeight = FontWeight.W700,
+                modifier = Modifier.align(Alignment.Center)
+            )
         }
         Column(
             modifier = Modifier

@@ -1,5 +1,6 @@
 package com.example.kilt
 
+import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -42,12 +43,11 @@ import com.example.kilt.screens.blog.BlogPage
 import com.example.kilt.screens.blog.News
 import com.example.kilt.screens.favorite.FavoritesScreen
 import com.example.kilt.screens.home.HomePageContent
-import com.example.kilt.screens.profile.AuthenticatedProfileScreen
-import com.example.kilt.screens.profile.registration.AgencyPage
+import com.example.kilt.screens.profile.registration.RegistrationForAgencyPage
 import com.example.kilt.screens.profile.EnterFourCodePage
 import com.example.kilt.screens.profile.EnterSixCodePage
 import com.example.kilt.screens.profile.login.LoginPage
-import com.example.kilt.screens.profile.registration.OwnerPage
+import com.example.kilt.screens.profile.registration.RegistrationForOwnerPage
 import com.example.kilt.screens.profile.ProfileScreen
 import com.example.kilt.screens.profile.registration.RegistrationPage
 import com.example.kilt.screens.searchpage.SearchPage
@@ -98,8 +98,8 @@ fun KiltApp() {
             navController = navController,
             startDestination = BottomNavigationScreen.HomePage.route,
             modifier = Modifier.padding(innerPadding),
-            enterTransition = { fadeIn(animationSpec = tween(0)) },
-            exitTransition = { fadeOut(animationSpec = tween(0)) }
+//            enterTransition = { fadeIn(animationSpec = tween(0)) },
+//            exitTransition = { fadeOut(animationSpec = tween(0)) }
         ) {
             composable(BottomNavigationScreen.HomePage.route) {
                 HomePageContent(
@@ -138,10 +138,12 @@ fun KiltApp() {
             composable(Screen.LoginPage.route){ LoginPage(navController = navController, authViewModel = authViewModel)}
             composable(Screen.EnterFourCodePage.route){ EnterFourCodePage(navController,authViewModel = authViewModel)}
             composable(Screen.RegistrationPage.route){ RegistrationPage(navController,authViewModel = authViewModel) }
-            composable(Screen.OwnerPage.route){ OwnerPage(navController,authViewModel = authViewModel) }
-            composable(Screen.AgencyPage.route){ AgencyPage(navController,authViewModel = authViewModel) }
+            composable(Screen.OwnerPage.route){ RegistrationForOwnerPage(navController,authViewModel = authViewModel) }
+            composable(Screen.AgencyPage.route){ RegistrationForAgencyPage(navController,authViewModel = authViewModel) }
             composable(Screen.EnterSixCodePage.route){ EnterSixCodePage(navController,authViewModel = authViewModel) }
         }
+        val currentRoute = navBackStackEntry?.destination?.route
+        Log.d("currentRoute", "KiltApp: $currentRoute")
     }
 }
 

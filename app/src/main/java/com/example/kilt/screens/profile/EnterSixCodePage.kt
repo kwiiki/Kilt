@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.example.kilt.screens.profile
 
 import android.util.Log
@@ -15,11 +17,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -42,6 +45,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.kilt.data.authentification.BioCheckOTPResult
 import com.example.kilt.navigation.NavPath
 import com.example.kilt.viewmodels.AuthViewModel
+import androidx.compose.material3.OutlinedTextField
 
 @Composable
 fun EnterSixCodePage(
@@ -89,7 +93,7 @@ fun EnterSixCodePage(
                     modifier = Modifier
                         .size(40.dp)
                         .padding(8.dp)
-                        .clickable { navController.popBackStack() }
+                        .clickable { navController.navigate(NavPath.PROFILE.name)}
                 )
                 Spacer(modifier = Modifier.fillMaxWidth(0.15f))
                 Text(
@@ -138,7 +142,12 @@ fun EnterSixCodePage(
                             color = Color(0xFFDBDFE4),
                             shape = RoundedCornerShape(14.dp)
                         )
-                        .height(50.dp)
+                        .height(50.dp),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = Color(0xFFDBDFE4),
+                        unfocusedBorderColor = Color(0xFFDBDFE4),
+                        cursorColor = Color(0xFFDBDFE4)
+                    )
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 val textColor by remember {

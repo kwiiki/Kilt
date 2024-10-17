@@ -48,6 +48,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.withStyle
@@ -152,6 +153,22 @@ fun LoginPage(navController: NavHostController, authViewModel: AuthViewModel) {
                     )
                 }
             }
+        }
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 85.dp)
+                .padding(horizontal = 30.dp),
+        ) {
+            Text(
+                text = "При регистрации аккаунта я даю согласие на обработку своих персональных данных, принимаю условия пользовательского соглашения и Политики конфиденциальности.",
+                fontSize = 12.sp,
+                lineHeight = 20.sp,
+                color = Color(0xff566982),
+                fontWeight = FontWeight.W700,
+                modifier = Modifier.align(Alignment.Center)
+            )
         }
         Column(
             modifier = Modifier

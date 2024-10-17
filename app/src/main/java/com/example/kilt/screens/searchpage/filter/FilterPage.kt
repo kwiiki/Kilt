@@ -261,15 +261,15 @@ fun FilterButtons(
             contentPadding = PaddingValues(vertical = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            item {
-                FilterButton(
-                    text = "Все",
-                    isSelected = selectedFilters.isEmpty(),
-                    onClick = {
-                        onFilterSelected(emptyList())
-                    }
-                )
-            }
+//            item {
+//                FilterButton(
+//                    text = "Все",
+//                    isSelected = selectedFilters.isEmpty(),
+//                    onClick = {
+//                        onFilterSelected(emptyList())
+//                    }
+//                )
+//            }
             items(filters ?: emptyList()) { filter ->
                 when (filter) {
                     is FilterItem -> {
