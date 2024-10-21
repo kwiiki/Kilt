@@ -6,5 +6,5 @@ data class RegistrationUiState(
     var phone: String = "",
     val iin: String = "",
     var userType: UserType = UserType.OWNER,
-    val code: String = ""
+    var code: String = ""
 )

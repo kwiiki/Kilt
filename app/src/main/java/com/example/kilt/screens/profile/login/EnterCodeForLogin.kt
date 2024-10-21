@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.example.kilt.screens.profile
+package com.example.kilt.screens.profile.login
 
 import android.util.Log
 import androidx.compose.foundation.clickable
@@ -25,7 +25,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,50 +33,54 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.kilt.data.authentification.CheckOtpResult
 import com.example.kilt.navigation.NavPath
 import com.example.kilt.otp.SmsViewModel
 import com.example.kilt.viewmodels.AuthViewModel
 
-
 @Composable
-fun EnterFourCodePage(navController: NavHostController, authViewModel: AuthViewModel,smsViewModel:SmsViewModel) {
+fun EnterCodeForLogin(navController: NavHostController, authViewModel: AuthViewModel) {
     val registrationUiState = authViewModel.registrationUiState.value
     val checkOtpResult by authViewModel.checkOtpResult
     var showError by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
     val timerCount by authViewModel.timerCount
-
+    var hasNavigated by remember { mutableStateOf(false) }
+//    val smsCode by smsViewModel.smsCode.collectAsState()
+//    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         authViewModel.startTimer()
+//        smsViewModel.startSmsRetriever(context)
     }
-    LaunchedEffect(checkOtpResult) {
-        checkOtpResult?.let {
-            Log.d("loginPage", "LoginPage: $it")
-            when (it) {
-                is CheckOtpResult.Success -> {
-                    authViewModel.clearOtpResult()
-                    navController.navigate(NavPath.PROFILE.name)
-                    authViewModel.setUserAuthenticated(true)
-                    authViewModel.handleCheckOtpResult(it)
-                }
-                is CheckOtpResult.Failure -> {
-                    errorMessage = it.error.msg
-                    showError = true
-                }
-            }
-        }
-    }
+
+//    LaunchedEffect(smsCode) {
+//        if (smsCode.isNotEmpty()) {
+//            authViewModel.updateForFourCode(smsCode)
+//        }
+//    }
+
+//    LaunchedEffect(checkOtpResult) {
+//        checkOtpResult?.let {
+//            Log.d("loginPage", "LoginPage: $it")
+//            when (it) {
+//                is CheckOtpResult.Success -> {
+//                    navController.navigate(NavPath.PROFILE.name)
+//                    authViewModel.setUserAuthenticated(true)
+//                    authViewModel.handleCheckOtpResult(it)
+//                }
+//                is CheckOtpResult.Failure -> {
+//                    errorMessage = it.error.msg
+//                    showError = true
+//                }
+//            }
+//        }
+//    }
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier

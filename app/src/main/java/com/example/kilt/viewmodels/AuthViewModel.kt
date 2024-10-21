@@ -2,6 +2,7 @@ package com.example.kilt.viewmodels
 
 import android.util.Log
 import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -29,7 +30,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import okhttp3.internal.notifyAll
 import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -69,36 +72,15 @@ class AuthViewModel @Inject constructor(
 
     private var timerJob: Job? = null
 
+
     fun sendPhoneNumber(phoneNumber: String) {
         viewModelScope.launch {
-            try {
-                val result = loginRepository.generateOtp(phoneNumber)
-                _otpResult.value = when (result) {
-                    is OtpResult.Success -> result
-                    is OtpResult.Failure -> OtpResult.Failure(ErrorResponse("Номер телефона введён неверно,либо вы не зарегистрированы.Пожалуйсто, зарегистрируйтесь"))
-                }
-            } catch (e: Exception) {
-                Log.e("LoginViewModel", "Error generating OTP", e)
-                _otpResult.value =
-                    OtpResult.Failure(ErrorResponse("Номер телефона введён неверно,либо вы не зарегистрированы.Пожалуйсто, зарегистрируйтесь"))
-            }
+            _otpResult.value = loginRepository.handleOtpGeneration(phoneNumber)
         }
     }
-    fun generateOTP(phoneNumber: String){
+    fun generateOTP(phoneNumber: String) {
         viewModelScope.launch {
-            try {
-                Log.d("wd", "sendPhoneNumber: $phoneNumber")
-                val result = registrationRepository.generateOTP(phoneNumber)
-                Log.d("wd", "sendPhoneNumber: $result")
-                _otpResult.value = when (result) {
-                    is OtpResult.Success -> result
-                    is OtpResult.Failure -> OtpResult.Failure(ErrorResponse("Номер телефона введён неверно,либо вы не зарегистрированы.Пожалуйсто, зарегистрируйтесь"))
-                }
-            } catch (e: Exception) {
-                Log.e("LoginViewModel", "Error generating OTP", e)
-                _otpResult.value =
-                    OtpResult.Failure(ErrorResponse("Номер телефона введён неверно,либо вы не зарегистрированы.Пожалуйсто, зарегистрируйтесь"))
-            }
+            _otpResult.value = loginRepository.handleOtpGeneration(phoneNumber)
         }
     }
     private fun checkOtp() {
@@ -107,24 +89,16 @@ class AuthViewModel @Inject constructor(
                 val firebaseToken = getFirebaseToken()
                 val phoneNumber = "+7${_registrationUiState.value.phone}"
                 val otpCode = _registrationUiState.value.code.trim()
+                val userType = registrationUiState.value.userType.value
 
-                Log.d("checkOtp", "firebaseToken: $firebaseToken")
-                Log.d("checkOtp", "phoneNumber: $phoneNumber")
-                Log.d("checkOtp", "otpCode: $otpCode")
-
-                val checkOtpRequest = CheckOtpRequest(
-                    otp = CheckOtp(phone = phoneNumber, code = otpCode),
-                    fcmToken = firebaseToken,
-                    referal = ""
+                _checkOtpResult.value = loginRepository.handleCheckOtp(
+                    phoneNumber = phoneNumber,
+                    otpCode = otpCode,
+                    firebaseToken = firebaseToken,
+                    userType = userType
                 )
-
-                val result = loginRepository.checkOtp(checkOtpRequest)
-                _checkOtpResult.value = when (result) {
-                    is CheckOtpResult.Success -> handleSuccessfulOtp(result)
-                    is CheckOtpResult.Failure -> CheckOtpResult.Failure(ErrorResponse(result.error.msg))
-                }
             } catch (e: Exception) {
-                Log.e("checkOtp", "Failed to check OTP", e)
+                Log.e("AuthViewModel", "Failed to check OTP", e)
                 _checkOtpResult.value = CheckOtpResult.Failure(ErrorResponse("Не удалось проверить код"))
             }
         }
@@ -305,7 +279,7 @@ class AuthViewModel @Inject constructor(
             while (_timerCount.intValue > 0) {
                 delay(1000)
                 _timerCount.intValue -= 1
-                Log.d("TimerDebug", "Timer count in ViewModel: ${_timerCount.value}")
+                Log.d("TimerDebug", "Timer count in ViewModel: ${_timerCount.intValue}")
             }
         }
     }
@@ -343,6 +317,19 @@ class AuthViewModel @Inject constructor(
     fun updateUserType(userType: UserType) {
         _registrationUiState.value = registrationUiState.value.copy(userType = userType)
     }
+    fun clearBioOtpResult(){
+        _bioOtpResult.value = null
+        _bioCheckOTPResult.value = null
+        _registrationUiState.value.code = ""
+        resetTimer()
+    }
+    fun clearOtpResult(){
+        _otpResult.value = null
+        _checkOtpResult.value = null
+        _registrationUiState.value.code = ""
+        resetTimer()
+    }
+
     fun clear(){
         _registrationUiState.value.phone = ""
     }

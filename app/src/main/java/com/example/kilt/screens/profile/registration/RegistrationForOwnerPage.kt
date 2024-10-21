@@ -2,6 +2,7 @@ package com.example.kilt.screens.profile.registration
 
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,6 +27,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -40,6 +43,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
@@ -57,6 +62,10 @@ import com.example.kilt.screens.profile.login.PhoneNumberTextField
 import com.example.kilt.screens.searchpage.homedetails.gradient
 import com.example.kilt.viewmodels.AuthViewModel
 
+val enabledGradient = Brush.horizontalGradient(
+    colors = listOf(Color(0xFFBEC1CC), Color(0xFFBEC1CC))
+)
+
 @Composable
 fun RegistrationForOwnerPage(navController: NavHostController, authViewModel: AuthViewModel) {
     val scrollState = rememberScrollState()
@@ -64,25 +73,26 @@ fun RegistrationForOwnerPage(navController: NavHostController, authViewModel: Au
     val bottomPadding = if (imeVisible) 1.dp else 16.dp
     val focusManager = LocalFocusManager.current
     val bioOtpResult by authViewModel.bioOtpResult
-
     val registrationUiState = authViewModel.registrationUiState.value
-
+    var selected by remember { mutableStateOf(false) }
     var showError by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
     var isError by remember { mutableStateOf(false) }
-
     LaunchedEffect(bioOtpResult) {
         bioOtpResult?.let {
             Log.d("loginPage", "LoginPage: $it")
             when (it) {
                 is BioOtpResult.Success -> {
+                    authViewModel.clearBioOtpResult()
                     navController.navigate(NavPath.ENTERSIXCODEPAGE.name)
                 }
+
                 is BioOtpResult.Failure -> {
                     errorMessage = it.message
                     showError = true
                 }
-                is BioOtpResult.RegisteredUser ->{
+
+                is BioOtpResult.RegisteredUser -> {
                     Log.d("lool", "OwnerPage: ${registrationUiState.phone}")
                     navController.navigate(NavPath.ENTERFOURCODEPAGE.name)
                     authViewModel.sendPhoneNumber("+7${registrationUiState.phone}")
@@ -104,8 +114,10 @@ fun RegistrationForOwnerPage(navController: NavHostController, authViewModel: Au
                     modifier = Modifier
                         .size(40.dp)
                         .padding(8.dp)
-                        .clickable { navController.popBackStack()
-                                        authViewModel.clear()}
+                        .clickable {
+                            navController.popBackStack()
+                            authViewModel.clear()
+                        }
                 )
             }
             Spacer(modifier = Modifier.height(8.dp))
@@ -166,6 +178,64 @@ fun RegistrationForOwnerPage(navController: NavHostController, authViewModel: Au
                         )
                     }
                 )
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(108.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .border(
+                            width = 1.dp,
+                            color = Color(0xFFBEC1CC),
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                        .background(color = Color(0xFFEFF1F4))
+                        .padding(12.dp)
+                ) {
+                    Text(
+                        text = "Внимание",
+                        fontWeight = FontWeight.W700,
+                        fontSize = 14.sp,
+                        color = Color(0xFF01060E)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Для защиты от мошенничества ваш номер телефона должен быть зарегистрирован в системе eGov. \n" +
+                                "Это помогает нам убедиться, что учетная запись принадлежит реальному человеку.",
+                        fontWeight = FontWeight.W400,
+                        fontSize = 12.sp,
+                        color = Color(0xFF01060E)
+                    )
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(66.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .border(
+                            width = 1.dp,
+                            color = Color(0xFFC4C9D3),
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                        .background(color = Color.White)
+                        .padding(12.dp)
+                ) {
+                    Checkbox(
+                        checked = selected,
+                        onCheckedChange = { selected = it },
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = Color(0xFF3244E4),
+                            uncheckedColor = Color(0xFFBEC1CC),
+                            checkmarkColor = Color.White
+                        )
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "Регистрируясь, я соглашаюсь на обработку персональных данных и принимаю условия соглашения и Политики конфиденциальности.",
+                        fontWeight = FontWeight.W400,
+                        fontSize = 12.sp,
+                        color = Color(0xFF01060E)
+                    )
+                }
                 if (showError) {
                     Text(
                         text = errorMessage,
@@ -182,22 +252,6 @@ fun RegistrationForOwnerPage(navController: NavHostController, authViewModel: Au
                     )
                 }
             }
-        }
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 85.dp)
-                .padding(horizontal = 30.dp),
-        ) {
-            Text(
-                text = "При регистрации аккаунта я даю согласие на обработку своих персональных данных, принимаю условия пользовательского соглашения и Политики конфиденциальности.",
-                fontSize = 12.sp,
-                lineHeight = 20.sp,
-                color = Color(0xff566982),
-                fontWeight = FontWeight.W700,
-                modifier = Modifier.align(Alignment.Center)
-            )
         }
         Column(
             modifier = Modifier
@@ -220,10 +274,14 @@ fun RegistrationForOwnerPage(navController: NavHostController, authViewModel: Au
                 contentPadding = PaddingValues(0.dp),
                 colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.Transparent),
                 shape = RoundedCornerShape(12.dp),
+                enabled = selected && registrationUiState.phone.length == 10 && registrationUiState.iin.length == 12,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp)
-                    .background(gradient, RoundedCornerShape(12.dp))
+                    .background(
+                        if (registrationUiState.phone.length == 10 && selected && registrationUiState.iin.length == 12) gradient else enabledGradient,
+                        RoundedCornerShape(12.dp)
+                    )
             ) {
                 Box(
                     modifier = Modifier.fillMaxSize(),

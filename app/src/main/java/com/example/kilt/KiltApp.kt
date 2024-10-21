@@ -1,10 +1,9 @@
 package com.example.kilt
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -39,16 +38,20 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.kilt.navigation.BottomNavigationScreen
 import com.example.kilt.navigation.Screen
+import com.example.kilt.otp.SmsViewModel
 import com.example.kilt.screens.blog.BlogPage
 import com.example.kilt.screens.blog.News
 import com.example.kilt.screens.favorite.FavoritesScreen
 import com.example.kilt.screens.home.HomePageContent
+import com.example.kilt.screens.home.addAnnouncement.AddingAnnouncementScreen
+import com.example.kilt.screens.profile.EditProfile
 import com.example.kilt.screens.profile.registration.RegistrationForAgencyPage
 import com.example.kilt.screens.profile.EnterFourCodePage
 import com.example.kilt.screens.profile.EnterSixCodePage
 import com.example.kilt.screens.profile.login.LoginPage
 import com.example.kilt.screens.profile.registration.RegistrationForOwnerPage
 import com.example.kilt.screens.profile.ProfileScreen
+import com.example.kilt.screens.profile.notifications.NotificationsScreen
 import com.example.kilt.screens.profile.registration.RegistrationPage
 import com.example.kilt.screens.searchpage.SearchPage
 import com.example.kilt.screens.searchpage.chooseCity.ChooseCityPage
@@ -60,6 +63,7 @@ import com.example.kilt.viewmodels.AuthViewModel
 import com.example.kilt.viewmodels.SearchViewModel
 
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun KiltApp() {
     val navController = rememberNavController()
@@ -70,6 +74,7 @@ fun KiltApp() {
     val homeSaleViewModel: HomeSaleViewModel = hiltViewModel()
     val chooseCityViewModel: ChooseCityViewModel = hiltViewModel()
     val authViewModel:AuthViewModel = hiltViewModel()
+    val smsViewModel:SmsViewModel = hiltViewModel()
 
 
     val bottomBarRoutes = listOf(
@@ -136,11 +141,14 @@ fun KiltApp() {
                 )
             }
             composable(Screen.LoginPage.route){ LoginPage(navController = navController, authViewModel = authViewModel)}
-            composable(Screen.EnterFourCodePage.route){ EnterFourCodePage(navController,authViewModel = authViewModel)}
+            composable(Screen.EnterFourCodePage.route){ EnterFourCodePage(navController,authViewModel = authViewModel,smsViewModel = smsViewModel) }
             composable(Screen.RegistrationPage.route){ RegistrationPage(navController,authViewModel = authViewModel) }
             composable(Screen.OwnerPage.route){ RegistrationForOwnerPage(navController,authViewModel = authViewModel) }
             composable(Screen.AgencyPage.route){ RegistrationForAgencyPage(navController,authViewModel = authViewModel) }
             composable(Screen.EnterSixCodePage.route){ EnterSixCodePage(navController,authViewModel = authViewModel) }
+            composable(Screen.EditProfile.route){ EditProfile(navController,authViewModel = authViewModel) }
+            composable(Screen.AddingAnnouncement.route){ AddingAnnouncementScreen()}
+            composable(Screen.NotificationsScreen.route){ NotificationsScreen(navController) }
         }
         val currentRoute = navBackStackEntry?.destination?.route
         Log.d("currentRoute", "KiltApp: $currentRoute")

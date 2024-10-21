@@ -3,6 +3,7 @@ package com.example.kilt.di
 import android.content.Context
 import com.example.kilt.data.dataStore.UserDataStoreManager
 import com.example.kilt.data.shardePrefernce.PreferencesHelper
+import com.example.kilt.otp.SmsViewModel
 import com.example.kilt.repository.ConfigRepository
 import com.example.kilt.repository.HomeSaleRepository
 import com.example.kilt.repository.KatoRepository
@@ -61,5 +62,11 @@ object ViewModelModule {
         return AuthViewModel(registrationRepository, loginRepository, userDataStoreManager,preferencesHelper)
     }
 
+    @Provides
+    @ViewModelScoped
+    fun provideSmsViewModel(
+    ): SmsViewModel {
+        return SmsViewModel()
+    }
 
 }

@@ -11,4 +11,10 @@ sealed class Screen(val route:String) {
     data object RegistrationPage:Screen(route = NavPath.REGISTRATIONPAGE.name)
     data object OwnerPage:Screen(route = NavPath.OWNERPAGE.name)
     data object AgencyPage:Screen(route = NavPath.AGENCYPAGE.name)
+    data object EditProfile:Screen(route = NavPath.EDITPROFILE.name)
+    data object NotificationsScreen:Screen(route = NavPath.NOTIFICATIONSSCREEN.name)
+
+
+
+    data object AddingAnnouncement:Screen(route = NavPath.ADDINGANNOUNCEMENTSCREEN.name)
 }

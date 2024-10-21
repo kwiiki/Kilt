@@ -71,7 +71,6 @@ fun LoginPage(navController: NavHostController, authViewModel: AuthViewModel) {
     val bottomPadding = if (imeVisible) 1.dp else 16.dp
     val focusManager = LocalFocusManager.current
     val otpResult by authViewModel.otpResult
-
     val registrationUiState = authViewModel.registrationUiState.value
 
     var showError by remember { mutableStateOf(false) }
@@ -83,6 +82,7 @@ fun LoginPage(navController: NavHostController, authViewModel: AuthViewModel) {
             Log.d("loginPage", "LoginPage: $it")
             when (it) {
                 is OtpResult.Success -> {
+                    authViewModel.clearOtpResult()
                     navController.navigate(NavPath.ENTERFOURCODEPAGE.name)
                 }
                 is OtpResult.Failure -> {
@@ -92,6 +92,7 @@ fun LoginPage(navController: NavHostController, authViewModel: AuthViewModel) {
             }
         }
     }
+
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -106,8 +107,10 @@ fun LoginPage(navController: NavHostController, authViewModel: AuthViewModel) {
                     modifier = Modifier
                         .size(40.dp)
                         .padding(8.dp)
-                        .clickable { navController.popBackStack()
-                                        authViewModel.clear()}
+                        .clickable {
+                            navController.popBackStack()
+                            authViewModel.clear()
+                        }
                 )
             }
             Spacer(modifier = Modifier.height(8.dp))
@@ -144,7 +147,7 @@ fun LoginPage(navController: NavHostController, authViewModel: AuthViewModel) {
                         fontSize = 14.sp,
                         modifier = Modifier.align(Alignment.Start)
                     )
-                } else if(isError){
+                } else if (isError) {
                     Text(
                         text = "Введите корректный номер",
                         color = Color.Red,
@@ -186,6 +189,7 @@ fun LoginPage(navController: NavHostController, authViewModel: AuthViewModel) {
                         authViewModel.sendPhoneNumber("+7${registrationUiState.phone}")
                         isError = false
                         errorMessage = ""
+                        showError = false
                     }
                 },
                 contentPadding = PaddingValues(0.dp),
@@ -215,7 +219,7 @@ fun LoginPage(navController: NavHostController, authViewModel: AuthViewModel) {
             }
             if (showError) {
                 Spacer(modifier = Modifier.height(8.dp))
-                RegistrationButton(navController = navController,modifier = Modifier)
+                RegistrationButton(navController = navController, modifier = Modifier)
             }
         }
     }

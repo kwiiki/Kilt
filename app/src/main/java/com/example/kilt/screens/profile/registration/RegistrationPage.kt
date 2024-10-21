@@ -10,8 +10,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -38,6 +42,7 @@ import com.example.kilt.R
 import com.example.kilt.data.authentification.BioOtpResult
 import com.example.kilt.enums.UserType
 import com.example.kilt.navigation.NavPath
+import com.example.kilt.screens.profile.gradientBrush
 import com.example.kilt.screens.searchpage.homedetails.gradient
 import com.example.kilt.viewmodels.AuthViewModel
 
@@ -52,22 +57,22 @@ fun RegistrationPage(navController: NavHostController, authViewModel: AuthViewMo
     val bioOtpResult by authViewModel.bioOtpResult
     var showError by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
-    LaunchedEffect(bioOtpResult) {
-        bioOtpResult?.let {
-            when (it) {
-                is BioOtpResult.Success -> {
-                    navController.navigate(NavPath.PROFILE.name)
-                }
-                is BioOtpResult.Failure -> {
-                    errorMessage = it.message
-                    showError = true
-                }
-                is BioOtpResult.RegisteredUser -> {
-                    navController.navigate(NavPath.ENTERFOURCODEPAGE.name)
-                }
-            }
-        }
-    }
+//    LaunchedEffect(bioOtpResult) {
+//        bioOtpResult?.let {
+//            when (it) {
+//                is BioOtpResult.Success -> {
+//                    navController.navigate(NavPath.PROFILE.name)
+//                }
+//                is BioOtpResult.Failure -> {
+//                    errorMessage = it.message
+//                    showError = true
+//                }
+//                is BioOtpResult.RegisteredUser -> {
+//                    navController.navigate(NavPath.ENTERFOURCODEPAGE.name)
+//                }
+//            }
+//        }
+//    }
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -75,7 +80,7 @@ fun RegistrationPage(navController: NavHostController, authViewModel: AuthViewMo
         ) {
             Row {
                 Icon(
-                    Icons.Default.Close,
+                    Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = null,
                     tint = Color.Black,
                     modifier = Modifier
@@ -130,14 +135,15 @@ fun RegistrationPage(navController: NavHostController, authViewModel: AuthViewMo
                         color = if (selectedUserType == UserType.OWNER) Color(0xFF3F4FE0) else Color.Black,
                         modifier = Modifier.weight(1f)
                     )
-                    if (selectedUserType == UserType.OWNER) {
-                        Icon(
-                            imageVector = ImageVector.vectorResource(id = R.drawable.check_icon),
-                            contentDescription = "Selected",
-                            tint = Color(0xFF3F4FE0),
-                            modifier = Modifier.size(24.dp)
+                    Checkbox(
+                        checked = selectedUserType == UserType.OWNER,
+                        onCheckedChange = { authViewModel.updateUserType(UserType.OWNER) },
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = Color(0xFF3244E4),
+                            uncheckedColor = Color(0xFFBEC1CC),
+                            checkmarkColor = Color.White
                         )
-                    }
+                    )
                 }
                 Row(
                     modifier = Modifier
@@ -156,14 +162,15 @@ fun RegistrationPage(navController: NavHostController, authViewModel: AuthViewMo
                         color = if (selectedUserType == UserType.AGENT) Color(0xFF3F4FE0) else Color.Black,
                         modifier = Modifier.weight(1f)
                     )
-                    if (selectedUserType == UserType.AGENT) {
-                        Icon(
-                            imageVector = ImageVector.vectorResource(id = R.drawable.check_icon),
-                            contentDescription = "Selected",
-                            tint = Color(0xFF3F4FE0),
-                            modifier = Modifier.size(24.dp)
+                    Checkbox(
+                        checked = selectedUserType == UserType.AGENT,
+                        onCheckedChange = { authViewModel.updateUserType(UserType.AGENT) },
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = Color(0xFF3244E4),
+                            uncheckedColor = Color(0xFFBEC1CC),
+                            checkmarkColor = Color.White
                         )
-                    }
+                    )
                 }
                 Row(
                     modifier = Modifier
@@ -182,34 +189,18 @@ fun RegistrationPage(navController: NavHostController, authViewModel: AuthViewMo
                         color = if (selectedUserType == UserType.AGENCY) Color(0xFF3F4FE0) else Color.Black,
                         modifier = Modifier.weight(1f)
                     )
-                    if (selectedUserType == UserType.AGENCY) {
-                        Icon(
-                            imageVector = ImageVector.vectorResource(id = R.drawable.check_icon),
-                            contentDescription = "Selected",
-                            tint = Color(0xFF3F4FE0),
-                            modifier = Modifier.size(24.dp)
+                    Checkbox(
+                        checked = selectedUserType == UserType.AGENCY,
+                        onCheckedChange = { authViewModel.updateUserType(UserType.AGENCY) },
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = Color(0xFF3244E4),
+                            uncheckedColor = Color(0xFFBEC1CC),
+                            checkmarkColor = Color.White
                         )
-                    }
+                    )
                 }
             }
         }
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 85.dp)
-                .padding(horizontal = 30.dp),
-        ) {
-            Text(
-                text = "При регистрации аккаунта я даю согласие на обработку своих персональных данных, принимаю условия пользовательского соглашения и Политики конфиденциальности.",
-                fontSize = 12.sp,
-                lineHeight = 20.sp,
-                color = Color(0xff566982),
-                fontWeight = FontWeight.W700,
-                modifier = Modifier.align(Alignment.Center)
-            )
-        }
-
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -237,7 +228,7 @@ fun RegistrationPage(navController: NavHostController, authViewModel: AuthViewMo
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp)
-                    .background(gradient, RoundedCornerShape(12.dp))
+                    .background(gradientBrush, RoundedCornerShape(12.dp))
             ) {
                 Box(
                     modifier = Modifier.fillMaxSize(),

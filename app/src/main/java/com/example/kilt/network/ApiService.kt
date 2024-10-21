@@ -18,6 +18,8 @@ import com.example.kilt.data.authentification.OtpRequest
 import com.example.kilt.data.authentification.OtpResult
 import com.example.kilt.data.authentification.UniversalUserUpdateRequest
 import com.example.kilt.data.authentification.UniversalUserUpdateResult
+import com.example.kilt.data.authentification.User
+import com.example.kilt.data.authentification.UserFindRequest
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -63,5 +65,11 @@ interface ApiService {
 
     @POST("universal/User/update")
     suspend fun universalUserUpdate(@Body request: UniversalUserUpdateRequest):UniversalUserUpdateResult
+
+    @POST("universal/User/find")
+    suspend fun universalUserFind(@Body request: UserFindRequest):User
+
+    @GET("users/get-data/{id}")
+    suspend fun getUsersData(@Path("id")id:String):User
 }
 
