@@ -314,7 +314,8 @@ fun CustomButtonForEdit(
                 )
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
-                    text = text, style = TextStyle(
+                    text = text,
+                    style = TextStyle(
                         brush = Brush.horizontalGradient(
                             colors = colorList,
                             tileMode = TileMode.Mirror

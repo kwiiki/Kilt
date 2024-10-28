@@ -3,29 +3,38 @@
 package com.example.kilt.screens.profile
 
 import android.util.Log
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,9 +43,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -45,18 +57,20 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.kilt.data.authentification.CheckOtpResult
 import com.example.kilt.navigation.NavPath
-import com.example.kilt.otp.SmsViewModel
+import com.example.kilt.screens.profile.registration.RegistrationButton
+import com.example.kilt.screens.searchpage.homedetails.gradient
 import com.example.kilt.viewmodels.AuthViewModel
 
 
 @Composable
-fun EnterFourCodePage(navController: NavHostController, authViewModel: AuthViewModel,smsViewModel:SmsViewModel) {
-    val registrationUiState = authViewModel.registrationUiState.value
+fun EnterFourCodePage(navController: NavHostController, authViewModel: AuthViewModel) {
+    val authenticationUiState = authViewModel.authenticationUiState.value
     val checkOtpResult by authViewModel.checkOtpResult
     var showError by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
     val timerCount by authViewModel.timerCount
-
+    val imeVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
+    val bottomPadding = if (imeVisible) 1.dp else 16.dp
 
     LaunchedEffect(Unit) {
         authViewModel.startTimer()
@@ -72,7 +86,7 @@ fun EnterFourCodePage(navController: NavHostController, authViewModel: AuthViewM
                     authViewModel.handleCheckOtpResult(it)
                 }
                 is CheckOtpResult.Failure -> {
-                    errorMessage = it.error.msg
+                    errorMessage = "Код не верный"
                     showError = true
                 }
             }
@@ -84,7 +98,8 @@ fun EnterFourCodePage(navController: NavHostController, authViewModel: AuthViewM
                 .fillMaxSize()
         ) {
             Row(
-                modifier = Modifier.padding(vertical = 16.dp),
+                modifier = Modifier
+                    .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
@@ -92,21 +107,13 @@ fun EnterFourCodePage(navController: NavHostController, authViewModel: AuthViewM
                     contentDescription = null,
                     tint = Color(0xFF566982),
                     modifier = Modifier
-                        .size(40.dp)
-                        .padding(8.dp)
+                        .size(55.dp)
+                        .padding(horizontal = 16.dp, vertical = 16.dp)
                         .clickable {
                             navController.popBackStack()
                         }
                 )
-                Spacer(modifier = Modifier.fillMaxWidth(0.15f))
-                Text(
-                    text = "Подтверждение личности",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.W700
-                )
-
             }
-            Spacer(modifier = Modifier.height(8.dp))
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -115,22 +122,22 @@ fun EnterFourCodePage(navController: NavHostController, authViewModel: AuthViewM
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Text(
-                    text = "Введите код",
+                    text = "Введите код из SMS",
                     fontSize = 24.sp,
                     fontWeight = FontWeight.W700,
                     modifier = Modifier.align(Alignment.Start)
                 )
                 val regex = """(\d)(\d{3})(\d{3})(\d{2})(\d{2})""".toRegex()
-                val number = "7${registrationUiState.phone}"
+                val number = "7${authenticationUiState.phone}"
                 val output = regex.replace(number, "$1 $2 $3 $4 $5")
                 Text(
-                    text = "Код отправлен на номер: +$output",
+                    text = "На ваш телефон +$output отправили SMS с кодом подтверждения. Пожалуйста, введите его ниже, чтобы войти в ваш аккаунт.",
                     fontSize = 16.sp,
                     color = Color(0xff566982),
                     modifier = Modifier.align(Alignment.Start)
                 )
                 OutlinedTextField(
-                    value = registrationUiState.code,
+                    value = authenticationUiState.code,
                     onValueChange = { newCode ->
                         if (newCode.length <= 4) {
                             authViewModel.updateForFourCode(newCode)
@@ -140,38 +147,96 @@ fun EnterFourCodePage(navController: NavHostController, authViewModel: AuthViewM
                     singleLine = true,
                     modifier = Modifier
                         .fillMaxWidth(0.5f)
-                        .height(50.dp),
+                        .height(56.dp),
                     shape = RoundedCornerShape(14.dp),
                     colors = TextFieldDefaults.outlinedTextFieldColors(
-                        focusedBorderColor = Color(0xFFDBDFE4),
-                        unfocusedBorderColor = Color(0xFFDBDFE4),
+                        unfocusedBorderColor = if (showError) Color.Red else Color(0xFFcfcfcf),
+                        focusedBorderColor = if (showError) Color.Red else Color(0xFFcfcfcf),
                         cursorColor = Color(0xFFDBDFE4)
-                    )
+                    ),
+                    label = {
+                        Text(
+                            buildAnnotatedString {
+                                withStyle(style = SpanStyle(color = Color.Gray)) {
+                                    append("SMS код")
+                                }
+                                withStyle(style = SpanStyle(color = Color.Red)) {
+                                    append("*")
+                                }
+                            }
+                        )
+                    }
                 )
-            }
-            Spacer(modifier = Modifier.height(12.dp))
-            val textColor by remember {
-                derivedStateOf {
-                    if (timerCount > 0) Color(0xff8794A5) else Color(0xff010101)
+                if (showError) {
+                    Text(
+                        text = errorMessage,
+                        color = Color.Red,
+                        fontSize = 14.sp,
+                        modifier = Modifier.align(Alignment.Start)
+                    )
                 }
             }
-            Text(
-                text = if (timerCount > 0)
-                    "Отправить код повторно через $timerCount сек"
-                else
-                    "Отправить код повторно",
-                fontSize = 14.sp,
-                fontWeight = FontWeight.W400,
-                lineHeight = 20.sp,
-                color = textColor,
+            Spacer(modifier = Modifier.height(12.dp))
+        }
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+                .padding(bottom = bottomPadding, start = 16.dp, end = 16.dp)
+                .windowInsetsPadding(WindowInsets.ime)
+        ) {
+            val textColor by remember {
+                derivedStateOf {
+                    if (timerCount > 0) Color(0xffBEC1CC) else Color(0xff3244E4)
+                }
+            }
+            val backgroundColor by remember {
+                derivedStateOf {
+                    if (timerCount > 0) Color(0xffEFF1F4) else Color(0xFFFFFFFF)
+                }
+            }
+            val borderColor by remember {
+                derivedStateOf {
+                    if (timerCount > 0) Color(0xffEFF1F4) else Color(0xFF3244E4)
+                }
+            }
+            OutlinedButton(
+                onClick = {
+                    authViewModel.resendCode()
+                },
+                enabled = timerCount == 0,
+                contentPadding = PaddingValues(0.dp),
+                colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.Transparent),
+                shape = RoundedCornerShape(12.dp),
+                border = BorderStroke(width = 1.dp, color = borderColor),
                 modifier = Modifier
-                    .padding(start = 16.dp)
-                    .clickable(enabled = timerCount == 0) {
-                        if (timerCount == 0) {
-                            authViewModel.resendCode()
-                        }
+                    .fillMaxWidth()
+                    .height(50.dp)
+                    .background(backgroundColor, RoundedCornerShape(12.dp))
+            ) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = if (timerCount > 0) {"Повторить через $timerCount секунд"} else "Запросить еще раз",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = textColor
+                        )
                     }
-            )
+                }
+            }
         }
     }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun PreviewFourCodePage() {
+    EnterFourCodePage(navController = rememberNavController(), authViewModel = hiltViewModel())
 }

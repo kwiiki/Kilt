@@ -73,7 +73,7 @@ fun RegistrationForOwnerPage(navController: NavHostController, authViewModel: Au
     val bottomPadding = if (imeVisible) 1.dp else 16.dp
     val focusManager = LocalFocusManager.current
     val bioOtpResult by authViewModel.bioOtpResult
-    val registrationUiState = authViewModel.registrationUiState.value
+    val registrationUiState = authViewModel.authenticationUiState.value
     var selected by remember { mutableStateOf(false) }
     var showError by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
@@ -86,12 +86,10 @@ fun RegistrationForOwnerPage(navController: NavHostController, authViewModel: Au
                     authViewModel.clearBioOtpResult()
                     navController.navigate(NavPath.ENTERSIXCODEPAGE.name)
                 }
-
                 is BioOtpResult.Failure -> {
                     errorMessage = it.message
                     showError = true
                 }
-
                 is BioOtpResult.RegisteredUser -> {
                     Log.d("lool", "OwnerPage: ${registrationUiState.phone}")
                     navController.navigate(NavPath.ENTERFOURCODEPAGE.name)
@@ -146,7 +144,8 @@ fun RegistrationForOwnerPage(navController: NavHostController, authViewModel: Au
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
-                    focusManager = focusManager
+                    focusManager = focusManager,
+                    showError = showError
                 )
                 OutlinedTextField(
                     value = registrationUiState.iin,
@@ -160,8 +159,8 @@ fun RegistrationForOwnerPage(navController: NavHostController, authViewModel: Au
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                     keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
                     colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedBorderColor = if (isError) Color.Red else Color(0xFFcfcfcf),
-                        focusedBorderColor = if (isError) Color.Red else Color(0xFFcfcfcf),
+                        unfocusedBorderColor = if (showError) Color.Red else Color(0xFFcfcfcf),
+                        focusedBorderColor = if (showError) Color.Red else Color(0xFFcfcfcf),
                         cursorColor = Color.Black,
                         errorBorderColor = Color.Red
                     ),
@@ -178,6 +177,14 @@ fun RegistrationForOwnerPage(navController: NavHostController, authViewModel: Au
                         )
                     }
                 )
+                if (showError) {
+                    Text(
+                        text = errorMessage,
+                        color = Color.Red,
+                        fontSize = 14.sp,
+                        modifier = Modifier.align(Alignment.Start)
+                    )
+                }
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -236,21 +243,6 @@ fun RegistrationForOwnerPage(navController: NavHostController, authViewModel: Au
                         color = Color(0xFF01060E)
                     )
                 }
-                if (showError) {
-                    Text(
-                        text = errorMessage,
-                        color = Color.Red,
-                        fontSize = 14.sp,
-                        modifier = Modifier.align(Alignment.Start)
-                    )
-                } else if (isError) {
-                    Text(
-                        text = "Введите корректный номер",
-                        color = Color.Red,
-                        fontSize = 14.sp,
-                        modifier = Modifier.align(Alignment.Start)
-                    )
-                }
             }
         }
         Column(
@@ -262,12 +254,17 @@ fun RegistrationForOwnerPage(navController: NavHostController, authViewModel: Au
         ) {
             OutlinedButton(
                 onClick = {
+                    showError = false
+                    errorMessage = ""
+                    authViewModel.clearBioOtpResult()
                     if (registrationUiState.phone.length < 10) {
                         isError = true
+                        showError = true
                         errorMessage = "Введите корректный номер"
                     } else {
                         authViewModel.bioOtp()
                         isError = false
+                        showError = false
                         errorMessage = ""
                     }
                 },

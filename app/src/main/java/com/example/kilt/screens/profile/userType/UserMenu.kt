@@ -57,7 +57,7 @@ fun UserMenu(navController: NavHostController) {
             icon = ImageVector.vectorResource(id = R.drawable.my_listings_icon),
             title = "Мои объявления",
             url = "",
-            onClick = {navController.navigate(NavPath.BLOGPAGE.name) }
+            onClick = {navController.navigate(NavPath.MYANNOUNCEMENTSCREEN.name) }
 
         )
         SettingItem(

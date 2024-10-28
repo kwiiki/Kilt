@@ -141,6 +141,8 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.ui.graphics.Brush
 import com.example.kilt.screens.profile.gradientBrush
+import com.example.kilt.screens.profile.myannouncement.BenefitsScreen
+import com.example.kilt.screens.profile.myannouncement.MyAnnouncementScreen
 import java.util.regex.Pattern
 
 
@@ -171,7 +173,11 @@ class MainActivity : ComponentActivity() {
         }
         startSmsUserConsent()
         setContent {
+//            BenefitsScreen()
+//            MyAnnouncementScreen(navController = rememberNavController())
             KiltApp()
+//            EnterFourCodePage(navController = rememberNavController(), authViewModel = hiltViewModel())
+
         }
     }
     @Deprecated("Deprecated in Java")

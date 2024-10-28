@@ -261,7 +261,8 @@ fun IconText(icon: ImageVector, text: String) {
             text = text,
             fontSize = 14.sp,
             color = Color(0xff6B6D79),
-            style = MaterialTheme.typography.labelSmall
+            style = MaterialTheme.typography.labelSmall,
+            lineHeight = 18.sp
         )
     }
 }

@@ -20,6 +20,7 @@ class LoginRepositoryImpl(private val apiService: ApiService):LoginRepository {
         return apiService.generateOtpNew(OtpRequest(Otp(phone)))
     }
     override suspend fun handleOtpGeneration(phoneNumber: String): OtpResult {
+        Log.d("phoneNumber", "handleOtpGeneration: $phoneNumber")
         return try {
             when (val result = generateOtp(phoneNumber)) {
                 is OtpResult.Success -> result

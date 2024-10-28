@@ -1,6 +1,7 @@
 package com.example.kilt.screens.profile.login
 
 import android.util.Log
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -34,6 +35,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -61,6 +63,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.kilt.data.authentification.OtpResult
 import com.example.kilt.navigation.NavPath
 import com.example.kilt.screens.profile.registration.RegistrationButton
+import com.example.kilt.screens.profile.registration.enabledGradient
 import com.example.kilt.screens.searchpage.homedetails.gradient
 import com.example.kilt.viewmodels.AuthViewModel
 
@@ -71,11 +74,12 @@ fun LoginPage(navController: NavHostController, authViewModel: AuthViewModel) {
     val bottomPadding = if (imeVisible) 1.dp else 16.dp
     val focusManager = LocalFocusManager.current
     val otpResult by authViewModel.otpResult
-    val registrationUiState = authViewModel.registrationUiState.value
-
+    val registrationUiState = authViewModel.authenticationUiState.value
     var showError by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
     var isError by remember { mutableStateOf(false) }
+    val phoneLength = registrationUiState.phone.length
+    val enabledBoolean = phoneLength == 10
 
     LaunchedEffect(otpResult) {
         otpResult?.let {
@@ -134,44 +138,31 @@ fun LoginPage(navController: NavHostController, authViewModel: AuthViewModel) {
                 )
                 PhoneNumberTextField(
                     value = registrationUiState.phone,
-                    onValueChange = { registrationUiState.phone = it },
+                    onValueChange = {
+                        registrationUiState.phone = it
+                        isError = it.length != 10
+                        if (isError) {
+                            errorMessage = ""
+                        } else {
+                            errorMessage = ""
+                            showError = false
+                        }
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
-                    focusManager = focusManager
+                    focusManager = focusManager,
+                    showError = showError
                 )
-                if (showError) {
+                if (showError || isError) {
                     Text(
                         text = errorMessage,
                         color = Color.Red,
                         fontSize = 14.sp,
                         modifier = Modifier.align(Alignment.Start)
                     )
-                } else if (isError) {
-                    Text(
-                        text = "Введите корректный номер",
-                        color = Color.Red,
-                        fontSize = 14.sp,
-                        modifier = Modifier.align(Alignment.Start)
-                    )
                 }
             }
-        }
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 85.dp)
-                .padding(horizontal = 30.dp),
-        ) {
-            Text(
-                text = "При регистрации аккаунта я даю согласие на обработку своих персональных данных, принимаю условия пользовательского соглашения и Политики конфиденциальности.",
-                fontSize = 12.sp,
-                lineHeight = 20.sp,
-                color = Color(0xff566982),
-                fontWeight = FontWeight.W700,
-                modifier = Modifier.align(Alignment.Center)
-            )
         }
         Column(
             modifier = Modifier
@@ -180,10 +171,17 @@ fun LoginPage(navController: NavHostController, authViewModel: AuthViewModel) {
                 .padding(bottom = bottomPadding, start = 16.dp, end = 16.dp)
                 .windowInsetsPadding(WindowInsets.ime)
         ) {
+            val borderColor by remember {
+                derivedStateOf {
+                    if (enabledBoolean) Color(0xFF3244E4) else Color(0xffEFF1F4)
+                }
+            }
             OutlinedButton(
                 onClick = {
-                    if (registrationUiState.phone.length < 10) {
+                    authViewModel.clearOtpResult()
+                    if (!enabledBoolean) {
                         isError = true
+                        showError = true
                         errorMessage = "Введите корректный номер"
                     } else {
                         authViewModel.sendPhoneNumber("+7${registrationUiState.phone}")
@@ -193,12 +191,17 @@ fun LoginPage(navController: NavHostController, authViewModel: AuthViewModel) {
                     }
                 },
                 contentPadding = PaddingValues(0.dp),
+                enabled = enabledBoolean,  // Кнопка активна только при длине номера 10
                 colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.Transparent),
                 shape = RoundedCornerShape(12.dp),
+                border = BorderStroke(width = 1.dp, color = borderColor),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp)
-                    .background(gradient, RoundedCornerShape(12.dp))
+                    .background(
+                        if (enabledBoolean) gradient else enabledGradient,
+                        RoundedCornerShape(12.dp)
+                    )
             ) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
@@ -217,19 +220,20 @@ fun LoginPage(navController: NavHostController, authViewModel: AuthViewModel) {
                     }
                 }
             }
-            if (showError) {
-                Spacer(modifier = Modifier.height(8.dp))
-                RegistrationButton(navController = navController, modifier = Modifier)
-            }
+            Spacer(modifier = Modifier.height(8.dp))
+            RegistrationButton(navController = navController, modifier = Modifier)
         }
     }
 }
+
+
 @Composable
 fun PhoneNumberTextField(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    focusManager: FocusManager
+    focusManager: FocusManager,
+    showError: Boolean
 ) {
     var textFieldValueState by remember {
         mutableStateOf(
@@ -247,14 +251,16 @@ fun PhoneNumberTextField(
         value = textFieldValueState,
         onValueChange = { newValue ->
             val oldText = textFieldValueState.text
-            val newText = if (isFocused && !newValue.text.startsWith("+7")) "+7${newValue.text}" else newValue.text
+            val newText =
+                if (isFocused && !newValue.text.startsWith("+7")) "+7${newValue.text}" else newValue.text
             val oldSelection = textFieldValueState.selection.start
             val newSelection = newValue.selection.start
 
             val unformattedNewText = newText.substringAfter("+7").filter { it.isDigit() }
 
             if (unformattedNewText.length <= 10) {
-                val formattedNewText = if (isFocused) formatPhoneNumber(unformattedNewText) else unformattedNewText
+                val formattedNewText =
+                    if (isFocused) formatPhoneNumber(unformattedNewText) else unformattedNewText
 
                 val oldFormattedCursorPosition =
                     oldText.take(oldSelection).count { it.isDigit() } - if (isFocused) 1 else 0
@@ -297,8 +303,8 @@ fun PhoneNumberTextField(
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
         keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
         colors = OutlinedTextFieldDefaults.colors(
-            unfocusedBorderColor = if (isError) Color.Red else Color(0xFFcfcfcf),
-            focusedBorderColor = if (isError) Color.Red else Color(0xFFcfcfcf),
+            unfocusedBorderColor = if (showError) Color.Red else Color(0xFFcfcfcf),
+            focusedBorderColor = if (showError) Color.Red else Color(0xFFcfcfcf),
             cursorColor = Color.Black,
             errorBorderColor = Color.Red
         ),
@@ -324,6 +330,7 @@ fun PhoneNumberTextField(
         )
     }
 }
+
 fun formatPhoneNumber(digits: String): String {
     return buildString {
         append("+7")

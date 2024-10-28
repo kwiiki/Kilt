@@ -2,7 +2,6 @@ package com.example.kilt.viewmodels
 
 import android.util.Log
 import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -11,8 +10,6 @@ import com.example.kilt.data.authentification.BioCheckOTPResult
 import com.example.kilt.data.authentification.BioOtpCheckRequest
 import com.example.kilt.data.authentification.BioOtpRequest
 import com.example.kilt.data.authentification.BioOtpResult
-import com.example.kilt.data.authentification.CheckOtp
-import com.example.kilt.data.authentification.CheckOtpRequest
 import com.example.kilt.data.authentification.CheckOtpResult
 import com.example.kilt.data.authentification.DeviceInfo
 import com.example.kilt.data.authentification.ErrorResponse
@@ -23,16 +20,14 @@ import com.example.kilt.data.shardePrefernce.PreferencesHelper
 import com.example.kilt.enums.UserType
 import com.example.kilt.repository.LoginRepository
 import com.example.kilt.repository.RegistrationRepository
-import com.example.kilt.screens.profile.registration.RegistrationUiState
+import com.example.kilt.screens.profile.registration.AuthenticationUiState
 import com.google.android.datatransport.BuildConfig
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import okhttp3.internal.notifyAll
 import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -46,8 +41,8 @@ class AuthViewModel @Inject constructor(
     private val preferencesHelper: PreferencesHelper
    ):ViewModel() {
     val user: Flow<UserWithMetadata?> = userDataStoreManager.userDataFlow
-    private val _registrationUiState = mutableStateOf(RegistrationUiState())
-    val registrationUiState:State<RegistrationUiState> = _registrationUiState
+    private val _authenticationUiState = mutableStateOf(AuthenticationUiState())
+    val authenticationUiState:State<AuthenticationUiState> = _authenticationUiState
 
     private val _bioOtpResult = mutableStateOf<BioOtpResult?>(null)
     val bioOtpResult: State<BioOtpResult?> = _bioOtpResult
@@ -80,16 +75,16 @@ class AuthViewModel @Inject constructor(
     }
     fun generateOTP(phoneNumber: String) {
         viewModelScope.launch {
-            _otpResult.value = loginRepository.handleOtpGeneration(phoneNumber)
+            _otpResult.value = registrationRepository.handleOtpGeneration(phoneNumber)
         }
     }
     private fun checkOtp() {
         viewModelScope.launch {
             try {
                 val firebaseToken = getFirebaseToken()
-                val phoneNumber = "+7${_registrationUiState.value.phone}"
-                val otpCode = _registrationUiState.value.code.trim()
-                val userType = registrationUiState.value.userType.value
+                val phoneNumber = "+7${_authenticationUiState.value.phone}"
+                val otpCode = _authenticationUiState.value.code.trim()
+                val userType = authenticationUiState.value.userType.value
 
                 _checkOtpResult.value = loginRepository.handleCheckOtp(
                     phoneNumber = phoneNumber,
@@ -109,9 +104,9 @@ class AuthViewModel @Inject constructor(
                 FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         val firebaseToken = task.result
-                        val phoneNumber = registrationUiState.value.phone
-                        val userType = registrationUiState.value.userType
-                        val iin = registrationUiState.value.iin
+                        val phoneNumber = authenticationUiState.value.phone
+                        val userType = authenticationUiState.value.userType
+                        val iin = authenticationUiState.value.iin
 
                         Log.d("bioOtp", "App Version: ${BuildConfig.VERSION_NAME}")
                         Log.d("bioOtp", "Firebase Token: $firebaseToken")
@@ -151,9 +146,9 @@ class AuthViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val firebaseToken = getFirebaseToken()
-                val phoneNumber = "7${registrationUiState.value.phone}"
-                val otpCode = registrationUiState.value.code
-                val iin = registrationUiState.value.iin
+                val phoneNumber = "7${authenticationUiState.value.phone}"
+                val otpCode = authenticationUiState.value.code
+                val iin = authenticationUiState.value.iin
 
                 Log.d("bioOTP", "firebaseToken: $firebaseToken")
                 Log.d("bioOTP", "phoneNumber: $phoneNumber")
@@ -226,7 +221,7 @@ class AuthViewModel @Inject constructor(
 
     private suspend fun handleSuccessfulOtp(result: CheckOtpResult.Success): CheckOtpResult {
         val userId = result.user.id
-        val userType = registrationUiState.value.userType.value
+        val userType = authenticationUiState.value.userType.value
         Log.d("user-type", "userType: $userType")
 
         return try {
@@ -244,7 +239,7 @@ class AuthViewModel @Inject constructor(
     }
     private suspend fun handleSuccessfulBioOtp(result: BioCheckOTPResult.Success): BioCheckOTPResult {
         val userId = result.user.id
-        val userType = registrationUiState.value.userType.value
+        val userType = authenticationUiState.value.userType.value
         Log.d("user-type", "userType: $userType")
 
         return try {
@@ -291,46 +286,46 @@ class AuthViewModel @Inject constructor(
 
     fun resendCode() {
         viewModelScope.launch {
-            Log.d("checkPhone", "resendCode: ${registrationUiState.value.phone}")
-            sendPhoneNumber("+7${registrationUiState.value.phone}")
+            Log.d("checkPhone", "resendCode: ${authenticationUiState.value.phone}")
+            sendPhoneNumber("+7${authenticationUiState.value.phone}")
             resetTimer()
         }
     }
     fun updateForSixCode(newCode: String) {
-        _registrationUiState.value = registrationUiState.value.copy(code = newCode)
+        _authenticationUiState.value = authenticationUiState.value.copy(code = newCode)
         if (newCode.length == 6) {
             bioOtpCheck()
         }
     }
     fun updateForFourCode(newCode: String) {
-        _registrationUiState.value = registrationUiState.value.copy(code = newCode)
+        _authenticationUiState.value = authenticationUiState.value.copy(code = newCode)
         if (newCode.length == 4) {
             checkOtp()
         }
     }
     fun updatePhone(phone: String) {
-        _registrationUiState.value = registrationUiState.value.copy(phone = phone)
+        _authenticationUiState.value = authenticationUiState.value.copy(phone = phone)
     }
     fun updateIin(iin: String) {
-        _registrationUiState.value = registrationUiState.value.copy(iin = iin)
+        _authenticationUiState.value = authenticationUiState.value.copy(iin = iin)
     }
     fun updateUserType(userType: UserType) {
-        _registrationUiState.value = registrationUiState.value.copy(userType = userType)
+        _authenticationUiState.value = authenticationUiState.value.copy(userType = userType)
     }
     fun clearBioOtpResult(){
         _bioOtpResult.value = null
         _bioCheckOTPResult.value = null
-        _registrationUiState.value.code = ""
+        _authenticationUiState.value.code = ""
         resetTimer()
     }
     fun clearOtpResult(){
         _otpResult.value = null
         _checkOtpResult.value = null
-        _registrationUiState.value.code = ""
+        _authenticationUiState.value.code = ""
         resetTimer()
     }
 
     fun clear(){
-        _registrationUiState.value.phone = ""
+        _authenticationUiState.value.phone = ""
     }
 }

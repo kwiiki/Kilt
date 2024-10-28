@@ -1,6 +1,7 @@
 package com.example.kilt.screens.profile.registration
 
 import android.util.Log
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -30,6 +31,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,18 +52,18 @@ import com.example.kilt.screens.searchpage.homedetails.gradient
 import com.example.kilt.viewmodels.AuthViewModel
 
 @Composable
-fun RegistrationForAgencyPage(navController: NavHostController, authViewModel: AuthViewModel){
+fun RegistrationForAgencyPage(navController: NavHostController, authViewModel: AuthViewModel) {
     val scrollState = rememberScrollState()
     val imeVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
     val bottomPadding = if (imeVisible) 1.dp else 16.dp
     val focusManager = LocalFocusManager.current
     val otpResult by authViewModel.otpResult
-
-    val registrationUiState = authViewModel.registrationUiState.value
-
+    val registrationUiState = authViewModel.authenticationUiState.value
     var showError by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
     var isError by remember { mutableStateOf(false) }
+
+    val enabledBoolean = registrationUiState.phone.length == 10
 
     LaunchedEffect(otpResult) {
         otpResult?.let {
@@ -77,6 +79,7 @@ fun RegistrationForAgencyPage(navController: NavHostController, authViewModel: A
             }
         }
     }
+
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -115,11 +118,15 @@ fun RegistrationForAgencyPage(navController: NavHostController, authViewModel: A
                 )
                 PhoneNumberTextField(
                     value = registrationUiState.phone,
-                    onValueChange = { registrationUiState.phone = it },
+                    onValueChange = {
+                        registrationUiState.phone = it
+                        isError = it.length != 10 // Update error state based on the length
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
-                    focusManager = focusManager
+                    focusManager = focusManager,
+                    showError = showError
                 )
                 if (showError) {
                     Text(
@@ -129,30 +136,9 @@ fun RegistrationForAgencyPage(navController: NavHostController, authViewModel: A
                         modifier = Modifier.align(Alignment.Start)
                     )
                 } else if (isError) {
-                    Text(
-                        text = "Введите корректный номер",
-                        color = Color.Red,
-                        fontSize = 14.sp,
-                        modifier = Modifier.align(Alignment.Start)
-                    )
+
                 }
             }
-        }
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 85.dp)
-                .padding(horizontal = 30.dp),
-        ) {
-            Text(
-                text = "При регистрации аккаунта я даю согласие на обработку своих персональных данных, принимаю условия пользовательского соглашения и Политики конфиденциальности.",
-                fontSize = 12.sp,
-                lineHeight = 20.sp,
-                color = Color(0xff566982),
-                fontWeight = FontWeight.W700,
-                modifier = Modifier.align(Alignment.Center)
-            )
         }
         Column(
             modifier = Modifier
@@ -161,6 +147,12 @@ fun RegistrationForAgencyPage(navController: NavHostController, authViewModel: A
                 .padding(bottom = bottomPadding, start = 16.dp, end = 16.dp)
                 .windowInsetsPadding(WindowInsets.ime)
         ) {
+            val borderColor by remember {
+                derivedStateOf {
+                    if (enabledBoolean ) Color(0xFF3244E4) else Color(0xffEFF1F4)
+                }
+            }
+            Log.d("phone length", "RegistrationForAgencyPage: ${registrationUiState.phone.length}")
             OutlinedButton(
                 onClick = {
                     if (registrationUiState.phone.length < 10) {
@@ -173,12 +165,17 @@ fun RegistrationForAgencyPage(navController: NavHostController, authViewModel: A
                     }
                 },
                 contentPadding = PaddingValues(0.dp),
+                enabled = enabledBoolean,
                 colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.Transparent),
                 shape = RoundedCornerShape(12.dp),
+                border = BorderStroke(width = 1.dp, color = borderColor),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp)
-                    .background(gradient, RoundedCornerShape(12.dp))
+                    .background(
+                        if (enabledBoolean) gradient else enabledGradient,
+                        RoundedCornerShape(12.dp)
+                    )
             ) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
@@ -197,9 +194,7 @@ fun RegistrationForAgencyPage(navController: NavHostController, authViewModel: A
                     }
                 }
             }
-            if (showError) {
-                Spacer(modifier = Modifier.height(8.dp))
-            }
         }
     }
 }
+

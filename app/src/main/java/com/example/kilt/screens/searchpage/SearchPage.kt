@@ -46,7 +46,6 @@ fun SearchPage(
 ) {
     val response = searchViewModel.searchResult.collectAsState()
     val searchResults = searchViewModel.searchResultsFlow.collectAsLazyPagingItems()
-
     val listState by searchViewModel.listState.collectAsState()
 
     LaunchedEffect(searchResults.loadState) {
