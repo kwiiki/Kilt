@@ -161,5 +161,10 @@ fun SpecialistScreen(
         }
         Spacer(modifier = Modifier.height(24.dp))
         UserMenu(navController = navController)
+        Text(text = "Выйти",
+            fontSize = 18.sp,
+            color = Color.Red,
+            modifier = Modifier.clickable { authViewModel.logout() }
+        )
     }
 }

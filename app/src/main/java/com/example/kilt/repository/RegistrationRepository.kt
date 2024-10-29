@@ -10,6 +10,7 @@ import com.example.kilt.data.authentification.UniversalUserUpdateResult
 interface RegistrationRepository {
     suspend fun bioOtp(bioOtpRequest: BioOtpRequest): BioOtpResult
     suspend fun bioOtpCheck(bioOtpCheckRequest: BioOtpCheckRequest): BioCheckOTPResult
+    suspend fun handleBioOtp(bioOtpRequest: BioOtpRequest):BioOtpResult
     suspend fun generateOTP(phone:String):OtpResult
     suspend fun handleOtpGeneration(phoneNumber: String): OtpResult
     suspend fun universalUserUpdate(userId:Int,userType:String): UniversalUserUpdateResult

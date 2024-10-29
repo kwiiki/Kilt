@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.sp
 import com.example.kilt.data.config.FilterItem
 import com.example.kilt.viewmodels.ConfigViewModel
 import com.example.kilt.viewmodels.SearchViewModel
+import com.example.kilt.screens.searchpage.filter.FilterButton
 
 
 @Composable
@@ -56,7 +57,7 @@ fun FilterButtonsForQuickSearch(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             item {
-                com.example.kilt.screens.searchpage.filter.FilterButton(
+                FilterButton(
                     text = "Все",
                     isSelected = selectedFilters.isEmpty(),
                     onClick = {
@@ -67,7 +68,7 @@ fun FilterButtonsForQuickSearch(
             items(filters ?: emptyList()) { filter ->
                 when (filter) {
                     is FilterItem -> {
-                        com.example.kilt.screens.searchpage.filter.FilterButton(
+                        FilterButton(
                             text = filter.name,
                             isSelected = selectedFilters.contains(filter.id),
                             onClick = {

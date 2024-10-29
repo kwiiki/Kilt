@@ -48,6 +48,7 @@ import com.example.kilt.screens.profile.EditProfile
 import com.example.kilt.screens.profile.registration.RegistrationForAgencyPage
 import com.example.kilt.screens.profile.EnterFourCodePage
 import com.example.kilt.screens.profile.EnterSixCodePage
+import com.example.kilt.screens.profile.IdentificationScreen
 import com.example.kilt.screens.profile.login.LoginPage
 import com.example.kilt.screens.profile.registration.RegistrationForOwnerPage
 import com.example.kilt.screens.profile.ProfileScreen
@@ -61,6 +62,7 @@ import com.example.kilt.viewmodels.ChooseCityViewModel
 import com.example.kilt.viewmodels.ConfigViewModel
 import com.example.kilt.viewmodels.HomeSaleViewModel
 import com.example.kilt.viewmodels.AuthViewModel
+import com.example.kilt.viewmodels.IdentificationViewModel
 import com.example.kilt.viewmodels.SearchViewModel
 
 
@@ -75,6 +77,7 @@ fun KiltApp() {
     val homeSaleViewModel: HomeSaleViewModel = hiltViewModel()
     val chooseCityViewModel: ChooseCityViewModel = hiltViewModel()
     val authViewModel:AuthViewModel = hiltViewModel()
+    val identificationViewModel:IdentificationViewModel = hiltViewModel()
     val smsViewModel:SmsViewModel = hiltViewModel()
 
 
@@ -151,6 +154,7 @@ fun KiltApp() {
             composable(Screen.AddingAnnouncement.route){ AddingAnnouncementScreen()}
             composable(Screen.NotificationsScreen.route){ NotificationsScreen(navController) }
             composable(Screen.MyAnnouncementScreen.route){ MyAnnouncementScreen(navController) }
+            composable(Screen.IdentificationScreen.route){ IdentificationScreen(navController, identificationViewModel = identificationViewModel) }
         }
         val currentRoute = navBackStackEntry?.destination?.route
         Log.d("currentRoute", "KiltApp: $currentRoute")

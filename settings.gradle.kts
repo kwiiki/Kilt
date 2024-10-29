@@ -21,5 +21,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "Kilt"
 include(":app")
-include(":data")
-include(":domain")
+//include(":data")
+//include(":domain")

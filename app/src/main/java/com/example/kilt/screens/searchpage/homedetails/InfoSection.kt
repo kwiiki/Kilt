@@ -89,7 +89,6 @@ fun FlatInfoSection(
             }
         }
 
-        // Пример обработки мебели
         val furnitureList = config.propMapping.furniture.list
         val lineOfHouseList = config.propMapping.line_of_houses.list
         val whereLocatedList = config.propMapping.where_located.list
@@ -110,10 +109,10 @@ fun FlatInfoSection(
         // Поиск и отображение значений назначения
         val designationIds = homeSale.listing.designation?.split(",")?.map { it.trim().toIntOrNull() }?.filterNotNull() ?: emptyList()
         val matchedDesignations = designationList.filter { it.id in designationIds }
+
         if (matchedDesignations.isNotEmpty()) {
-            matchedDesignations.forEach { designation ->
-                DetailItem(label = "Назначение", value = designation.name)
-            }
+            val designationNames = matchedDesignations.joinToString(", ") { it.name }
+            DetailItem(label = "Назначение", value = designationNames)
         }
     }
 }

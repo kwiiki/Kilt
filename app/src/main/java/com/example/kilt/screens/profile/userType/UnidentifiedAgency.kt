@@ -29,6 +29,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.kilt.R
 import com.example.kilt.data.authentification.User
+import com.example.kilt.navigation.NavPath
 import com.example.kilt.viewmodels.AuthViewModel
 
 @Composable
@@ -44,22 +45,24 @@ fun UnidentifiedAgency(authViewModel: AuthViewModel, user: User,navController: N
                 .background(Color(0xFFF2F2F2), shape = RoundedCornerShape(12.dp))
                 .height(113.dp)
                 .padding(16.dp)
-                .clickable { },
+                .clickable { navController.navigate(NavPath.IDENTIFICATIONSCREEN.name) },
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
                 painter = painterResource(id = R.drawable.succesful_image),
                 contentDescription = null,
                 modifier = Modifier
-                    .size(50.dp)
+                    .size(40.dp)
                     .background(color = Color.Transparent, RoundedCornerShape(12.dp))
             )
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(24.dp))
             Text(
                 text = "Пройти идентификацию",
-                fontSize = 24.sp,
+                fontSize = 20.sp,
                 fontWeight = FontWeight.W700,
-                color = Color(0xff010101)
+                lineHeight = 24.sp,
+                color = Color(0xff010101),
+                modifier = Modifier.width(160.dp)
             )
             Spacer(modifier = Modifier.weight(1f))
             Icon(

@@ -262,6 +262,7 @@ fun RegistrationForOwnerPage(navController: NavHostController, authViewModel: Au
                         showError = true
                         errorMessage = "Введите корректный номер"
                     } else {
+                        Log.d("phone size", "RegistrationForOwnerPage: ${registrationUiState.phone.length}")
                         authViewModel.bioOtp()
                         isError = false
                         showError = false

@@ -16,7 +16,6 @@ class BioOtpResultAdapter : JsonDeserializer<BioOtpResult> {
         val jsonObject = json?.asJsonObject ?: throw JsonParseException("JsonElement is null")
 
         return when {
-            // Если это зарегистрированный пользователь
             jsonObject.has("id") && jsonObject.has("phone") -> {
                 BioOtpResult.RegisteredUser(
                     id = jsonObject.get("id").asLong,

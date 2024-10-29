@@ -18,8 +18,13 @@ class ConfigRepositoryImpl @Inject constructor(
 
     override suspend fun loadConfig() {
         if (_config.value == null) {
-            Log.d("ConfigDownload", "loadConfig: $_config")
-            _config.value = apiService.getConfig()
+            try {
+                val newConfig = apiService.getConfig()
+                _config.value = newConfig
+                Log.d("ConfigDownload", "Config loaded successfully")
+            } catch (e: Exception) {
+                Log.e("ConfigDownload", "Error loading config", e)
+            }
         }
     }
 

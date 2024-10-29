@@ -4,8 +4,12 @@ import com.example.kilt.network.ApiService
 import com.example.kilt.repository.ConfigHelper
 import com.example.kilt.repository.ConfigRepository
 import com.example.kilt.repository.ConfigRepositoryImpl
+import com.example.kilt.repository.EditProfileRepository
+import com.example.kilt.repository.EditProfileRepositoryImpl
 import com.example.kilt.repository.HomeSaleRepository
 import com.example.kilt.repository.HomeSaleRepositoryImpl
+import com.example.kilt.repository.IdentificationRepository
+import com.example.kilt.repository.IdentificationRepositoryImpl
 import com.example.kilt.repository.KatoRepository
 import com.example.kilt.repository.KatoRepositoryImpl
 import com.example.kilt.repository.LoginRepository
@@ -66,5 +70,17 @@ object RepositoryModule {
     @Singleton
     fun provideRegistrationRepository(apiService: ApiService): RegistrationRepository {
         return RegistrationRepositoryImpl(apiService)
+    }
+
+    @Provides
+    @Singleton
+    fun provideEditProfileRepository(apiService: ApiService):EditProfileRepository{
+        return EditProfileRepositoryImpl(apiService)
+    }
+
+    @Provides
+    @Singleton
+    fun provideIdentificationRepository(apiService: ApiService): IdentificationRepository {
+        return IdentificationRepositoryImpl(apiService)
     }
 }

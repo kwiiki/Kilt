@@ -20,9 +20,13 @@ import com.example.kilt.data.authentification.UniversalUserUpdateRequest
 import com.example.kilt.data.authentification.UniversalUserUpdateResult
 import com.example.kilt.data.authentification.User
 import com.example.kilt.data.authentification.UserFindRequest
+import okhttp3.MultipartBody
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -71,5 +75,17 @@ interface ApiService {
 
     @GET("users/get-data/{id}")
     suspend fun getUsersData(@Path("id")id:String):User
+
+    @Multipart
+    @POST("users/upload-agency-verification-document")
+    suspend fun uploadImages(
+        @Part images: List<MultipartBody.Part>
+    ): Response<String>
+
+    @POST("users/update/{id}")
+    suspend fun userUpdate(
+        @Path("id") id: String,
+        @Body user: User
+    ): Response<Any>
 }
 

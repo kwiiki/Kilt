@@ -35,6 +35,10 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -69,6 +73,10 @@ val redListColor = listOf(Color(0xFFE63312), Color(0xFFE63312))
 fun EditProfile(navController: NavHostController, authViewModel: AuthViewModel) {
     val scrollState = rememberScrollState()
     val user = authViewModel.user.collectAsState(initial = null).value?.user
+    var agentAbout by remember { mutableStateOf("Текст") }
+    var agentCity by remember { mutableStateOf("Город, район") }
+    var agentFullAddress by remember { mutableStateOf("ул.Абая, д.123, кв.12") }
+    var agentWorkingHours by remember { mutableStateOf("с 9 до 17, обед с 13-14") }
 
     Column(
         modifier = Modifier
@@ -127,9 +135,9 @@ fun EditProfile(navController: NavHostController, authViewModel: AuthViewModel) 
 
 //        About me
 
-        CustomTextField(label = "Имя", value = user?.firstname.toString())
-        CustomTextField(label = "Фамилия", value = user?.lastname.toString())
-        CustomTextField(label = "О себе", value = "Текст", isMultiline = true)
+        CustomTextField(label = "Имя", value = user?.firstname.toString(), onValueChange = {})
+        CustomTextField(label = "Фамилия", value = user?.lastname.toString(), onValueChange = {})
+        CustomTextField(label = "О себе", value = "Текст", onValueChange = {agentAbout = it}, isMultiline = true)
 
         // Phone number
         TextSectionTitle("Телефоны")
@@ -161,11 +169,12 @@ fun EditProfile(navController: NavHostController, authViewModel: AuthViewModel) 
 
             TextSectionTitle("Адрес работы")
             Spacer(modifier = Modifier.height(16.dp))
-            CustomTextField(label = "Город", value = "Город, район")
-            CustomTextField(label = "Полный адрес", value = "ул.Абая, д.123, кв.12")
+            CustomTextField(label = "Город", value = "Город, район", onValueChange = {agentCity = it})
+            CustomTextField(label = "Полный адрес", value = "ул.Абая, д.123, кв.12", onValueChange = {agentFullAddress = it})
             CustomTextField(
                 label = "График работы",
                 value = "с 9 до 17, обед с 13-14",
+                onValueChange = {agentWorkingHours = it},
                 hasIcon = true
             )
         }
@@ -201,10 +210,10 @@ fun TextSectionTitle(title: String) {
 fun CustomTextField(
     label: String,
     value: String,
+    onValueChange: (String) -> Unit,
     isMultiline: Boolean = false,
     hasIcon: Boolean = false
 ) {
-
     val enable = !(label == "Имя" || label == "Фамилия")
     val textFieldHeight = if (isMultiline) 155 else 48
     Column {
@@ -217,7 +226,7 @@ fun CustomTextField(
         Spacer(modifier = Modifier.height(8.dp))
         TextField(
             value = value,
-            onValueChange = {},
+            onValueChange = onValueChange,
             enabled = enable,
             modifier = Modifier
                 .fillMaxWidth()
@@ -235,7 +244,6 @@ fun CustomTextField(
                 unfocusedTextColor = Color(0xFF6D7384),
                 disabledContainerColor = Color.White,
                 disabledIndicatorColor = Color.Transparent
-
             ),
             singleLine = !isMultiline,
             maxLines = if (isMultiline) 5 else 1,

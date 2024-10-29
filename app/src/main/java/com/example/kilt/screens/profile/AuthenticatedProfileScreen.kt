@@ -23,6 +23,7 @@ fun AuthenticatedProfileScreen(
     if(userWithMetadata?.user?.user_type == "" || userWithMetadata?.user?.user_type == UserType.AGENCY.value) {
         if (isUserIdentified) {
          IdentifiedAgency(authViewModel = authViewModel, userWithMetadata,userWithMetadata.user,navController = navController)
+            Log.d("userId", "AuthenticatedProfileScreen: ${userWithMetadata.user.id}")
         } else {
             UnidentifiedAgency(authViewModel = authViewModel, userWithMetadata.user,navController = navController)
         }

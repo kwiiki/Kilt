@@ -41,6 +41,7 @@ class AuthViewModel @Inject constructor(
     private val preferencesHelper: PreferencesHelper
    ):ViewModel() {
     val user: Flow<UserWithMetadata?> = userDataStoreManager.userDataFlow
+
     private val _authenticationUiState = mutableStateOf(AuthenticationUiState())
     val authenticationUiState:State<AuthenticationUiState> = _authenticationUiState
 
@@ -67,7 +68,6 @@ class AuthViewModel @Inject constructor(
 
     private var timerJob: Job? = null
 
-
     fun sendPhoneNumber(phoneNumber: String) {
         viewModelScope.launch {
             _otpResult.value = loginRepository.handleOtpGeneration(phoneNumber)
@@ -81,19 +81,13 @@ class AuthViewModel @Inject constructor(
     private fun checkOtp() {
         viewModelScope.launch {
             try {
-                val firebaseToken = getFirebaseToken()
-                val phoneNumber = "+7${_authenticationUiState.value.phone}"
-                val otpCode = _authenticationUiState.value.code.trim()
-                val userType = authenticationUiState.value.userType.value
-
                 _checkOtpResult.value = loginRepository.handleCheckOtp(
-                    phoneNumber = phoneNumber,
-                    otpCode = otpCode,
-                    firebaseToken = firebaseToken,
-                    userType = userType
+                    phoneNumber = "+7${_authenticationUiState.value.phone}",
+                    otpCode = _authenticationUiState.value.code.trim(),
+                    firebaseToken = getFirebaseToken(),
+                    userType = _authenticationUiState.value.userType.value
                 )
             } catch (e: Exception) {
-                Log.e("AuthViewModel", "Failed to check OTP", e)
                 _checkOtpResult.value = CheckOtpResult.Failure(ErrorResponse("Не удалось проверить код"))
             }
         }
@@ -107,7 +101,6 @@ class AuthViewModel @Inject constructor(
                         val phoneNumber = authenticationUiState.value.phone
                         val userType = authenticationUiState.value.userType
                         val iin = authenticationUiState.value.iin
-
                         Log.d("bioOtp", "App Version: ${BuildConfig.VERSION_NAME}")
                         Log.d("bioOtp", "Firebase Token: $firebaseToken")
                         Log.d("bioOtp", "Phone Number: $phoneNumber")
@@ -324,7 +317,6 @@ class AuthViewModel @Inject constructor(
         _authenticationUiState.value.code = ""
         resetTimer()
     }
-
     fun clear(){
         _authenticationUiState.value.phone = ""
     }

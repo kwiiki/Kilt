@@ -24,6 +24,22 @@ class RegistrationRepositoryImpl(private val apiService: ApiService) : Registrat
         return apiService.bioOtpCheck(bioOtpCheckRequest)
     }
 
+    override suspend fun handleBioOtp(
+       bioOtpRequest: BioOtpRequest
+    ):BioOtpResult {
+        return try {
+            Log.d("bio otp", "handleBioOtp: ${bioOtpRequest}")
+            when (val result = bioOtp(bioOtpRequest = bioOtpRequest)) {
+                is BioOtpResult.Success -> result
+                is BioOtpResult.RegisteredUser -> result
+                is BioOtpResult.Failure -> BioOtpResult.Failure(message = "Номер телефона введён неверно, либо вы не зарегистрированы. Пожалуйста, зарегистрируйтесь", success = false)
+            }
+        } catch (e: Exception) {
+            Log.e("LoginRepository", "Error generating OTP", e)
+            BioOtpResult.Failure(message = "Номер телефона введён неверно, либо вы не зарегистрированы. Пожалуйста, зарегистрируйтесь", success = false)
+        }
+    }
+
     override suspend fun generateOTP(phone: String): OtpResult {
         return apiService.generateOtp(OtpRequest(Otp(phone)))
     }

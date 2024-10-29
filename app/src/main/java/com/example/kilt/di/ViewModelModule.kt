@@ -5,7 +5,9 @@ import com.example.kilt.data.dataStore.UserDataStoreManager
 import com.example.kilt.data.shardePrefernce.PreferencesHelper
 import com.example.kilt.otp.SmsViewModel
 import com.example.kilt.repository.ConfigRepository
+import com.example.kilt.repository.EditProfileRepository
 import com.example.kilt.repository.HomeSaleRepository
+import com.example.kilt.repository.IdentificationRepository
 import com.example.kilt.repository.KatoRepository
 import com.example.kilt.repository.LoginRepository
 import com.example.kilt.repository.RegistrationRepository
@@ -13,6 +15,8 @@ import com.example.kilt.repository.SearchRepository
 import com.example.kilt.viewmodels.ChooseCityViewModel
 import com.example.kilt.viewmodels.HomeSaleViewModel
 import com.example.kilt.viewmodels.AuthViewModel
+import com.example.kilt.viewmodels.EditProfileViewModel
+import com.example.kilt.viewmodels.IdentificationViewModel
 import com.example.kilt.viewmodels.SearchViewModel
 import dagger.Module
 import dagger.Provides
@@ -60,6 +64,18 @@ object ViewModelModule {
         preferencesHelper: PreferencesHelper
     ): AuthViewModel {
         return AuthViewModel(registrationRepository, loginRepository, userDataStoreManager,preferencesHelper)
+    }
+
+    @Provides
+    @ViewModelScoped
+    fun provideEditProfileViewModel(editProfileRepository: EditProfileRepository):EditProfileViewModel{
+        return EditProfileViewModel(editProfileRepository)
+    }
+
+    @Provides
+    @ViewModelScoped
+    fun provideIdentificationViewModel(identificationRepository: IdentificationRepository,configRepository: ConfigRepository): IdentificationViewModel {
+        return IdentificationViewModel(identificationRepository,configRepository)
     }
 
     @Provides
