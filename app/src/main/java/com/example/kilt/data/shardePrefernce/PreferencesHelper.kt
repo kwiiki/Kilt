@@ -12,7 +12,7 @@ class PreferencesHelper(context: Context) {
     companion object {
         private const val VIEWED_STORIES_KEY = "viewed_stories"
         private const val USER_AUTHENTICATED_KEY = "user_authenticated"
-        private const val USER_IDENTIFIED_KEY = "user_identified"
+        private const val USER_IDENTIFIED_KEY = "user_identified_key"
 
 
     }
