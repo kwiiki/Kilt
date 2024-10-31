@@ -9,6 +9,7 @@ import com.example.kilt.data.kato.KatoResponse
 import com.example.kilt.data.kato.MicroDistrictResponse
 import com.example.kilt.data.kato.ResidentialComplexResponse
 import com.example.kilt.data.HomeSale
+import com.example.kilt.data.authentification.ApiResponse
 import com.example.kilt.data.authentification.BioCheckOTPResult
 import com.example.kilt.data.authentification.BioOtpCheckRequest
 import com.example.kilt.data.authentification.BioOtpRequest
@@ -20,6 +21,7 @@ import com.example.kilt.data.authentification.UniversalUserUpdateRequest
 import com.example.kilt.data.authentification.UniversalUserUpdateResult
 import com.example.kilt.data.authentification.User
 import com.example.kilt.data.authentification.UserFindRequest
+import com.example.kilt.data.authentification.UserUpdateResult
 import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body
@@ -77,15 +79,15 @@ interface ApiService {
     suspend fun getUsersData(@Path("id")id:String):User
 
     @Multipart
-    @POST("users/upload-agency-verification-document")
+    @POST("users/upload-agency-verification-documents")
     suspend fun uploadImages(
         @Part images: List<MultipartBody.Part>
-    ): Response<String>
+    ): ApiResponse
 
     @POST("users/update/{id}")
     suspend fun userUpdate(
         @Path("id") id: String,
         @Body user: User
-    ): Response<Any>
+    ): ApiResponse
 }
 

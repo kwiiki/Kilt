@@ -63,19 +63,36 @@ object ViewModelModule {
         userDataStoreManager: UserDataStoreManager,
         preferencesHelper: PreferencesHelper
     ): AuthViewModel {
-        return AuthViewModel(registrationRepository, loginRepository, userDataStoreManager,preferencesHelper)
+        return AuthViewModel(
+            registrationRepository,
+            loginRepository,
+            userDataStoreManager,
+            preferencesHelper
+        )
     }
 
     @Provides
     @ViewModelScoped
-    fun provideEditProfileViewModel(editProfileRepository: EditProfileRepository):EditProfileViewModel{
+    fun provideEditProfileViewModel(editProfileRepository: EditProfileRepository): EditProfileViewModel {
         return EditProfileViewModel(editProfileRepository)
     }
 
     @Provides
     @ViewModelScoped
-    fun provideIdentificationViewModel(identificationRepository: IdentificationRepository,configRepository: ConfigRepository): IdentificationViewModel {
-        return IdentificationViewModel(identificationRepository,configRepository)
+    fun provideIdentificationViewModel(
+        @ApplicationContext context: Context,
+        identificationRepository: IdentificationRepository,
+        configRepository: ConfigRepository,
+        userDataStoreManager: UserDataStoreManager,
+        preferencesHelper: PreferencesHelper
+    ): IdentificationViewModel {
+        return IdentificationViewModel(
+            context,
+            identificationRepository,
+            configRepository,
+            userDataStoreManager,
+            preferencesHelper
+        )
     }
 
     @Provides

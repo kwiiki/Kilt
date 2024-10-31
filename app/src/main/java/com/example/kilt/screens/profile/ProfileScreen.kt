@@ -23,7 +23,6 @@ import com.example.kilt.viewmodels.AuthViewModel
 fun ProfileScreen(navController: NavHostController, authViewModel: AuthViewModel) {
     val userWithMetadata by authViewModel.user.collectAsState(initial = null)
     val isUserAuthenticated by authViewModel.isUserAuthenticated
-    val isUserIdentified by authViewModel.isUserIdentified
     val scrollState = rememberScrollState()
     Column(
         modifier = Modifier
@@ -42,7 +41,7 @@ fun ProfileScreen(navController: NavHostController, authViewModel: AuthViewModel
             fontWeight = FontWeight.W800
         )
         if (isUserAuthenticated) {
-            AuthenticatedProfileScreen(navController, authViewModel, userWithMetadata, isUserIdentified)
+            AuthenticatedProfileScreen(navController, authViewModel, userWithMetadata)
         } else {
             UnAuthenticatedProfileScreen(navController)
         }

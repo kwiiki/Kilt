@@ -17,6 +17,7 @@ import com.example.kilt.data.authentification.OtpResult
 import com.example.kilt.data.authentification.UserWithMetadata
 import com.example.kilt.data.dataStore.UserDataStoreManager
 import com.example.kilt.data.shardePrefernce.PreferencesHelper
+import com.example.kilt.enums.IdentificationTypes
 import com.example.kilt.enums.UserType
 import com.example.kilt.repository.LoginRepository
 import com.example.kilt.repository.RegistrationRepository
@@ -60,8 +61,8 @@ class AuthViewModel @Inject constructor(
     private val _isUserAuthenticated = mutableStateOf(preferencesHelper.isUserAuthenticated())
     val isUserAuthenticated: State<Boolean> = _isUserAuthenticated
 
-    private val _isUserIdentified = mutableStateOf(preferencesHelper.isUserIdentified())
-    val isUserIdentified: State<Boolean> = _isUserIdentified
+    private val _isUserIdentified = mutableStateOf(preferencesHelper.getUserIdentificationStatus())
+    val isUserIdentified: State<IdentificationTypes> = _isUserIdentified
 
     private val _timerCount = mutableIntStateOf(59)
     val timerCount: State<Int> = _timerCount
@@ -248,17 +249,12 @@ class AuthViewModel @Inject constructor(
             BioCheckOTPResult.Failure(ErrorResponse("Ошибка обновления пользователя"))
         }
     }
-    fun setUserIdentified(isIdentified: Boolean) {
-        _isUserIdentified.value = isIdentified
-        preferencesHelper.setUserIdentified(isIdentified)
-    }
+
     fun logout() {
         viewModelScope.launch {
             userDataStoreManager.clearUserData() // Кнопка для выхода из аккаунта
             preferencesHelper.setUserAuthenticated(false)
-            preferencesHelper.setUserIdentified(false)
             _isUserAuthenticated.value = false
-            _isUserIdentified.value = false
         }
     }
     fun startTimer() {

@@ -2,8 +2,8 @@ package com.example.kilt.data.shardePrefernce
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.provider.Settings.Global.putString
 import androidx.core.content.edit
+import com.example.kilt.enums.IdentificationTypes
 
 class PreferencesHelper(context: Context) {
     private val sharedPreferences: SharedPreferences =
@@ -14,8 +14,8 @@ class PreferencesHelper(context: Context) {
         private const val USER_AUTHENTICATED_KEY = "user_authenticated"
         private const val USER_IDENTIFIED_KEY = "user_identified"
 
-    }
 
+    }
     fun getViewedStories(count: Int): List<Boolean> {
         val viewedStories = sharedPreferences.getString(VIEWED_STORIES_KEY, null)
         return viewedStories?.split(",")?.map { it.toBoolean() } ?: List(count) { false }
@@ -36,13 +36,14 @@ class PreferencesHelper(context: Context) {
             putBoolean(USER_AUTHENTICATED_KEY, isAuthenticated)
         }
     }
-    fun isUserIdentified(): Boolean {
-        return sharedPreferences.getBoolean(USER_IDENTIFIED_KEY, false)
+    fun getUserIdentificationStatus(): IdentificationTypes {
+        val statusValue = sharedPreferences.getInt(USER_IDENTIFIED_KEY, IdentificationTypes.NotIdentified.value)
+        return IdentificationTypes.fromInt(statusValue)
     }
 
-    fun setUserIdentified(isIdentified: Boolean) {
+    fun setUserIdentificationStatus(status: IdentificationTypes) {
         sharedPreferences.edit {
-            putBoolean(USER_IDENTIFIED_KEY, isIdentified)
+            putInt(USER_IDENTIFIED_KEY, status.value)
         }
     }
 

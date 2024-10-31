@@ -1,7 +1,7 @@
 package com.example.kilt.data.authentification
 
 data class User(
-    val agency_verification_status: Int = 0,
+    val agency_verification_status: Int = 1,
     val agent_about: String = "",
     val agent_city: String ="",
     val agent_full_address: String ="",

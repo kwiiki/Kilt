@@ -1,0 +1,318 @@
+[33mcommit 3b8b0f287e460e7e39c9e52be4215c0c6168b91b[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m)[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Mon Oct 28 10:15:02 2024 +0500
+
+    Add MyAnnouncementScreen, New design,BenefitsScreen,ChooseListingType
+
+[33mcommit da2bb170f75c33a5b03e6d2bcf49134df088aa82[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Mon Oct 21 19:07:33 2024 +0500
+
+    new design for registration and login,and finished design for edit profile (owner,agent) and create notifications
+
+[33mcommit 4a80ac2a60bc5d1b222ad4f827dec1b26b3f4ebc[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Thu Oct 17 17:52:36 2024 +0500
+
+    Create Screen for each userType,Add request for universall,fix border for CodeEnter
+
+[33mcommit 53f1b47103b4919facc59f36abffbfe1c91e2034[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Wed Oct 16 19:47:47 2024 +0500
+
+    Correct sign up in Agency and other page
+
+[33mcommit 9fd916ad69c49d444e8f546ac4b994bd9c17a5c8[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Mon Oct 14 18:00:22 2024 +0500
+
+    Come in account,but don't save information and bug with BottomNavigationBar,and need when come in account save user information
+
+[33mcommit 335742e78c5f7f337775e5cc5f68a5c840d7f52f[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Fri Oct 11 10:47:15 2024 +0500
+
+    full commit,searView,SearchViewModel,add firebase,LoginPage
+
+[33mcommit 6f7051c7b3d3c0de6f8e5c7cb44c33235ef2040b[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Wed Oct 9 12:00:33 2024 +0500
+
+    full commit,searView,SearchViewModel,add firebase,LoginPage
+
+[33mcommit 0cb953c228c7f893e76409ffef854bf9ee22b161[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Mon Oct 7 14:43:46 2024 +0500
+
+    correct work district and calculator
+
+[33mcommit 95a4f1712639883d5cb5e42ee8fe956ec33948d3[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Mon Oct 7 14:33:15 2024 +0500
+
+    correct work district and calculator
+
+[33mcommit 8b5fbff572309564fd4a9809ac6fc6bb3acd4037[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Fri Oct 4 18:13:34 2024 +0500
+
+    disappearance cursor RangeFilter
+
+[33mcommit 73ceab0251acb45bfab0c69510703dc90fa301fb[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Fri Oct 4 13:05:46 2024 +0500
+
+    correct show microdistricts but not full testing
+
+[33mcommit 9cc1412f97718ce6e23930760dc1b1e42707be13[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Fri Oct 4 12:23:14 2024 +0500
+
+    correct work a choose city
+
+[33mcommit cd0baf10c017405a2b9795ed5e0644fc9f41802d[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Thu Oct 3 16:51:32 2024 +0500
+
+    add Loading indicator in button show result button
+
+[33mcommit c8a36e892006a6f1f889ea31ae95392afc083251[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Thu Oct 3 15:26:16 2024 +0500
+
+    finished chooseCitySection
+
+[33mcommit 5888c5dc397e34a9f74556f3dff255427f6a2ef0[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Tue Oct 1 15:22:18 2024 +0500
+
+    add checBox whick pick district
+
+[33mcommit d96400651426eb8c1c4e9d019b348c9bbcb75dcd[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Tue Oct 1 13:14:00 2024 +0500
+
+    correct work choose few microDistrick
+
+[33mcommit 925af08b599a86ed1700094013971a58ad935c81[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Mon Sep 30 18:58:23 2024 +0500
+
+    I add request which make request with microDiscrit
+
+[33mcommit 491fa933967eb95ab3752c8078506638eb0bb997[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Mon Sep 30 16:13:43 2024 +0500
+
+    I add SearchView and List of ResidentComplex
+
+[33mcommit 345cc9be62dce300a056859b8837ba8daba2caa5[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Fri Sep 27 17:05:32 2024 +0500
+
+    Location seaction don't correct work
+
+[33mcommit d5c17a29eecd00781505948b6253ec5b906b7ae8[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Wed Sep 25 15:37:56 2024 +0500
+
+    Add viewPager in HouseItem
+
+[33mcommit 78a476558b630f9e7ff5034301d5d6451511606c[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Tue Sep 24 17:56:16 2024 +0500
+
+    I correct work HomeDetailsScreen with hardCode but without bug,and correct display area
+
+[33mcommit 456a15fc24aaade5b5e469b80ed6b468462e53d9[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Tue Sep 24 14:27:17 2024 +0500
+
+    ViewPager + count photo in HomeDetailsScreen
+
+[33mcommit dd70b553d2b49a8d990b1fd4d7b9052e417e9c99[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Mon Sep 23 15:36:14 2024 +0500
+
+    add icon back in the ImageSlider page
+
+[33mcommit a8aafd3a97c9cf23f26f240b5d34018a7b3087ab[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Mon Sep 23 14:38:58 2024 +0500
+
+    quick filter work correct,range clear if click Clear button,and up to top when user click OutlinedTextField
+
+[33mcommit 6d4e7b84a00d90d0f8ef71a6cef2a52367c9d5ea[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Mon Sep 23 00:10:51 2024 +0500
+
+    Add quick filters and work with quick filters,but till now have bugs
+
+[33mcommit a010be1b21bce7e48d9dc07191de85b94f66c2f6[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Fri Sep 20 13:09:37 2024 +0500
+
+    quick filters and change logic dealType,propertyType,listingType
+
+[33mcommit f02f0169f164ea882bb55f726f9f7cbd0da3673c[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Thu Sep 19 11:33:40 2024 +0500
+
+    fix bug filter button,now filter button correct scroll
+
+[33mcommit 4a5f8b6a5570f962ed5f3f6806c73c12dc89c47f[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Tue Sep 17 12:30:18 2024 +0500
+
+    button work a speed but when change propertyType save a range and don't save filters when close filterPage,Sometimes dont work a resultCount
+
+[33mcommit 74abc8f8fef8306c28f9b76676bf932fcf236686[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Mon Sep 16 17:12:30 2024 +0500
+
+    add a save filter but with bug and correct request for body,1 request for config
+
+[33mcommit 81578c9837a9cabe144d34fd18dcd345198fb9c4[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Fri Sep 13 16:33:02 2024 +0500
+
+    half correct filter without hardcode Config
+
+[33mcommit 38a4fc8c891a36ecf5b0579d40b624405064892f[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Fri Sep 13 10:37:29 2024 +0500
+
+    correct pagination with LazyColumn state in SearchPage
+
+[33mcommit 061f4b864fed04076cd6ac10b44cbf016da4a318[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Thu Sep 12 17:08:05 2024 +0500
+
+    correct work pagination,but without save scroll state also i need do correct downloading config
+
+[33mcommit 81a0cc573dee8424780507a6f2e3bc6c5417ddcd[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Wed Sep 11 15:59:45 2024 +0500
+
+    add scroll save,save a fitler,make request only when click button,indicator when list announcement end
+
+[33mcommit 012950cbe46b2cbe4dc31859c9022dc36f9a831f[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Tue Sep 10 15:21:22 2024 +0500
+
+    full filter code,but have hard code
+
+[33mcommit f9555ec232da0b38047c96f587c6cf6c7a75f4f3[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Mon Sep 2 21:01:16 2024 +0500
+
+    fix bug with charackteristics and add button with count result
+
+[33mcommit 7e1a0b93be84d1d0c5304086893c217005e79212[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Thu Aug 29 16:33:41 2024 +0500
+
+    add filter for deal_type,listing,property_type
+
+[33mcommit e6409962d14bf8ffd4f4b8951d72173415abcccf[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Wed Aug 28 11:36:43 2024 +0500
+
+    Correct work filters and HomeDetails work with each id announcement
+
+[33mcommit 047bd028d10b1cd8831fed25127ce99ca3f8300b[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Fri Aug 23 16:05:27 2024 +0500
+
+    correctiong filter and delete bad code
+
+[33mcommit 9215e25a84c8154d56314197d49b63ef484099c3[m
+Merge: 49851be 38f36f6
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Thu Aug 22 17:17:47 2024 +0500
+
+    add checkbox and create Filter page + add Priority Filter
+
+[33mcommit 49851bec9ab7cb34e214430ae0745f03dc17be59[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Tue Aug 20 11:39:51 2024 +0500
+
+    add checkbox and create Filter page + add Priority Filter
+
+[33mcommit 38f36f60c55ad02291039f9ca3a47cb00f9adb5b[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Tue Aug 20 11:39:51 2024 +0500
+
+    add checkbox and create Filter page + add Priority Filter
+
+[33mcommit f5eeed19f6341577461c4d4bc87e16db63367408[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Mon Aug 19 14:28:10 2024 +0500
+
+    FilterSection,Priority Bottom Sheet
+
+[33mcommit 52b3b59964b49c6e7a69b44ef21729d767b79bac[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Fri Aug 16 16:26:48 2024 +0500
+
+    Add calculator and correct image slider + LazyRow and description for Bottom Sheet
+
+[33mcommit b9d3c8ea5ce80f0e5c05e7d07cb179cf5641bbc5[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Thu Aug 15 14:31:55 2024 +0500
+
+    HomeInfa + rest
+
+[33mcommit 885a1ada0129f61b6c54a9d8abff780f694179b4[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Tue Aug 13 18:20:51 2024 +0500
+
+    ImageSlider modification + rest,HomeDetailScreen + rest
+
+[33mcommit 3edd2e8888af287db547f8430fc0cded9c9dbafd[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Tue Aug 13 10:41:37 2024 +0500
+
+    I add retrofit and get data
+
+[33mcommit 7ed313d223874c31ba321286293a324965716078[m
+Author: kwiiki <daryn.satpaev8@gmail.com>
+Date:   Fri Aug 9 12:19:23 2024 +0500
+
+    Fix bugs in HomeDetails
+
+[33mcommit 080883334a3c70c2dac041afa92153b74e3d2803[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Fri Aug 9 13:13:27 2024 +0500
+
+    Add ProfileScreen,FavoriteScreen
+
+[33mcommit 5fe86cb012de5be0f193d4afe94c6a2eb4d884a0[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Fri Aug 9 12:00:27 2024 +0500
+
+    Add HomeDetails,fix bottom bug
+
+[33mcommit 8c0bd470b936a6a8b3b0d141a5c6f9c049ab5167[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Fri Aug 9 11:31:59 2024 +0500
+
+    Add HomeDetails,fix bottom bug
+
+[33mcommit 91e36b0f4f350a1a5e0864feb0e61b35696c7127[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Thu Aug 8 11:05:08 2024 +0500
+
+    Fixed BottomNavigationBar
+
+[33mcommit 834213c766259c5e16329ee66c27f5272d05bd6a[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Wed Aug 7 17:52:59 2024 +0500
+
+    first commit
+
+[33mcommit 21291a97a0e646c0d1128fa6be91342ad064a337[m
+Author: daryn <daryn.satpaev8@gmail.com>
+Date:   Wed Aug 7 17:52:52 2024 +0500
+
+    first commit
