@@ -60,12 +60,14 @@ object ViewModelModule {
     fun provideAuthViewModel(
         registrationRepository: RegistrationRepository,
         loginRepository: LoginRepository,
+        identificationRepository: IdentificationRepository,
         userDataStoreManager: UserDataStoreManager,
         preferencesHelper: PreferencesHelper
     ): AuthViewModel {
         return AuthViewModel(
             registrationRepository,
             loginRepository,
+            identificationRepository,
             userDataStoreManager,
             preferencesHelper
         )

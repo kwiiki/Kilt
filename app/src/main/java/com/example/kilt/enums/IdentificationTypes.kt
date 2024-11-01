@@ -1,8 +1,8 @@
 package com.example.kilt.enums
 
 enum class IdentificationTypes(val value: Int) {
-    NotIdentified(0),
-    IsIdentified(1),
+    IsIdentified(0),
+    NotIdentified(1),
     Identified(2);
 
     companion object {

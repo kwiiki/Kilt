@@ -19,6 +19,7 @@ import com.example.kilt.data.dataStore.UserDataStoreManager
 import com.example.kilt.data.shardePrefernce.PreferencesHelper
 import com.example.kilt.enums.IdentificationTypes
 import com.example.kilt.enums.UserType
+import com.example.kilt.repository.IdentificationRepository
 import com.example.kilt.repository.LoginRepository
 import com.example.kilt.repository.RegistrationRepository
 import com.example.kilt.screens.profile.registration.AuthenticationUiState
@@ -28,6 +29,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.coroutines.resume
@@ -38,19 +42,20 @@ import kotlin.coroutines.suspendCoroutine
 class AuthViewModel @Inject constructor(
     private val registrationRepository: RegistrationRepository,
     private val loginRepository: LoginRepository,
+    private val identificationRepository: IdentificationRepository,
     private val userDataStoreManager: UserDataStoreManager,
     private val preferencesHelper: PreferencesHelper
-   ):ViewModel() {
+) : ViewModel() {
     val user: Flow<UserWithMetadata?> = userDataStoreManager.userDataFlow
 
     private val _authenticationUiState = mutableStateOf(AuthenticationUiState())
-    val authenticationUiState:State<AuthenticationUiState> = _authenticationUiState
+    val authenticationUiState: State<AuthenticationUiState> = _authenticationUiState
 
     private val _bioOtpResult = mutableStateOf<BioOtpResult?>(null)
     val bioOtpResult: State<BioOtpResult?> = _bioOtpResult
 
     private val _bioCheckOTPResult = mutableStateOf<BioCheckOTPResult?>(null)
-    val bioCheckOTPResult:State<BioCheckOTPResult?> = _bioCheckOTPResult
+    val bioCheckOTPResult: State<BioCheckOTPResult?> = _bioCheckOTPResult
 
     private val _otpResult = mutableStateOf<OtpResult?>(null)
     val otpResult: State<OtpResult?> = _otpResult
@@ -67,8 +72,18 @@ class AuthViewModel @Inject constructor(
     private val _timerCount = mutableIntStateOf(59)
     val timerCount: State<Int> = _timerCount
 
+    private val _currentUser = mutableStateOf<UserWithMetadata?>(null)
+    val currentUser: State<UserWithMetadata?> = _currentUser
+
     private var timerJob: Job? = null
 
+    init {
+        viewModelScope.launch {
+            userDataStoreManager.userDataFlow.collect { user ->
+                _currentUser.value = user
+            }
+        }
+    }
     fun sendPhoneNumber(phoneNumber: String) {
         viewModelScope.launch {
             _otpResult.value = loginRepository.handleOtpGeneration(phoneNumber)
@@ -79,6 +94,23 @@ class AuthViewModel @Inject constructor(
             _otpResult.value = registrationRepository.handleOtpGeneration(phoneNumber)
         }
     }
+    fun checkVerificationStatus(userId: String) {
+        viewModelScope.launch {
+            val status = identificationRepository.checkIdentifiedStatus(userId)
+            when (status) {
+                1 -> {
+                    _isUserIdentified.value = IdentificationTypes.NotIdentified
+                }
+                2 -> {
+                    _isUserIdentified.value = IdentificationTypes.Identified
+                }
+                0 -> {
+                    _isUserIdentified.value = IdentificationTypes.IsIdentified
+                }
+            }
+        }
+    }
+
     private fun checkOtp() {
         viewModelScope.launch {
             try {
@@ -89,10 +121,12 @@ class AuthViewModel @Inject constructor(
                     userType = _authenticationUiState.value.userType.value
                 )
             } catch (e: Exception) {
-                _checkOtpResult.value = CheckOtpResult.Failure(ErrorResponse("Не удалось проверить код"))
+                _checkOtpResult.value =
+                    CheckOtpResult.Failure(ErrorResponse("Не удалось проверить код"))
             }
         }
     }
+
     fun bioOtp() {
         viewModelScope.launch {
             try {
@@ -136,6 +170,7 @@ class AuthViewModel @Inject constructor(
             }
         }
     }
+
     private fun bioOtpCheck() {
         viewModelScope.launch {
             try {
@@ -163,14 +198,20 @@ class AuthViewModel @Inject constructor(
 
                 _bioCheckOTPResult.value = when (result) {
                     is BioCheckOTPResult.Success -> handleSuccessfulBioOtp(result)
-                    is BioCheckOTPResult.Failure -> BioCheckOTPResult.Failure(ErrorResponse(result.error.msg))
+                    is BioCheckOTPResult.Failure -> BioCheckOTPResult.Failure(
+                        ErrorResponse(
+                            result.error.msg
+                        )
+                    )
                 }
             } catch (e: Exception) {
                 Log.e("bioOTP", "Failed to check Bio OTP", e)
-                _bioCheckOTPResult.value = BioCheckOTPResult.Failure(ErrorResponse("Не удалось проверить код"))
+                _bioCheckOTPResult.value =
+                    BioCheckOTPResult.Failure(ErrorResponse("Не удалось проверить код"))
             }
         }
     }
+
     fun handleCheckOtpResult(result: CheckOtpResult.Success) {
         viewModelScope.launch {
             userDataStoreManager.saveUserData(
@@ -203,12 +244,15 @@ class AuthViewModel @Inject constructor(
         _isUserAuthenticated.value = isAuthenticated
         preferencesHelper.setUserAuthenticated(isAuthenticated)
     }
+
     private suspend fun getFirebaseToken(): String = suspendCoroutine { continuation ->
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 continuation.resume(task.result)
             } else {
-                continuation.resumeWithException(task.exception ?: Exception("Failed to get Firebase token"))
+                continuation.resumeWithException(
+                    task.exception ?: Exception("Failed to get Firebase token")
+                )
             }
         }
     }
@@ -219,7 +263,8 @@ class AuthViewModel @Inject constructor(
         Log.d("user-type", "userType: $userType")
 
         return try {
-            val updateResult = registrationRepository.universalUserUpdate(userId = userId, userType = userType)
+            val updateResult =
+                registrationRepository.universalUserUpdate(userId = userId, userType = userType)
             Log.d("universalUserUpdate", "User update result: $updateResult")
             if (updateResult.success) {
                 result
@@ -231,13 +276,15 @@ class AuthViewModel @Inject constructor(
             CheckOtpResult.Failure(ErrorResponse("Ошибка обновления пользователя"))
         }
     }
+
     private suspend fun handleSuccessfulBioOtp(result: BioCheckOTPResult.Success): BioCheckOTPResult {
         val userId = result.user.id
         val userType = authenticationUiState.value.userType.value
         Log.d("user-type", "userType: $userType")
 
         return try {
-            val updateResult = registrationRepository.universalUserUpdate(userId = userId, userType = userType)
+            val updateResult =
+                registrationRepository.universalUserUpdate(userId = userId, userType = userType)
             Log.d("universalUserUpdate", "User update result: $updateResult")
             if (updateResult.success) {
                 result
@@ -257,6 +304,7 @@ class AuthViewModel @Inject constructor(
             _isUserAuthenticated.value = false
         }
     }
+
     fun startTimer() {
         timerJob?.cancel()
         timerJob = viewModelScope.launch {
@@ -280,40 +328,48 @@ class AuthViewModel @Inject constructor(
             resetTimer()
         }
     }
+
     fun updateForSixCode(newCode: String) {
         _authenticationUiState.value = authenticationUiState.value.copy(code = newCode)
         if (newCode.length == 6) {
             bioOtpCheck()
         }
     }
+
     fun updateForFourCode(newCode: String) {
         _authenticationUiState.value = authenticationUiState.value.copy(code = newCode)
         if (newCode.length == 4) {
             checkOtp()
         }
     }
+
     fun updatePhone(phone: String) {
         _authenticationUiState.value = authenticationUiState.value.copy(phone = phone)
     }
+
     fun updateIin(iin: String) {
         _authenticationUiState.value = authenticationUiState.value.copy(iin = iin)
     }
+
     fun updateUserType(userType: UserType) {
         _authenticationUiState.value = authenticationUiState.value.copy(userType = userType)
     }
-    fun clearBioOtpResult(){
+
+    fun clearBioOtpResult() {
         _bioOtpResult.value = null
         _bioCheckOTPResult.value = null
         _authenticationUiState.value.code = ""
         resetTimer()
     }
-    fun clearOtpResult(){
+
+    fun clearOtpResult() {
         _otpResult.value = null
         _checkOtpResult.value = null
         _authenticationUiState.value.code = ""
         resetTimer()
     }
-    fun clear(){
+
+    fun clear() {
         _authenticationUiState.value.phone = ""
     }
 }

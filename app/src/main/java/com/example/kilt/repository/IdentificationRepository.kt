@@ -10,5 +10,6 @@ interface IdentificationRepository {
 
     suspend fun identifyUser(id:String,user: User):UserUpdateResult
     suspend fun uploadImages(images: List<MultipartBody.Part>): UserUpdateResult
+    suspend fun checkIdentifiedStatus(id:String):Int
 }
 

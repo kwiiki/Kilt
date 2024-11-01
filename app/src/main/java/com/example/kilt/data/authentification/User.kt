@@ -13,7 +13,7 @@ data class User(
     val email: String = "",
     val firstname: String = "",
     val gender: String = "",
-    val id: Int = 1443,
+    var id: Int = 0,
     val iin: String = "",
     val instagram: String = "",
     val is_blocked: Boolean = false,

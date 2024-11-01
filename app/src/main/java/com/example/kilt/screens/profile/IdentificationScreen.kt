@@ -74,12 +74,12 @@ fun IdentificationScreen(
     var isUpdateSuccess by remember { mutableStateOf(false) }
     var isUploadSuccess by remember { mutableStateOf(false) }
     val agencyItems = identificationViewModel.agencyItems.value?.split(";") ?: emptyList()
-//    val checkAndNavigate = {
-//        if (isUpdateSuccess && isUploadSuccess) {
-//            isLoading = false
-//            navController.navigate(NavPath.PROFILE.name)
-//        }
-//    }
+    val checkAndNavigate = {
+        if (isUpdateSuccess && isUploadSuccess) {
+            isLoading = false
+            navController.navigate(NavPath.PROFILE.name)
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -181,7 +181,7 @@ fun IdentificationScreen(
                         agentWorkingHours = agentWorkingHours,
                         onSuccess = {
                             isUpdateSuccess = true
-//                            checkAndNavigate()
+                            checkAndNavigate()
                         },
                         onError = { error ->
                             isLoading = false
@@ -194,7 +194,7 @@ fun IdentificationScreen(
                         agencyItems = agencyItems,
                         onSuccess = {
                             isUploadSuccess = true
-//                            checkAndNavigate()
+                            checkAndNavigate()
                         },
                         onError = { error ->
                             isLoading = false

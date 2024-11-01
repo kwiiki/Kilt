@@ -1,5 +1,6 @@
 package com.example.kilt.repository
 
+import android.util.Log
 import com.example.kilt.data.authentification.User
 import com.example.kilt.data.authentification.UserUpdateResult
 import com.example.kilt.network.ApiService
@@ -21,6 +22,17 @@ class IdentificationRepositoryImpl(private val apiService: ApiService):Identific
             UserUpdateResult.UpdateUserSuccess(success = true, user = response.user)
         } else {
             UserUpdateResult.UpdateUserFailure(success = false, message = "Upload failed")
+        }
+    }
+
+    override suspend fun checkIdentifiedStatus(id: String): Int {
+        return try {
+            val userData = apiService.getUsersData(id)
+            Log.d("checkIdentifiedStatus", "checkIdentifiedStatus: ${userData.agency_verification_status}")
+            Log.d("checkIdentifiedStatus", "id: ${id}")
+            userData.agency_verification_status
+        } catch (e: Exception) {
+            0
         }
     }
 

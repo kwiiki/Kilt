@@ -44,6 +44,7 @@ import com.example.kilt.screens.blog.News
 import com.example.kilt.screens.favorite.FavoritesScreen
 import com.example.kilt.screens.home.HomePageContent
 import com.example.kilt.screens.home.addAnnouncement.AddingAnnouncementScreen
+import com.example.kilt.screens.profile.AgencyProfileScreen
 import com.example.kilt.screens.profile.EditProfile
 import com.example.kilt.screens.profile.registration.RegistrationForAgencyPage
 import com.example.kilt.screens.profile.EnterFourCodePage
@@ -155,6 +156,7 @@ fun KiltApp() {
             composable(Screen.NotificationsScreen.route){ NotificationsScreen(navController) }
             composable(Screen.MyAnnouncementScreen.route){ MyAnnouncementScreen(navController) }
             composable(Screen.IdentificationScreen.route){ IdentificationScreen(navController, identificationViewModel = identificationViewModel) }
+            composable(Screen.AgencyProfileScreen.route){ AgencyProfileScreen(navController)}
         }
         val currentRoute = navBackStackEntry?.destination?.route
         Log.d("currentRoute", "KiltApp: $currentRoute")
