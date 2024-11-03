@@ -4,9 +4,8 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.kilt.data.Config
-import com.example.kilt.data.config.FilterItem
-import com.example.kilt.repository.ConfigRepository
+import com.example.kilt.models.config.FilterItem
+import com.example.kilt.domain.config.repository.ConfigRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

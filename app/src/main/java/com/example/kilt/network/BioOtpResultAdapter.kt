@@ -1,6 +1,6 @@
 package com.example.kilt.network
 
-import com.example.kilt.data.authentification.BioOtpResult
+import com.example.kilt.models.authentification.BioOtpResult
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement

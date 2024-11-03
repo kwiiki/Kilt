@@ -1,13 +1,12 @@
 package com.example.kilt.di
 
 import android.content.Context
-import com.example.kilt.data.dataStore.UserDataStoreManager
-import com.example.kilt.data.shardePrefernce.PreferencesHelper
+import com.example.kilt.models.dataStore.UserDataStoreManager
+import com.example.kilt.models.shardePrefernce.PreferencesHelper
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.android.scopes.ViewModelScoped
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 

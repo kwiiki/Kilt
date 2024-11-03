@@ -1,7 +1,8 @@
 package com.example.kilt.repository
 
 import android.util.Log
-import com.example.kilt.data.Config
+import com.example.kilt.domain.config.repository.ConfigRepository
+import com.example.kilt.models.Config
 import com.example.kilt.network.ApiService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

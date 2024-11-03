@@ -60,7 +60,7 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.kilt.R
-import com.example.kilt.data.config.Image
+import com.example.kilt.models.config.Image
 import com.example.kilt.navigation.NavPath
 import com.example.kilt.utills.imageCdnUrl
 import com.example.kilt.viewmodels.HomeSaleViewModel

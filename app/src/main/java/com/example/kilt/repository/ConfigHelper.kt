@@ -1,8 +1,8 @@
 package com.example.kilt.repository
 
 import android.util.Log
-import com.example.kilt.data.PropLabel
-import com.example.kilt.data.config.ListingStructures
+import com.example.kilt.models.PropLabel
+import com.example.kilt.models.config.ListingStructures
 
 class ConfigHelper {
     private fun getFieldType(fieldName: String, propLabels: List<PropLabel>): String {

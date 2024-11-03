@@ -41,11 +41,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.kilt.data.authentification.OtpResult
+import com.example.kilt.models.authentification.OtpResult
 import com.example.kilt.navigation.NavPath
 import com.example.kilt.screens.profile.login.PhoneNumberTextField
 import com.example.kilt.screens.searchpage.homedetails.gradient

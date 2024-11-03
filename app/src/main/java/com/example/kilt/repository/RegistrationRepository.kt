@@ -1,11 +1,11 @@
 package com.example.kilt.repository
 
-import com.example.kilt.data.authentification.BioCheckOTPResult
-import com.example.kilt.data.authentification.BioOtpCheckRequest
-import com.example.kilt.data.authentification.BioOtpRequest
-import com.example.kilt.data.authentification.BioOtpResult
-import com.example.kilt.data.authentification.OtpResult
-import com.example.kilt.data.authentification.UniversalUserUpdateResult
+import com.example.kilt.models.authentification.BioCheckOTPResult
+import com.example.kilt.models.authentification.BioOtpCheckRequest
+import com.example.kilt.models.authentification.BioOtpRequest
+import com.example.kilt.models.authentification.BioOtpResult
+import com.example.kilt.models.authentification.OtpResult
+import com.example.kilt.models.authentification.UniversalUserUpdateResult
 
 interface RegistrationRepository {
     suspend fun bioOtp(bioOtpRequest: BioOtpRequest): BioOtpResult

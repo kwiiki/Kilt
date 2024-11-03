@@ -31,8 +31,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.kilt.R
-import com.example.kilt.data.authentification.User
-import com.example.kilt.data.authentification.UserWithMetadata
+import com.example.kilt.models.authentification.User
+import com.example.kilt.models.authentification.UserWithMetadata
 import com.example.kilt.enums.UserType
 import com.example.kilt.navigation.NavPath
 import com.example.kilt.viewmodels.AuthViewModel

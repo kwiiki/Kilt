@@ -38,7 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.kilt.R
-import com.example.kilt.data.Blog
+import com.example.kilt.models.Blog
 
 
 val blogs: List<Blog> = listOf(

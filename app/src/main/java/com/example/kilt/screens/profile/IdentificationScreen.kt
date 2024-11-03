@@ -80,7 +80,6 @@ fun IdentificationScreen(
             navController.navigate(NavPath.PROFILE.name)
         }
     }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -108,7 +107,6 @@ fun IdentificationScreen(
                 color = Color(0xff01060E)
             )
         }
-
         CustomTextField(
             label = "Название",
             value = agentFirstName,

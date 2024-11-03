@@ -1,10 +1,10 @@
 package com.example.kilt.repository
 
-import com.example.kilt.data.Count
-import com.example.kilt.data.Filters
-import com.example.kilt.data.PropertyItem
-import com.example.kilt.data.SearchResponse
-import com.example.kilt.data.THomeSale
+import com.example.kilt.models.Count
+import com.example.kilt.models.Filters
+import com.example.kilt.models.PropertyItem
+import com.example.kilt.models.SearchResponse
+import com.example.kilt.models.THomeSale
 
 interface SearchRepository {
     suspend fun performSearch(request: THomeSale): SearchResponse

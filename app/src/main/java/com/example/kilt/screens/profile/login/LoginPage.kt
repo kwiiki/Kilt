@@ -50,7 +50,6 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.withStyle
@@ -60,7 +59,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.kilt.data.authentification.OtpResult
+import com.example.kilt.models.authentification.OtpResult
 import com.example.kilt.navigation.NavPath
 import com.example.kilt.screens.profile.registration.RegistrationButton
 import com.example.kilt.screens.profile.registration.enabledGradient

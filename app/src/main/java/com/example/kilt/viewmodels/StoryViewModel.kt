@@ -2,7 +2,7 @@ package com.example.kilt.viewmodels
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
-import com.example.kilt.data.Story
+import com.example.kilt.models.Story
 
 class StoryViewModel : ViewModel() {
     private val _stories = mutableStateListOf<Story>()

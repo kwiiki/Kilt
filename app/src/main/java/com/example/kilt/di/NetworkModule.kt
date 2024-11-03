@@ -1,10 +1,10 @@
 
 package com.example.kilt.di
 
-import com.example.kilt.data.authentification.BioCheckOTPResult
-import com.example.kilt.data.authentification.BioOtpResult
-import com.example.kilt.data.authentification.CheckOtpResult
-import com.example.kilt.data.authentification.OtpResult
+import com.example.kilt.models.authentification.BioCheckOTPResult
+import com.example.kilt.models.authentification.BioOtpResult
+import com.example.kilt.models.authentification.CheckOtpResult
+import com.example.kilt.models.authentification.OtpResult
 import com.example.kilt.network.ApiService
 import com.example.kilt.network.BioCheckOTPResultAdapter
 import com.example.kilt.network.BioOtpResultAdapter

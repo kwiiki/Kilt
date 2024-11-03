@@ -55,10 +55,8 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.kilt.data.authentification.CheckOtpResult
+import com.example.kilt.models.authentification.CheckOtpResult
 import com.example.kilt.navigation.NavPath
-import com.example.kilt.screens.profile.registration.RegistrationButton
-import com.example.kilt.screens.searchpage.homedetails.gradient
 import com.example.kilt.viewmodels.AuthViewModel
 
 

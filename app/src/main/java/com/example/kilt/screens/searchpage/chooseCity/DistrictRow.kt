@@ -11,8 +11,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -31,8 +29,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.kilt.R
-import com.example.kilt.data.kato.District
-import com.example.kilt.data.kato.MicroDistrict
+import com.example.kilt.models.kato.District
+import com.example.kilt.models.kato.MicroDistrict
 import com.example.kilt.screens.searchpage.filter.CustomDivider
 import com.example.kilt.viewmodels.ChooseCityViewModel
 import com.example.kilt.viewmodels.SearchViewModel

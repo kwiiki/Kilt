@@ -6,10 +6,10 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.kilt.data.authentification.User
-import com.example.kilt.data.authentification.UserWithMetadata
-import com.example.kilt.data.dataStore.UserDataStoreManager
-import com.example.kilt.repository.ConfigRepository
+import com.example.kilt.models.authentification.User
+import com.example.kilt.models.authentification.UserWithMetadata
+import com.example.kilt.models.dataStore.UserDataStoreManager
+import com.example.kilt.domain.config.repository.ConfigRepository
 import com.example.kilt.repository.IdentificationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -18,12 +18,10 @@ import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import retrofit2.Response
 import javax.inject.Inject
 import android.util.Base64
-import android.util.Log
-import com.example.kilt.data.authentification.UserUpdateResult
-import com.example.kilt.data.shardePrefernce.PreferencesHelper
+import com.example.kilt.models.authentification.UserUpdateResult
+import com.example.kilt.models.shardePrefernce.PreferencesHelper
 import com.example.kilt.enums.IdentificationTypes
 
 @HiltViewModel

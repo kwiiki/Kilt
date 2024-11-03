@@ -6,22 +6,23 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.kilt.data.authentification.BioCheckOTPResult
-import com.example.kilt.data.authentification.BioOtpCheckRequest
-import com.example.kilt.data.authentification.BioOtpRequest
-import com.example.kilt.data.authentification.BioOtpResult
-import com.example.kilt.data.authentification.CheckOtpResult
-import com.example.kilt.data.authentification.DeviceInfo
-import com.example.kilt.data.authentification.ErrorResponse
-import com.example.kilt.data.authentification.OtpResult
-import com.example.kilt.data.authentification.UserWithMetadata
-import com.example.kilt.data.dataStore.UserDataStoreManager
-import com.example.kilt.data.shardePrefernce.PreferencesHelper
+import com.example.kilt.models.authentification.BioCheckOTPResult
+import com.example.kilt.models.authentification.BioOtpCheckRequest
+import com.example.kilt.models.authentification.BioOtpRequest
+import com.example.kilt.models.authentification.BioOtpResult
+import com.example.kilt.models.authentification.CheckOtpResult
+import com.example.kilt.models.authentification.DeviceInfo
+import com.example.kilt.models.authentification.ErrorResponse
+import com.example.kilt.models.authentification.OtpResult
+import com.example.kilt.models.authentification.UserWithMetadata
+import com.example.kilt.models.dataStore.UserDataStoreManager
+import com.example.kilt.models.shardePrefernce.PreferencesHelper
 import com.example.kilt.enums.IdentificationTypes
 import com.example.kilt.enums.UserType
 import com.example.kilt.repository.IdentificationRepository
 import com.example.kilt.repository.LoginRepository
 import com.example.kilt.repository.RegistrationRepository
+import com.example.kilt.repository.UserRepository
 import com.example.kilt.screens.profile.registration.AuthenticationUiState
 import com.google.android.datatransport.BuildConfig
 import com.google.firebase.messaging.FirebaseMessaging
@@ -29,9 +30,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.coroutines.resume
@@ -43,6 +41,7 @@ class AuthViewModel @Inject constructor(
     private val registrationRepository: RegistrationRepository,
     private val loginRepository: LoginRepository,
     private val identificationRepository: IdentificationRepository,
+    private val userRepository: UserRepository,
     private val userDataStoreManager: UserDataStoreManager,
     private val preferencesHelper: PreferencesHelper
 ) : ViewModel() {
@@ -110,7 +109,6 @@ class AuthViewModel @Inject constructor(
             }
         }
     }
-
     private fun checkOtp() {
         viewModelScope.launch {
             try {
@@ -123,6 +121,25 @@ class AuthViewModel @Inject constructor(
             } catch (e: Exception) {
                 _checkOtpResult.value =
                     CheckOtpResult.Failure(ErrorResponse("Не удалось проверить код"))
+            }
+        }
+    }
+
+    fun refreshUserData(userId: String) {
+        viewModelScope.launch {
+            try {
+                val user = userRepository.getUserData(userId)
+                userDataStoreManager.saveUserData(
+                    user = user,
+                    bonus = _currentUser.value?.bonus ?: 0,
+                    created = _currentUser.value?.created ?: false,
+                    expired = _currentUser.value?.expired ?: false,
+                    token = _currentUser.value?.token ?: ""
+                )
+                _currentUser.value = _currentUser.value?.copy(user = user)
+
+            } catch (e: Exception) {
+                Log.e("AuthViewModel", "Error refreshing user data: ${e.message}")
             }
         }
     }
@@ -372,4 +389,5 @@ class AuthViewModel @Inject constructor(
     fun clear() {
         _authenticationUiState.value.phone = ""
     }
+
 }

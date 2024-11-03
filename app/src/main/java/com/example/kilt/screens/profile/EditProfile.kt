@@ -133,7 +133,6 @@ fun EditProfile(navController: NavHostController, authViewModel: AuthViewModel) 
         )
         Spacer(modifier = Modifier.height(16.dp))
 
-//        About me
 
         CustomTextField(label = "Имя", value = user?.firstname.toString(), onValueChange = {})
         CustomTextField(label = "Фамилия", value = user?.lastname.toString(), onValueChange = {})
@@ -162,7 +161,6 @@ fun EditProfile(navController: NavHostController, authViewModel: AuthViewModel) 
         if (user?.user_type == UserType.OWNER.value) {
             SwitchAgentCard()
         }
-
         Spacer(modifier = Modifier.height(8.dp))
 
         if (user?.user_type == UserType.AGENT.value) {

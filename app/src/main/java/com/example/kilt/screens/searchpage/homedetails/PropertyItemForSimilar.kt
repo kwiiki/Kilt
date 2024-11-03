@@ -38,11 +38,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.kilt.R
-import com.example.kilt.data.Home
+import com.example.kilt.models.Home
 import com.example.kilt.screens.searchpage.Chip
-import com.example.kilt.screens.searchpage.GradientButton
 import com.example.kilt.screens.searchpage.IconText
-import com.example.kilt.screens.searchpage.WhatsAppGradientButton
 import com.example.kilt.utills.imageCdnUrl
 import com.example.kilt.viewmodels.HomeSaleViewModel
 

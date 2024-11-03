@@ -20,6 +20,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,8 +33,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.kilt.R
-import com.example.kilt.data.authentification.User
-import com.example.kilt.data.authentification.UserWithMetadata
+import com.example.kilt.models.authentification.User
+import com.example.kilt.models.authentification.UserWithMetadata
 import com.example.kilt.enums.IdentificationTypes
 import com.example.kilt.enums.UserType
 import com.example.kilt.navigation.NavPath
@@ -46,7 +47,11 @@ fun AgencyScreen(
     user: User,
     navController: NavHostController
 ) {
+    val currentUser by authViewModel.currentUser
     val isUserIdentified by authViewModel.isUserIdentified
+    LaunchedEffect(Unit) {
+        authViewModel.checkVerificationStatus(currentUser?.user?.id.toString())
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -121,7 +126,7 @@ fun IdentifiedUser(navController: NavHostController,user: User) {
             .background(Color(0xFFF2F2F2), shape = RoundedCornerShape(12.dp))
             .height(113.dp)
             .padding(16.dp)
-            .clickable { },
+            .clickable { navController.navigate(NavPath.AGENCYPROFILESCREEN.name)},
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(

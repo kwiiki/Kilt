@@ -39,7 +39,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.kilt.R
-import com.example.kilt.data.PropertyItem
+import com.example.kilt.models.PropertyItem
 import com.example.kilt.navigation.NavPath
 import com.example.kilt.screens.searchpage.homedetails.formatNumber
 import com.example.kilt.screens.searchpage.homedetails.gradient

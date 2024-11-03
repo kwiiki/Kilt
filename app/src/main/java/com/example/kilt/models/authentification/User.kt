@@ -1,0 +1,31 @@
+package com.example.kilt.models.authentification
+
+data class User(
+    val agency_verification_status: Int = 1,
+    val agent_about: String = "",
+    val agent_city: String ="",
+    val agent_full_address: String ="",
+    val agent_working_hours: String ="",
+    val birthdate: String = "",
+    val createdAt: String = "",
+    val deleted: Int = 0,
+    val discount: Int = 0,
+    val email: String = "",
+    val firstname: String = "",
+    val gender: String = "",
+    var id: Int = 0,
+    val iin: String = "",
+    val instagram: String = "",
+    val is_blocked: Boolean = false,
+    val kr_agency_id: Int = 0,
+    val kr_agency_name: String = "",
+    val kr_listing_type: String = "",
+    val kr_name: String = "",
+    val kr_user_id: Int = 0,
+    val lastname: String ="",
+    val phone: String = "",
+    val photo: String = "",
+    val referred_by: String = "",
+    val updatedAt: String = "",
+    val user_type: String = ""
+)

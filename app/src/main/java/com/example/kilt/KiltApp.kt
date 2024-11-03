@@ -156,7 +156,7 @@ fun KiltApp() {
             composable(Screen.NotificationsScreen.route){ NotificationsScreen(navController) }
             composable(Screen.MyAnnouncementScreen.route){ MyAnnouncementScreen(navController) }
             composable(Screen.IdentificationScreen.route){ IdentificationScreen(navController, identificationViewModel = identificationViewModel) }
-            composable(Screen.AgencyProfileScreen.route){ AgencyProfileScreen(navController)}
+            composable(Screen.AgencyProfileScreen.route){ AgencyProfileScreen(navController,authViewModel = authViewModel)}
         }
         val currentRoute = navBackStackEntry?.destination?.route
         Log.d("currentRoute", "KiltApp: $currentRoute")

@@ -21,7 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.kilt.R
-import com.example.kilt.data.kato.ResidentialComplex
+import com.example.kilt.models.kato.ResidentialComplex
 import com.example.kilt.screens.searchpage.filter.CustomDivider
 import com.example.kilt.viewmodels.ChooseCityViewModel
 import com.example.kilt.viewmodels.SearchViewModel

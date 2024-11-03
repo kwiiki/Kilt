@@ -1,7 +1,7 @@
 package com.example.kilt.network
 
-import com.example.kilt.data.authentification.ErrorResponse
-import com.example.kilt.data.authentification.OtpResult
+import com.example.kilt.models.authentification.ErrorResponse
+import com.example.kilt.models.authentification.OtpResult
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement

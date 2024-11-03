@@ -9,10 +9,10 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.example.kilt.data.FilterValue
-import com.example.kilt.data.Filters
-import com.example.kilt.data.PropertyItem
-import com.example.kilt.data.SearchResponse
+import com.example.kilt.models.FilterValue
+import com.example.kilt.models.Filters
+import com.example.kilt.models.PropertyItem
+import com.example.kilt.models.SearchResponse
 import com.example.kilt.repository.SearchRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -255,8 +255,9 @@ class SearchViewModel @Inject constructor(
                     (_filters.value.filterMap[TypeFilters.PROPERTY_TYPE.value] as? FilterValue.SingleValue)?.value?: 1
                 val pager = Pager(
                     config = PagingConfig(
-                        pageSize = 10,
-                        enablePlaceholders = false
+                        pageSize = 30,
+                        enablePlaceholders = false,
+                        initialLoadSize = 30
                     ),
                     pagingSourceFactory = {
                         SearchPagingSource(

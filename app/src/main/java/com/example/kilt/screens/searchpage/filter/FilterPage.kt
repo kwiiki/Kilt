@@ -47,7 +47,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.kilt.data.config.FilterItem
+import com.example.kilt.models.config.FilterItem
 import com.example.kilt.screens.searchpage.homedetails.gradient
 import com.example.kilt.viewmodels.ChooseCityViewModel
 import com.example.kilt.viewmodels.ConfigViewModel

@@ -8,9 +8,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.kilt.data.kato.District
-import com.example.kilt.data.kato.MicroDistrict
-import com.example.kilt.data.kato.ResidentialComplex
+import com.example.kilt.models.kato.District
+import com.example.kilt.models.kato.MicroDistrict
+import com.example.kilt.models.kato.ResidentialComplex
 import com.example.kilt.repository.KatoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch

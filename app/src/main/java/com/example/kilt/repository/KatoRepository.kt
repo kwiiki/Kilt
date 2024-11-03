@@ -1,8 +1,8 @@
 package com.example.kilt.repository
 
-import com.example.kilt.data.kato.KatoResponse
-import com.example.kilt.data.kato.MicroDistrictResponse
-import com.example.kilt.data.kato.ResidentialComplexResponse
+import com.example.kilt.models.kato.KatoResponse
+import com.example.kilt.models.kato.MicroDistrictResponse
+import com.example.kilt.models.kato.ResidentialComplexResponse
 
 interface KatoRepository {
    suspend fun getKatoById(id:String):KatoResponse

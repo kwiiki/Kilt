@@ -17,10 +17,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.kilt.data.Config
+import com.example.kilt.models.Config
 import com.example.kilt.viewmodels.ConfigViewModel
 import com.example.kilt.viewmodels.HomeSaleViewModel
-import com.example.kilt.data.HomeSale
+import com.example.kilt.models.HomeSale
 
 @Composable
 fun InfoSection(homeSale: HomeSale?, homeSaleViewModel: HomeSaleViewModel, configViewModel: ConfigViewModel) {

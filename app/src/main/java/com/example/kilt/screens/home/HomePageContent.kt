@@ -10,7 +10,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
-import com.example.kilt.data.shardePrefernce.PreferencesHelper
+import com.example.kilt.models.shardePrefernce.PreferencesHelper
 import com.example.kilt.viewmodels.SearchViewModel
 
 

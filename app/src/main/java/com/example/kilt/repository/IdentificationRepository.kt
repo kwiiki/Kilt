@@ -1,10 +1,8 @@
 package com.example.kilt.repository
 
-import com.example.kilt.data.authentification.User
-import com.example.kilt.data.authentification.UserUpdateResult
-import kotlinx.coroutines.flow.Flow
+import com.example.kilt.models.authentification.User
+import com.example.kilt.models.authentification.UserUpdateResult
 import okhttp3.MultipartBody
-import retrofit2.Response
 
 interface IdentificationRepository {
 

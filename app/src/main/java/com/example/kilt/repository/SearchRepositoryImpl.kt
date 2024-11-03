@@ -1,12 +1,13 @@
 package com.example.kilt.repository
 
 import android.util.Log
-import com.example.kilt.data.Count
-import com.example.kilt.data.FilterValue
-import com.example.kilt.data.Filters
-import com.example.kilt.data.PropertyItem
-import com.example.kilt.data.SearchResponse
-import com.example.kilt.data.THomeSale
+import com.example.kilt.domain.config.repository.ConfigRepository
+import com.example.kilt.models.Count
+import com.example.kilt.models.FilterValue
+import com.example.kilt.models.Filters
+import com.example.kilt.models.PropertyItem
+import com.example.kilt.models.SearchResponse
+import com.example.kilt.models.THomeSale
 import com.example.kilt.network.ApiService
 
 
@@ -16,8 +17,9 @@ class SearchRepositoryImpl(
     private val configHelper: ConfigHelper
 ) : SearchRepository {
     override suspend fun performSearch(request: THomeSale): SearchResponse {
-        Log.d("requestInRepo", "repo: $request")
+        Log.d("SearchRepository", "Performing search with request: $request")
         return apiService.search(request)
+
     }
 
     override suspend fun getResultBySearchCount(request: THomeSale): Count {
@@ -77,6 +79,9 @@ class SearchRepositoryImpl(
 
         dynamicConfig["kato_path"] = "like"
 
+        // Логируем динамическую конфигурацию
+        Log.d("createSearchRequest", "dynamicConfig: $dynamicConfig")
+
         val formattedFilterMap = filters.filterMap.mapValues { (_, value) ->
             when (value) {
                 is FilterValue.SingleValue -> value.value
@@ -100,12 +105,21 @@ class SearchRepositoryImpl(
                 else -> value as Any
             }
         }
-        return THomeSale(
+
+        // Логируем отфильтрованные и форматированные фильтры
+        Log.d("createSearchRequest", "formattedFilterMap: $formattedFilterMap")
+
+        val result = THomeSale(
             filters = formattedFilterMap,
             config = dynamicConfig,
             page = page,
             sorting = sorting
         )
+
+        // Логируем конечный объект THomeSale перед возвратом
+        Log.d("createSearchRequest", "THomeSale result: $result")
+
+        return result
     }
 }
 

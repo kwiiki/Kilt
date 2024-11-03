@@ -1,8 +1,7 @@
 package com.example.kilt.repository
 
-import android.util.Log
-import com.example.kilt.data.authentification.User
-import com.example.kilt.data.authentification.UserUpdateResult
+import com.example.kilt.models.authentification.User
+import com.example.kilt.models.authentification.UserUpdateResult
 import com.example.kilt.network.ApiService
 import okhttp3.MultipartBody
 
@@ -15,7 +14,6 @@ class IdentificationRepositoryImpl(private val apiService: ApiService):Identific
             UserUpdateResult.UpdateUserFailure(success = false, message = "Update failed")
         }
     }
-
     override suspend fun uploadImages(images: List<MultipartBody.Part>): UserUpdateResult {
         val response = apiService.uploadImages(images = images)
         return if (response.success && response.user != null) {
@@ -24,17 +22,13 @@ class IdentificationRepositoryImpl(private val apiService: ApiService):Identific
             UserUpdateResult.UpdateUserFailure(success = false, message = "Upload failed")
         }
     }
-
     override suspend fun checkIdentifiedStatus(id: String): Int {
         return try {
             val userData = apiService.getUsersData(id)
-            Log.d("checkIdentifiedStatus", "checkIdentifiedStatus: ${userData.agency_verification_status}")
-            Log.d("checkIdentifiedStatus", "id: ${id}")
             userData.agency_verification_status
         } catch (e: Exception) {
             0
         }
     }
-
 }
 

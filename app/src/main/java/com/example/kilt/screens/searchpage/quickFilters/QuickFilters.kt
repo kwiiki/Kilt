@@ -39,8 +39,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.example.kilt.R
-import com.example.kilt.data.FilterValue
-import com.example.kilt.data.Filters
+import com.example.kilt.models.FilterValue
+import com.example.kilt.models.Filters
 import com.example.kilt.enums.TypeFilters
 import com.example.kilt.viewmodels.ConfigViewModel
 import com.example.kilt.viewmodels.SearchViewModel

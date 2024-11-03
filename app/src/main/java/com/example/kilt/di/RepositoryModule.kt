@@ -2,9 +2,9 @@ package com.example.kilt.di
 
 import com.example.kilt.network.ApiService
 import com.example.kilt.repository.ConfigHelper
-import com.example.kilt.repository.ConfigRepository
+import com.example.kilt.domain.config.repository.ConfigRepository
 import com.example.kilt.repository.ConfigRepositoryImpl
-import com.example.kilt.repository.EditProfileRepository
+import com.example.kilt.domain.edit_profile.repository.EditProfileRepository
 import com.example.kilt.repository.EditProfileRepositoryImpl
 import com.example.kilt.repository.HomeSaleRepository
 import com.example.kilt.repository.HomeSaleRepositoryImpl
@@ -18,6 +18,8 @@ import com.example.kilt.repository.RegistrationRepository
 import com.example.kilt.repository.RegistrationRepositoryImpl
 import com.example.kilt.repository.SearchRepository
 import com.example.kilt.repository.SearchRepositoryImpl
+import com.example.kilt.repository.UserRepository
+import com.example.kilt.repository.UserRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -74,7 +76,7 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideEditProfileRepository(apiService: ApiService):EditProfileRepository{
+    fun provideEditProfileRepository(apiService: ApiService): EditProfileRepository {
         return EditProfileRepositoryImpl(apiService)
     }
 
@@ -83,4 +85,10 @@ object RepositoryModule {
     fun provideIdentificationRepository(apiService: ApiService): IdentificationRepository {
         return IdentificationRepositoryImpl(apiService)
     }
+    @Provides
+    @Singleton
+    fun provideUserRepository(apiService: ApiService): UserRepository {
+        return UserRepositoryImpl(apiService)
+    }
+
 }

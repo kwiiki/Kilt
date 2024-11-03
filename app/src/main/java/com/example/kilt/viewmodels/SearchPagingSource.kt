@@ -3,8 +3,8 @@ package com.example.kilt.viewmodels
 import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.example.kilt.data.Filters
-import com.example.kilt.data.PropertyItem
+import com.example.kilt.models.Filters
+import com.example.kilt.models.PropertyItem
 import com.example.kilt.repository.SearchRepository
 
 class SearchPagingSource(
@@ -16,10 +16,10 @@ class SearchPagingSource(
     private val sort: String
 ) : PagingSource<Int, PropertyItem>() {
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, PropertyItem> {
-        try {
-            val currentPage = params.key ?: 1
-            Log.d("SearchPagingSource", "Loading page $currentPage with loadSize: ${params.loadSize}")
+        val currentPage = params.key ?: 1
+        Log.d("SearchPagingSource", "Loading page $currentPage with loadSize: ${params.loadSize}")
 
+        return try {
             val request = searchRepository.createSearchRequest(
                 filters = filters,
                 dealType = dealType,
@@ -28,19 +28,34 @@ class SearchPagingSource(
                 page = currentPage,
                 sorting = sort
             )
-            Log.d("request", "request: $request")
+
+            Log.d("SearchPagingSource", "Request created with page=$currentPage: $request")
+
+            // Выполняем запрос
             val response = searchRepository.performSearch(request)
-            response.list.forEach { println("all id: ${it.id}") }
-            Log.d("response", "load: $response")
+            Log.d("SearchPagingSource", "Response received for page=$currentPage: $response")
+
+            // Проверяем, что список не пустой
+            if (response.list.isEmpty()) {
+                Log.d("SearchPagingSource", "No items found for page $currentPage")
+            } else {
+                response.list.forEach { Log.d("SearchPagingSource", "Item ID: ${it.id}") }
+            }
+
             val items = response.list
-            return LoadResult.Page(
+            val nextKey = if (response.list.isNotEmpty()) currentPage + 1 else null
+            val prevKey = if (currentPage == 1) null else currentPage - 1
+
+            Log.d("SearchPagingSource", "Returning LoadResult.Page with nextKey=$nextKey, prevKey=$prevKey")
+
+            LoadResult.Page(
                 data = items,
-                prevKey = if (currentPage == 1) null else currentPage - 1,
-                nextKey = if (items.isEmpty()) null else currentPage + 1
+                prevKey = prevKey,
+                nextKey = nextKey
             )
         } catch (e: Exception) {
-            Log.e("SearchPagingSource", "Error loading page", e)
-            return LoadResult.Error(e)
+            Log.e("SearchPagingSource", "Error loading page $currentPage", e)
+            LoadResult.Error(e)
         }
     }
     override fun getRefreshKey(state: PagingState<Int, PropertyItem>): Int? {

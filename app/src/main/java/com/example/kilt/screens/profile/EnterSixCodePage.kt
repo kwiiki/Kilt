@@ -50,7 +50,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.kilt.data.authentification.BioCheckOTPResult
+import com.example.kilt.models.authentification.BioCheckOTPResult
 import com.example.kilt.navigation.NavPath
 import com.example.kilt.viewmodels.AuthViewModel
 import androidx.compose.material3.OutlinedTextField

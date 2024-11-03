@@ -2,7 +2,7 @@ package com.example.kilt.repository
 
 import android.util.Log
 import com.example.kilt.network.ApiService
-import com.example.kilt.data.HomeSale
+import com.example.kilt.models.HomeSale
 
 class HomeSaleRepositoryImpl(
     private val apiService: ApiService

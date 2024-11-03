@@ -5,13 +5,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.navigation.NavHostController
-import com.example.kilt.data.authentification.UserWithMetadata
+import com.example.kilt.models.authentification.UserWithMetadata
 import com.example.kilt.enums.UserType
 import com.example.kilt.screens.profile.userType.AgencyScreen
 import com.example.kilt.screens.profile.userType.OwnerScreen
 import com.example.kilt.screens.profile.userType.SpecialistScreen
 import com.example.kilt.viewmodels.AuthViewModel
-import kotlin.system.exitProcess
 
 @Composable
 fun AuthenticatedProfileScreen(
@@ -25,6 +24,7 @@ fun AuthenticatedProfileScreen(
     Log.d("user_type111", "AuthenticatedProfileScreen: ${currentUser?.user?.id}")
     LaunchedEffect(Unit) {
         authViewModel.checkVerificationStatus(currentUser?.user?.id.toString())
+        authViewModel.refreshUserData(currentUser?.user?.id.toString())
     }
     when (userWithMetadata?.user?.user_type) {
         UserType.AGENCY.value -> {
@@ -35,9 +35,6 @@ fun AuthenticatedProfileScreen(
         }
         UserType.AGENT.value -> {
             SpecialistScreen(navController = navController,authViewModel = authViewModel, userWithMetadata,userWithMetadata.user)
-        }
-        else -> {
-            exitProcess(1)
         }
     }
 }

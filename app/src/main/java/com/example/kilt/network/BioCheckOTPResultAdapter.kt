@@ -1,10 +1,9 @@
 package com.example.kilt.network
 
 import android.util.Log
-import com.example.kilt.data.authentification.BioCheckOTPResult
-import com.example.kilt.data.authentification.CheckOtpResult
-import com.example.kilt.data.authentification.ErrorResponse
-import com.example.kilt.data.authentification.User
+import com.example.kilt.models.authentification.BioCheckOTPResult
+import com.example.kilt.models.authentification.ErrorResponse
+import com.example.kilt.models.authentification.User
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
