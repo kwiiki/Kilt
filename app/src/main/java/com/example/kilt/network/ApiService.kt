@@ -1,5 +1,7 @@
 package com.example.kilt.network
 
+import com.example.kilt.data.editprofile.dto.AddPhoneDTO
+import com.example.kilt.domain.editprofile.model.Phone
 import com.example.kilt.models.authentification.CheckOtpRequest
 import com.example.kilt.models.Config
 import com.example.kilt.models.Count
@@ -87,5 +89,13 @@ interface ApiService {
         @Path("id") id: String,
         @Body user: User
     ): ApiResponse
+
+    @POST("users/add-phone")
+    suspend fun addPhone(
+        @Body phone: Phone
+        ): AddPhoneDTO
+
+    @POST("universal/User/find")
+    suspend fun userFindByOTP()
 }
 

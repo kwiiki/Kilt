@@ -54,6 +54,8 @@ import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import com.example.kilt.R
 import com.example.kilt.navigation.NavPath
+import com.example.kilt.presentation.editprofile.CustomTextField
+import com.example.kilt.presentation.editprofile.TextSectionTitle
 import com.example.kilt.viewmodels.IdentificationViewModel
 
 @Composable

@@ -40,7 +40,6 @@ object NetworkModule {
         val logging = HttpLoggingInterceptor()
         logging.level = HttpLoggingInterceptor.Level.BODY
 
-        // Добавление логгера в OkHttpClient
         val httpClient = OkHttpClient.Builder()
             .addInterceptor(logging) // подключаем логирование
             .build()

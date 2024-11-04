@@ -1,4 +1,6 @@
-package com.example.kilt.screens.profile
+@file:OptIn(ExperimentalMaterial3Api::class)
+
+package com.example.kilt.presentation.editprofile
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -21,18 +23,22 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -48,35 +54,39 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.kilt.R
+import com.example.kilt.domain.editprofile.model.Phone
 import com.example.kilt.enums.UserType
-import com.example.kilt.navigation.NavPath
+import com.example.kilt.presentation.editprofile.viewmodel.EditProfileViewModel
 import com.example.kilt.viewmodels.AuthViewModel
 
 
 val gradientBrush = Brush.horizontalGradient(
     colors = listOf(Color(0xFF3244E4), Color(0xFF1B278F))
 )
-val redGradientBrush = Brush.horizontalGradient(
-    colors = listOf(Color(0xFFE63312), Color(0xFFE63312))
-)
 val listColor = listOf(Color(0xFF1B278F), Color(0xFF3244E4))
-val redListColor = listOf(Color(0xFFE63312), Color(0xFFE63312))
 
 @Composable
-fun EditProfile(navController: NavHostController, authViewModel: AuthViewModel) {
+fun EditProfile(
+    navController: NavHostController,
+    authViewModel: AuthViewModel,
+    editProfileViewModel: EditProfileViewModel
+) {
     val scrollState = rememberScrollState()
     val user = authViewModel.user.collectAsState(initial = null).value?.user
     var agentAbout by remember { mutableStateOf("Текст") }
     var agentCity by remember { mutableStateOf("Город, район") }
     var agentFullAddress by remember { mutableStateOf("ул.Абая, д.123, кв.12") }
     var agentWorkingHours by remember { mutableStateOf("с 9 до 17, обед с 13-14") }
+    var openFilterBottomSheet by remember { mutableStateOf(false) }
+    val bottomSheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true,
+    )
+    val uiState = editProfileViewModel.editProfileUiState.value
+
 
     Column(
         modifier = Modifier
@@ -133,12 +143,21 @@ fun EditProfile(navController: NavHostController, authViewModel: AuthViewModel) 
         )
         Spacer(modifier = Modifier.height(16.dp))
 
+        CustomTextField(label = "Название", value = user?.firstname.toString(), onValueChange = {})
 
-        CustomTextField(label = "Имя", value = user?.firstname.toString(), onValueChange = {})
-        CustomTextField(label = "Фамилия", value = user?.lastname.toString(), onValueChange = {})
-        CustomTextField(label = "О себе", value = "Текст", onValueChange = {agentAbout = it}, isMultiline = true)
-
-        // Phone number
+        if (user?.user_type != UserType.AGENCY.value) {
+            CustomTextField(label = "Имя", value = user?.firstname.toString(), onValueChange = {})
+            CustomTextField(
+                label = "Фамилия",
+                value = user?.lastname.toString(),
+                onValueChange = {})
+        }
+        CustomTextField(
+            label = "О себе",
+            value = user?.agent_about.toString(),
+            onValueChange = { agentAbout = it },
+            isMultiline = true
+        )
         TextSectionTitle("Телефоны")
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -151,10 +170,22 @@ fun EditProfile(navController: NavHostController, authViewModel: AuthViewModel) 
 
         CustomButtonForEdit(
             text = "Добавить еще",
-            onClick = { /*TODO*/ },
+            onClick = { openFilterBottomSheet = true },
             colorList = listColor,
             colorBrush = gradientBrush
         )
+        if (openFilterBottomSheet) {
+            ModalBottomSheet(
+                tonalElevation = 20.dp,
+                contentColor = Color.White,
+                containerColor = Color.White,
+                sheetState = bottomSheetState,
+                onDismissRequest = { openFilterBottomSheet = false },
+            ) {
+                AddNewPhoneNumber(editProfileViewModel)
+
+            }
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -163,16 +194,27 @@ fun EditProfile(navController: NavHostController, authViewModel: AuthViewModel) 
         }
         Spacer(modifier = Modifier.height(8.dp))
 
-        if (user?.user_type == UserType.AGENT.value) {
+        if (user?.user_type != UserType.OWNER.value) {
 
-            TextSectionTitle("Адрес работы")
+            Text(
+                text = "Адрес работы",
+                color = Color(0xff01060E),
+                fontWeight = FontWeight.W700,
+                fontSize = 24.sp
+            )
             Spacer(modifier = Modifier.height(16.dp))
-            CustomTextField(label = "Город", value = "Город, район", onValueChange = {agentCity = it})
-            CustomTextField(label = "Полный адрес", value = "ул.Абая, д.123, кв.12", onValueChange = {agentFullAddress = it})
+            CustomTextField(
+                label = "Город",
+                value = "Город, район",
+                onValueChange = { agentCity = it })
+            CustomTextField(
+                label = "Полный адрес",
+                value = "ул.Абая, д.123, кв.12",
+                onValueChange = { agentFullAddress = it })
             CustomTextField(
                 label = "График работы",
                 value = "с 9 до 17, обед с 13-14",
-                onValueChange = {agentWorkingHours = it},
+                onValueChange = { agentWorkingHours = it },
                 hasIcon = true
             )
         }
@@ -181,15 +223,32 @@ fun EditProfile(navController: NavHostController, authViewModel: AuthViewModel) 
         TextSectionTitle("Действия")
         Spacer(modifier = Modifier.height(8.dp))
 
-        CustomButtonForEdit(
-            text = "Удалить аккаунт",
-            onClick = { /*TODO*/ },
-            colorList = redListColor,
-            colorBrush = redGradientBrush
-        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp, vertical = 16.dp)
+                .clickable { },
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = "Удалить",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.W400,
+                color = Color.Red,
+                lineHeight = 20.sp
+            )
+            Icon(
+                Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                tint = Color.Red,
+                contentDescription = null
+            )
+        }
 
         Spacer(modifier = Modifier.height(10.dp))
-        SaveButton()
+        SaveButton {
+
+        }
         Spacer(modifier = Modifier.height(16.dp))
     }
 }
@@ -212,7 +271,7 @@ fun CustomTextField(
     isMultiline: Boolean = false,
     hasIcon: Boolean = false
 ) {
-    val enable = !(label == "Имя" || label == "Фамилия")
+    val enable = !(label == "Имя" || label == "Фамилия" || label == "Название")
     val textFieldHeight = if (isMultiline) 155 else 48
     Column {
         Text(
@@ -246,7 +305,7 @@ fun CustomTextField(
             singleLine = !isMultiline,
             maxLines = if (isMultiline) 5 else 1,
             trailingIcon = if (hasIcon) {
-                { Icon(Icons.Default.Search, contentDescription = null) }
+                { Icon(Icons.Default.DateRange, contentDescription = null) }
             } else null
         )
     }
@@ -373,16 +432,16 @@ fun SwitchAgentCard() {
 }
 
 @Composable
-fun SaveButton(){
+fun SaveButton(onClick: () -> Unit) {
     val gradient = Brush.horizontalGradient(
-        colors = listOf( Color(0xFF3244E4),Color(0xFF1B278F)),
+        colors = listOf(Color(0xFF3244E4), Color(0xFF1B278F)),
         startX = 0f,
         endX = 600f
     )
 
     Row(modifier = Modifier.fillMaxWidth()) {
         OutlinedButton(
-            onClick = {
+            onClick = { onClick()
             },
             contentPadding = PaddingValues(0.dp),
             colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.Transparent),
@@ -402,11 +461,6 @@ fun SaveButton(){
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    Icon(
-                        Icons.Default.Add,
-                        contentDescription = "Search",
-                        tint = Color.White
-                    )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = "Сохранить",
@@ -419,14 +473,3 @@ fun SaveButton(){
     }
 }
 
-@Composable
-@Preview(showBackground = true)
-fun PreviewSwitch() {
-    SwitchAgentCard()
-}
-
-@Composable
-@Preview(showBackground = true)
-fun PreviewEditProfile() {
-    EditProfile(navController = rememberNavController(), authViewModel = hiltViewModel())
-}

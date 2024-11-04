@@ -32,7 +32,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.kilt.enums.UserType
 import com.example.kilt.navigation.NavPath
-import com.example.kilt.screens.profile.gradientBrush
+import com.example.kilt.presentation.editprofile.gradientBrush
 import com.example.kilt.viewmodels.AuthViewModel
 
 @SuppressLint("UnrememberedMutableInteractionSource")

@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.kilt.navigation.NavPath
-import com.example.kilt.screens.profile.gradientBrush
+import com.example.kilt.presentation.editprofile.gradientBrush
 
 
 @Composable

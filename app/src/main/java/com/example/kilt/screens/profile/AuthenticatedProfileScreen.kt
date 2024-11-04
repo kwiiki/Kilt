@@ -23,8 +23,9 @@ fun AuthenticatedProfileScreen(
     Log.d("user_type111", "AuthenticatedProfileScreen: ${userWithMetadata?.user}")
     Log.d("user_type111", "AuthenticatedProfileScreen: ${currentUser?.user?.id}")
     LaunchedEffect(Unit) {
-        authViewModel.checkVerificationStatus(currentUser?.user?.id.toString())
         authViewModel.refreshUserData(currentUser?.user?.id.toString())
+        authViewModel.checkVerificationStatus(currentUser?.user?.id.toString())
+
     }
     when (userWithMetadata?.user?.user_type) {
         UserType.AGENCY.value -> {

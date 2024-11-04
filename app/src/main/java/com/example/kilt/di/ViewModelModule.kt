@@ -5,7 +5,8 @@ import com.example.kilt.models.dataStore.UserDataStoreManager
 import com.example.kilt.models.shardePrefernce.PreferencesHelper
 import com.example.kilt.otp.SmsViewModel
 import com.example.kilt.domain.config.repository.ConfigRepository
-import com.example.kilt.domain.edit_profile.repository.EditProfileRepository
+import com.example.kilt.domain.editprofile.repository.EditProfileRepository
+import com.example.kilt.domain.editprofile.usecase.AddPhoneUseCase
 import com.example.kilt.repository.HomeSaleRepository
 import com.example.kilt.repository.IdentificationRepository
 import com.example.kilt.repository.KatoRepository
@@ -16,7 +17,7 @@ import com.example.kilt.repository.UserRepository
 import com.example.kilt.viewmodels.ChooseCityViewModel
 import com.example.kilt.viewmodels.HomeSaleViewModel
 import com.example.kilt.viewmodels.AuthViewModel
-import com.example.kilt.viewmodels.EditProfileViewModel
+import com.example.kilt.presentation.editprofile.viewmodel.EditProfileViewModel
 import com.example.kilt.viewmodels.IdentificationViewModel
 import com.example.kilt.viewmodels.SearchViewModel
 import dagger.Module
@@ -77,8 +78,8 @@ object ViewModelModule {
 
     @Provides
     @ViewModelScoped
-    fun provideEditProfileViewModel(editProfileRepository: EditProfileRepository): EditProfileViewModel {
-        return EditProfileViewModel(editProfileRepository)
+    fun provideEditProfileViewModel(addPhoneUseCase: AddPhoneUseCase): EditProfileViewModel {
+        return EditProfileViewModel(addPhoneUseCase)
     }
 
     @Provides

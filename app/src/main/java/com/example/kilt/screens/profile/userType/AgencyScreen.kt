@@ -1,5 +1,6 @@
 package com.example.kilt.screens.profile.userType
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -49,6 +50,7 @@ fun AgencyScreen(
 ) {
     val currentUser by authViewModel.currentUser
     val isUserIdentified by authViewModel.isUserIdentified
+    Log.d("AgencyScreen", "AgencyScreen: InAgencyScreen")
     LaunchedEffect(Unit) {
         authViewModel.checkVerificationStatus(currentUser?.user?.id.toString())
     }
@@ -126,7 +128,7 @@ fun IdentifiedUser(navController: NavHostController,user: User) {
             .background(Color(0xFFF2F2F2), shape = RoundedCornerShape(12.dp))
             .height(113.dp)
             .padding(16.dp)
-            .clickable { navController.navigate(NavPath.AGENCYPROFILESCREEN.name)},
+            .clickable { navController.navigate(NavPath.AGENCYPROFILESCREEN.name) },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(

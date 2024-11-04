@@ -4,8 +4,8 @@ import com.example.kilt.network.ApiService
 import com.example.kilt.repository.ConfigHelper
 import com.example.kilt.domain.config.repository.ConfigRepository
 import com.example.kilt.repository.ConfigRepositoryImpl
-import com.example.kilt.domain.edit_profile.repository.EditProfileRepository
-import com.example.kilt.repository.EditProfileRepositoryImpl
+import com.example.kilt.domain.editprofile.repository.EditProfileRepository
+import com.example.kilt.data.editprofile.repository.EditProfileRepositoryImpl
 import com.example.kilt.repository.HomeSaleRepository
 import com.example.kilt.repository.HomeSaleRepositoryImpl
 import com.example.kilt.repository.IdentificationRepository
