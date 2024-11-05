@@ -58,9 +58,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.kilt.R
-import com.example.kilt.domain.editprofile.model.Phone
 import com.example.kilt.enums.UserType
-import com.example.kilt.presentation.editprofile.viewmodel.EditProfileViewModel
+import com.example.kilt.presentation.editprofile.viewmodel.AddNewPhoneNumberViewModel
 import com.example.kilt.viewmodels.AuthViewModel
 
 
@@ -73,7 +72,7 @@ val listColor = listOf(Color(0xFF1B278F), Color(0xFF3244E4))
 fun EditProfile(
     navController: NavHostController,
     authViewModel: AuthViewModel,
-    editProfileViewModel: EditProfileViewModel
+    addNewPhoneNumberViewModel: AddNewPhoneNumberViewModel
 ) {
     val scrollState = rememberScrollState()
     val user = authViewModel.user.collectAsState(initial = null).value?.user
@@ -85,7 +84,7 @@ fun EditProfile(
     val bottomSheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
     )
-    val uiState = editProfileViewModel.editProfileUiState.value
+    val uiState = addNewPhoneNumberViewModel.editProfileUiState.value
 
 
     Column(
@@ -182,7 +181,7 @@ fun EditProfile(
                 sheetState = bottomSheetState,
                 onDismissRequest = { openFilterBottomSheet = false },
             ) {
-                AddNewPhoneNumber(editProfileViewModel)
+                AddNewPhoneNumber(addNewPhoneNumberViewModel,onClick = { openFilterBottomSheet = false})
 
             }
         }

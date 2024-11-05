@@ -1,8 +1,8 @@
 package com.example.kilt.di
 
 import android.content.Context
-import com.example.kilt.models.dataStore.UserDataStoreManager
-import com.example.kilt.models.shardePrefernce.PreferencesHelper
+import com.example.kilt.data.localstorage.dataStore.UserDataStoreManager
+import com.example.kilt.data.localstorage.sharedPreference.PreferencesHelper
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

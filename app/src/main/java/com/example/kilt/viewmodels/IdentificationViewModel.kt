@@ -8,7 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.kilt.models.authentification.User
 import com.example.kilt.models.authentification.UserWithMetadata
-import com.example.kilt.models.dataStore.UserDataStoreManager
+import com.example.kilt.data.localstorage.dataStore.UserDataStoreManager
 import com.example.kilt.domain.config.repository.ConfigRepository
 import com.example.kilt.repository.IdentificationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,7 +21,7 @@ import okhttp3.RequestBody
 import javax.inject.Inject
 import android.util.Base64
 import com.example.kilt.models.authentification.UserUpdateResult
-import com.example.kilt.models.shardePrefernce.PreferencesHelper
+import com.example.kilt.data.localstorage.sharedPreference.PreferencesHelper
 import com.example.kilt.enums.IdentificationTypes
 
 @HiltViewModel

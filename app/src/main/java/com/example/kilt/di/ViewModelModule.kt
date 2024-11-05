@@ -1,12 +1,14 @@
 package com.example.kilt.di
 
 import android.content.Context
-import com.example.kilt.models.dataStore.UserDataStoreManager
-import com.example.kilt.models.shardePrefernce.PreferencesHelper
+import com.example.kilt.data.localstorage.dataStore.UserDataStoreManager
+import com.example.kilt.data.localstorage.sharedPreference.PreferencesHelper
+import com.example.kilt.domain.common.GetUserIdUseCase
 import com.example.kilt.otp.SmsViewModel
 import com.example.kilt.domain.config.repository.ConfigRepository
-import com.example.kilt.domain.editprofile.repository.EditProfileRepository
-import com.example.kilt.domain.editprofile.usecase.AddPhoneUseCase
+import com.example.kilt.domain.editprofile.addnewphonenumberbottomsheet.usercase.AddPhoneUseCase
+import com.example.kilt.domain.editprofile.addnewphonenumberbottomsheet.usercase.UniversalUserCreateUseCase
+import com.example.kilt.domain.editprofile.addnewphonenumberbottomsheet.usercase.UserFindByOTPUseCase
 import com.example.kilt.repository.HomeSaleRepository
 import com.example.kilt.repository.IdentificationRepository
 import com.example.kilt.repository.KatoRepository
@@ -17,7 +19,7 @@ import com.example.kilt.repository.UserRepository
 import com.example.kilt.viewmodels.ChooseCityViewModel
 import com.example.kilt.viewmodels.HomeSaleViewModel
 import com.example.kilt.viewmodels.AuthViewModel
-import com.example.kilt.presentation.editprofile.viewmodel.EditProfileViewModel
+import com.example.kilt.presentation.editprofile.viewmodel.AddNewPhoneNumberViewModel
 import com.example.kilt.viewmodels.IdentificationViewModel
 import com.example.kilt.viewmodels.SearchViewModel
 import dagger.Module
@@ -78,8 +80,18 @@ object ViewModelModule {
 
     @Provides
     @ViewModelScoped
-    fun provideEditProfileViewModel(addPhoneUseCase: AddPhoneUseCase): EditProfileViewModel {
-        return EditProfileViewModel(addPhoneUseCase)
+    fun provideAddNewPhoneNumberViewModel(
+        addPhoneUseCase: AddPhoneUseCase,
+        userFindByOTPUseCase: UserFindByOTPUseCase,
+        universalUserCreateUseCase: UniversalUserCreateUseCase,
+        getUserIdUseCase: GetUserIdUseCase
+    ): AddNewPhoneNumberViewModel {
+        return AddNewPhoneNumberViewModel(
+            addPhoneUseCase,
+            userFindByOTPUseCase,
+            universalUserCreateUseCase,
+            getUserIdUseCase
+        )
     }
 
     @Provides

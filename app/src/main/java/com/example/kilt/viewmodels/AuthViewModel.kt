@@ -15,8 +15,8 @@ import com.example.kilt.models.authentification.DeviceInfo
 import com.example.kilt.models.authentification.ErrorResponse
 import com.example.kilt.models.authentification.OtpResult
 import com.example.kilt.models.authentification.UserWithMetadata
-import com.example.kilt.models.dataStore.UserDataStoreManager
-import com.example.kilt.models.shardePrefernce.PreferencesHelper
+import com.example.kilt.data.localstorage.dataStore.UserDataStoreManager
+import com.example.kilt.data.localstorage.sharedPreference.PreferencesHelper
 import com.example.kilt.enums.IdentificationTypes
 import com.example.kilt.enums.UserType
 import com.example.kilt.repository.IdentificationRepository

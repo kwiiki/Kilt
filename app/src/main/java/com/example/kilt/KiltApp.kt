@@ -46,7 +46,7 @@ import com.example.kilt.screens.home.HomePageContent
 import com.example.kilt.screens.home.addAnnouncement.AddingAnnouncementScreen
 import com.example.kilt.screens.profile.AgencyProfileScreen
 import com.example.kilt.presentation.editprofile.EditProfile
-import com.example.kilt.presentation.editprofile.viewmodel.EditProfileViewModel
+import com.example.kilt.presentation.editprofile.viewmodel.AddNewPhoneNumberViewModel
 import com.example.kilt.screens.profile.registration.RegistrationForAgencyPage
 import com.example.kilt.screens.profile.EnterFourCodePage
 import com.example.kilt.screens.profile.EnterSixCodePage
@@ -80,7 +80,7 @@ fun KiltApp() {
     val chooseCityViewModel: ChooseCityViewModel = hiltViewModel()
     val authViewModel:AuthViewModel = hiltViewModel()
     val identificationViewModel:IdentificationViewModel = hiltViewModel()
-    val editProfileViewModel:EditProfileViewModel = hiltViewModel()
+    val addNewPhoneNumberViewModel:AddNewPhoneNumberViewModel = hiltViewModel()
     val smsViewModel:SmsViewModel = hiltViewModel()
 
 
@@ -153,7 +153,7 @@ fun KiltApp() {
             composable(Screen.OwnerPage.route){ RegistrationForOwnerPage(navController,authViewModel = authViewModel) }
             composable(Screen.AgencyPage.route){ RegistrationForAgencyPage(navController,authViewModel = authViewModel) }
             composable(Screen.EnterSixCodePage.route){ EnterSixCodePage(navController,authViewModel = authViewModel) }
-            composable(Screen.EditProfile.route){ EditProfile(navController,authViewModel = authViewModel,editProfileViewModel = editProfileViewModel) }
+            composable(Screen.EditProfile.route){ EditProfile(navController,authViewModel = authViewModel,addNewPhoneNumberViewModel = addNewPhoneNumberViewModel) }
             composable(Screen.AddingAnnouncement.route){ AddingAnnouncementScreen()}
             composable(Screen.NotificationsScreen.route){ NotificationsScreen(navController) }
             composable(Screen.MyAnnouncementScreen.route){ MyAnnouncementScreen(navController) }

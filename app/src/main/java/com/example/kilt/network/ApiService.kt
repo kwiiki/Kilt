@@ -1,7 +1,10 @@
 package com.example.kilt.network
 
-import com.example.kilt.data.editprofile.dto.AddPhoneDTO
-import com.example.kilt.domain.editprofile.model.Phone
+import com.example.kilt.data.editprofile.addnewphonenumberbottomsheet.dto.AddPhoneDTO
+import com.example.kilt.data.editprofile.addnewphonenumberbottomsheet.dto.UserFindByOTPResult
+import com.example.kilt.data.editprofile.addnewphonenumberbottomsheet.dto.Create
+import com.example.kilt.data.editprofile.addnewphonenumberbottomsheet.dto.Filters
+import com.example.kilt.data.editprofile.addnewphonenumberbottomsheet.dto.Phone
 import com.example.kilt.models.authentification.CheckOtpRequest
 import com.example.kilt.models.Config
 import com.example.kilt.models.Count
@@ -24,6 +27,7 @@ import com.example.kilt.models.authentification.UniversalUserUpdateResult
 import com.example.kilt.models.authentification.User
 import com.example.kilt.models.authentification.UserFindRequest
 import okhttp3.MultipartBody
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Multipart
@@ -95,7 +99,15 @@ interface ApiService {
         @Body phone: Phone
         ): AddPhoneDTO
 
-    @POST("universal/User/find")
-    suspend fun userFindByOTP()
+    @POST("universal/OTP/find")
+    suspend fun userFindByOTP(
+        @Body filters: Filters
+    ) : UserFindByOTPResult
+
+    @POST("universal/UserPhone/create")
+    suspend fun universalUserPhoneCreate(@Body create: Create):Response<Any>
+
+    @POST("universal/UserPhone/find")
+    suspend fun universalUserFind()
 }
 
