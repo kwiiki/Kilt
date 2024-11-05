@@ -9,7 +9,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,22 +23,20 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -49,17 +46,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.kilt.R
-import com.example.kilt.domain.editprofile.model.Phone
 import com.example.kilt.enums.UserType
+import com.example.kilt.navigation.NavPath
+import com.example.kilt.presentation.editprofile.addnewphonenumberbottomsheet.AddNewPhoneNumber
+import com.example.kilt.presentation.editprofile.addnewphonenumberbottomsheet.viewmodel.AddNewPhoneNumberViewModel
+import com.example.kilt.presentation.editprofile.components.CustomButtonForEdit
+import com.example.kilt.presentation.editprofile.components.SaveButton
 import com.example.kilt.presentation.editprofile.viewmodel.EditProfileViewModel
 import com.example.kilt.viewmodels.AuthViewModel
 
@@ -73,6 +72,7 @@ val listColor = listOf(Color(0xFF1B278F), Color(0xFF3244E4))
 fun EditProfile(
     navController: NavHostController,
     authViewModel: AuthViewModel,
+    addNewPhoneNumberViewModel: AddNewPhoneNumberViewModel,
     editProfileViewModel: EditProfileViewModel
 ) {
     val scrollState = rememberScrollState()
@@ -85,9 +85,11 @@ fun EditProfile(
     val bottomSheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
     )
-    val uiState = editProfileViewModel.editProfileUiState.value
+    val phoneNumbers = editProfileViewModel.phoneNumbers.value
 
-
+    LaunchedEffect(Unit) {
+        editProfileViewModel.loadPhoneNumbers()
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -166,11 +168,20 @@ fun EditProfile(
             icon = painterResource(id = R.drawable.phone_icon),
             value = user?.phone ?: ""
         )
+        if (phoneNumbers.isNotEmpty()) {
+            phoneNumbers.forEach {
+                CustomTextFieldWithIcon(
+                    icon = painterResource(id = R.drawable.phone_icon),
+                    value = it
+                )
+            }
+        }
         Spacer(modifier = Modifier.height(8.dp))
 
         CustomButtonForEdit(
             text = "Добавить еще",
             onClick = { openFilterBottomSheet = true },
+
             colorList = listColor,
             colorBrush = gradientBrush
         )
@@ -182,11 +193,11 @@ fun EditProfile(
                 sheetState = bottomSheetState,
                 onDismissRequest = { openFilterBottomSheet = false },
             ) {
-                AddNewPhoneNumber(editProfileViewModel)
-
+                AddNewPhoneNumber(
+                    addNewPhoneNumberViewModel,
+                    onClick = { openFilterBottomSheet = false })
             }
         }
-
         Spacer(modifier = Modifier.height(16.dp))
 
         if (user?.user_type == UserType.OWNER.value) {
@@ -203,10 +214,8 @@ fun EditProfile(
                 fontSize = 24.sp
             )
             Spacer(modifier = Modifier.height(16.dp))
-            CustomTextField(
-                label = "Город",
-                value = "Город, район",
-                onValueChange = { agentCity = it })
+            ChooseCityTextField(navController = navController)
+            Spacer(modifier = Modifier.height(8.dp))
             CustomTextField(
                 label = "Полный адрес",
                 value = "ул.Абая, д.123, кв.12",
@@ -254,6 +263,38 @@ fun EditProfile(
 }
 
 @Composable
+fun ChooseCityTextField(navController: NavHostController) {
+    Column(modifier = Modifier.padding()) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp)
+                .clickable { navController.navigate(NavPath.CHOOSECITYINEDIT.name) }
+                .background(Color.Transparent, shape = RoundedCornerShape(14.dp))
+                .border(
+                    width = 1.dp,
+                    color = Color(0xFFC4C9D3),
+                    shape = RoundedCornerShape(12.dp)
+                )
+                .padding(horizontal = 16.dp, vertical = 12.dp)
+        ) {
+            Text(
+                text = "Город, район",
+                color = Color.Gray,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.W400,
+                modifier = Modifier.align(Alignment.CenterStart)
+            )
+            Icon(
+                Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = "Arrow",
+                modifier = Modifier.align(Alignment.CenterEnd)
+            )
+        }
+    }
+}
+
+@Composable
 fun TextSectionTitle(title: String) {
     Text(
         text = title,
@@ -297,7 +338,7 @@ fun CustomTextField(
                 unfocusedContainerColor = Color(0xFFFFFFFF),
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
-                focusedTextColor = Color(0xFF6D7384),
+                focusedTextColor = Color(0xFF01060E),
                 unfocusedTextColor = Color(0xFF6D7384),
                 disabledContainerColor = Color.White,
                 disabledIndicatorColor = Color.Transparent
@@ -340,58 +381,6 @@ fun CustomTextFieldWithIcon(icon: Painter, value: String) {
         Spacer(modifier = Modifier.height(16.dp))
     }
 }
-
-@Composable
-fun CustomButtonForEdit(
-    text: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    colorList: List<Color>,
-    colorBrush: Brush
-) {
-    val tintColor = if (text == "Удалить аккаунт") Color(0xFFE63312) else Color(0xFF1B278F)
-    Button(
-        onClick = onClick,
-        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-        shape = RoundedCornerShape(12.dp),
-        modifier = modifier
-            .fillMaxWidth()
-            .border(
-                width = 1.dp,
-                brush = colorBrush,
-                shape = RoundedCornerShape(12.dp)
-            )
-            .height(50.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Icon(
-                    Icons.Default.Add,
-                    contentDescription = null,
-                    tint = tintColor
-                )
-                Spacer(modifier = Modifier.width(6.dp))
-                Text(
-                    text = text,
-                    style = TextStyle(
-                        brush = Brush.horizontalGradient(
-                            colors = colorList,
-                            tileMode = TileMode.Mirror
-                        ),
-                    ), fontWeight = FontWeight.W700
-                )
-            }
-        }
-    }
-}
-
 @Composable
 fun SwitchAgentCard() {
     Card(
@@ -431,45 +420,5 @@ fun SwitchAgentCard() {
     }
 }
 
-@Composable
-fun SaveButton(onClick: () -> Unit) {
-    val gradient = Brush.horizontalGradient(
-        colors = listOf(Color(0xFF3244E4), Color(0xFF1B278F)),
-        startX = 0f,
-        endX = 600f
-    )
 
-    Row(modifier = Modifier.fillMaxWidth()) {
-        OutlinedButton(
-            onClick = { onClick()
-            },
-            contentPadding = PaddingValues(0.dp),
-            colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.Transparent),
-            shape = RoundedCornerShape(12.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-                .background(gradient, RoundedCornerShape(12.dp))
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "Сохранить",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = Color.White
-                    )
-                }
-            }
-        }
-    }
-}
 

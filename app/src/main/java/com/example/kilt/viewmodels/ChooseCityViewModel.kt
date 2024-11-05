@@ -8,8 +8,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.kilt.domain.choosecity.modul.MicroDistrict
 import com.example.kilt.models.kato.District
-import com.example.kilt.models.kato.MicroDistrict
 import com.example.kilt.models.kato.ResidentialComplex
 import com.example.kilt.repository.KatoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -219,13 +219,14 @@ class ChooseCityViewModel @Inject constructor(
             selectDistrict(district)
         }
     }
+
     fun selectDistrict(district: District) {
         _loadingDistricts[district.id] = true
         _selectedDistrict.value = district
         viewModelScope.launch {
             try {
                 val response = katoRepository.getMicroDistrict(district.id)
-                _microDistrictsByDistrict[district.id] = response.list.sortedBy { it.name }
+                _microDistrictsByDistrict[district.id] = response.sortedBy { it.name }
             } catch (e: Exception) {
                 // Обработка ошибки
             } finally {

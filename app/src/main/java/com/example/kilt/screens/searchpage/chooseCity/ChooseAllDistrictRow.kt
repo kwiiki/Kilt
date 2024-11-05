@@ -33,7 +33,6 @@ fun ChooseAllDistrictRow(
 ) {
     // Use the ViewModel's map to track the district checkbox state
     val isDistrictChecked = chooseCityViewModel.isCheckMapDistrict[district.id] ?: false
-
     Row(
         modifier = Modifier
             .fillMaxWidth()

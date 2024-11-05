@@ -25,12 +25,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.BottomSheetDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -46,6 +48,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -62,10 +65,6 @@ import com.example.kilt.viewmodels.AuthViewModel
 @Composable
 fun AgencyProfileScreen(navController: NavHostController, authViewModel: AuthViewModel) {
     val userWithMetadata by authViewModel.user.collectAsState(initial = null)
-    var openFilterBottomSheet by remember { mutableStateOf(false) }
-    val bottomSheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true,
-    )
     val user = userWithMetadata?.user
     val agencyAboutList = listOf("Личные данные", "Место работы", "О себе")
     val expandedItems = remember { mutableStateMapOf<String, Boolean>() }
@@ -73,10 +72,11 @@ fun AgencyProfileScreen(navController: NavHostController, authViewModel: AuthVie
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(color = Color(0xFFFFFFFF))
             .padding(horizontal = 16.dp, vertical = 16.dp)
     ) {
         Row(
-            modifier = Modifier.padding(vertical = 8.dp),
+            modifier = Modifier.padding(bottom = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
@@ -88,58 +88,13 @@ fun AgencyProfileScreen(navController: NavHostController, authViewModel: AuthVie
                     .padding(8.dp)
                     .clickable { navController.popBackStack() }
             )
-            Spacer(modifier = Modifier.fillMaxWidth(0.26f))
+            Spacer(modifier = Modifier.fillMaxWidth(0.3f))
             Text(
-                text = "Профиль агентства",
-                fontSize = 16.sp,
+                text = "Профиль ",
+                fontSize = 18.sp,
                 fontWeight = FontWeight.W500,
                 color = Color(0xff01060E)
             )
-            Spacer(modifier = Modifier.fillMaxWidth(0.7f))
-            IconButton(onClick = { openFilterBottomSheet = true }) {
-                Icon(
-                    Icons.Default.MoreVert,
-                    contentDescription = null,
-                    tint = Color.Black
-                )
-            }
-        }
-        if (openFilterBottomSheet) {
-            ModalBottomSheet(
-                tonalElevation = 20.dp,
-                sheetState = bottomSheetState,
-                onDismissRequest = { openFilterBottomSheet = false },
-                dragHandle = {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(50.dp)
-                            .background(Color.White),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        BottomSheetDefaults.DragHandle(color = Color(0xff010101))
-                    }
-                }
-            ) {
-                Column(modifier = Modifier
-                    .fillMaxWidth()
-                    .height(220.dp)
-                    .background(Color.White)) {
-                    TextButton(onClick = {
-                        navController.navigate(NavPath.EDITPROFILE.name)
-                        openFilterBottomSheet = false
-                    }) {
-                        Text(
-                            text = "Редактировать профиль",
-                            fontWeight = FontWeight.W600,
-                            fontSize = 16.sp,
-                            color = Color.Black
-                        )
-                        Spacer(modifier = Modifier.height(1.dp).background(color = Color.Gray))
-                    }
-                }
-
-            }
         }
         val userTypeText = when (user?.user_type) {
             "owner" -> UserType.OWNER.ruText
@@ -147,54 +102,61 @@ fun AgencyProfileScreen(navController: NavHostController, authViewModel: AuthVie
             "agency" -> UserType.AGENCY.ruText
             else -> ""
         }
-        Row(
+
+        Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color(0xFFF2F2F2), shape = RoundedCornerShape(12.dp))
-                .height(113.dp)
-                .padding(16.dp)
-                .clickable { navController.navigate(NavPath.AGENCYPROFILESCREEN.name) },
-            verticalAlignment = Alignment.CenterVertically
+                .background(Color(0xFFFFFFFF), shape = RoundedCornerShape(12.dp))
+                .clickable { navController.navigate(NavPath.EDITPROFILE.name) },
+            elevation = CardDefaults.cardElevation(8.dp),
+            colors = CardDefaults.cardColors(containerColor = Color(0xFFFFFFFF))
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.non_image),
-                contentDescription = null,
+            Row(
                 modifier = Modifier
-                    .size(83.dp)
-                    .background(color = Color.Transparent, RoundedCornerShape(12.dp))
-            )
-            Spacer(modifier = Modifier.width(16.dp))
-            Column {
-                Row {
-                    Image(
-                        imageVector = ImageVector.vectorResource(id = R.drawable.chield_check_fill),
-                        contentDescription = null
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = userTypeText,
-                        color = Color(0xFF2AA65C),
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.W700
-                    )
-                }
-                Text(
-                    text = user?.firstname ?: "Не Указано",
-                    fontWeight = FontWeight.W700,
-                    fontSize = 20.sp,
-                    color = Color(0xff010101)
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.non_image),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(56.dp)
+                        .background(color = Color.Transparent, RoundedCornerShape(12.dp))
                 )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = formatPhoneNumber(user?.phone),
-                    color = Color(0xff010101),
-                    fontSize = 16.sp
+                Spacer(modifier = Modifier.width(16.dp))
+                Column {
+                    Row {
+                        Image(
+                            imageVector = ImageVector.vectorResource(id = R.drawable.chield_check_fill),
+                            contentDescription = null
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = userTypeText,
+                            color = Color(0xFF2AA65C),
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.W700,
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = user?.firstname ?: "Не Указано",
+                        fontWeight = FontWeight.W700,
+                        fontSize = 20.sp,
+                        color = Color(0xff010101)
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                }
+                Spacer(modifier = Modifier.weight(1f))
+                Image(
+                    painter = painterResource(id = R.drawable.edit),
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp)
                 )
             }
-            Spacer(modifier = Modifier.weight(1f))
         }
         Spacer(modifier = Modifier.height(24.dp))
-
         agencyAboutList.forEach { item ->
             val isExpanded = expandedItems[item] ?: false
             DocumentRow(
@@ -221,7 +183,8 @@ fun AgencyProfileScreen(navController: NavHostController, authViewModel: AuthVie
 @Composable
 fun UserPersonalData(user: User?) {
     Column(modifier = Modifier.padding(top = 16.dp)) {
-        DetailItem(label = "Телефон", value = formatPhoneNumber(user?.phone))
+        DetailItemForAgency(label = "Телефон", value = formatPhoneNumber(user?.phone))
+        DetailItemForAgency(label = "ID", value = formatPhoneNumber(user?.id.toString()))
     }
 }
 
@@ -231,23 +194,51 @@ fun WorkPlaceData(user: User?) {
         modifier = Modifier.padding(top = 16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        DetailItem(label = "Город", value = user!!.agent_city)
-        DetailItem(label = "Полный адрес", value = user.agent_full_address)
-        DetailItem(label = "Сотрудники", value = "0")
-        DetailItem(label = "График работы", value = user.agent_working_hours)
+        DetailItemForAgency(label = "Город", value = user!!.agent_city)
+        DetailItemForAgency(label = "Полный адрес", value = user.agent_full_address)
+        DetailItemForAgency(label = "Сотрудники", value = "0")
+        DetailItemForAgency(label = "График работы", value = user.agent_working_hours)
     }
 }
 
 @Composable
 fun AboutData(user: User?) {
     Column(modifier = Modifier.padding(top = 16.dp)) {
-        DetailItem(label = "О себе", value = user!!.agent_about)
+        DetailItemForAgency(label = "О себе", value = user!!.agent_about)
     }
 }
 
 fun formatPhoneNumber(phone: String?): String {
     val regex = """(\d)(\d{3})(\d{3})(\d{2})(\d{2})""".toRegex()
     return phone?.let { regex.replace(it, "$1 $2 $3 $4 $5") } ?: ""
+}
+
+@Composable
+fun DetailItemForAgency(label: String, value: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        verticalAlignment = Alignment.Top
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyMedium,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.W400,
+            modifier = Modifier.weight(1f)
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        Text(
+            text = value,
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.W700,
+            fontSize = 16.sp,
+            modifier = Modifier.weight(1f),
+            maxLines = Int.MAX_VALUE,
+            overflow = TextOverflow.Visible
+        )
+    }
 }
 
 @Composable

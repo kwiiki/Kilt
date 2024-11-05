@@ -18,8 +18,7 @@ sealed class Screen(val route:String) {
     data object MyAnnouncementScreen:Screen(route = NavPath.MYANNOUNCEMENTSCREEN.name)
     data object IdentificationScreen:Screen(route = NavPath.IDENTIFICATIONSCREEN.name)
     data object AgencyProfileScreen:Screen(route = NavPath.AGENCYPROFILESCREEN.name)
-
-
+    data object ChooseCityInEdit:Screen(route = NavPath.CHOOSECITYINEDIT.name)
 
     data object AddingAnnouncement:Screen(route = NavPath.ADDINGANNOUNCEMENTSCREEN.name)
 }

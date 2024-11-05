@@ -1,5 +1,6 @@
 package com.example.kilt.screens.searchpage.chooseCity
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -25,6 +26,8 @@ import com.example.kilt.screens.searchpage.filter.CustomDivider
 
 @Composable
 fun CityRow(cityName: String, onCityClick: (String) -> Unit) {
+
+    Log.d("cityName", "CityRow: $cityName")
     Row(
         modifier = Modifier
             .fillMaxWidth()

@@ -273,7 +273,7 @@ fun DocumentRow(title: String, expanded: Boolean, onClick: () -> Unit) {
     ) {
         Text(
             text = title,
-            fontSize = 16.sp,
+            fontSize = 18.sp,
             color = Color(0xff010101),
             fontWeight = FontWeight.W700
         )

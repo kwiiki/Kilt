@@ -20,8 +20,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.kilt.R
+import com.example.kilt.domain.choosecity.modul.MicroDistrict
 import com.example.kilt.models.kato.District
-import com.example.kilt.models.kato.MicroDistrict
 import com.example.kilt.screens.searchpage.filter.CustomDivider
 import com.example.kilt.viewmodels.ChooseCityViewModel
 import com.example.kilt.viewmodels.SearchViewModel

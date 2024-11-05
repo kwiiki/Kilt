@@ -1,4 +1,4 @@
-package com.example.kilt.models.shardePrefernce
+package com.example.kilt.data.localstorage.sharedPreference
 
 import android.content.Context
 import android.content.SharedPreferences

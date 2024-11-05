@@ -15,8 +15,8 @@ import com.example.kilt.models.authentification.DeviceInfo
 import com.example.kilt.models.authentification.ErrorResponse
 import com.example.kilt.models.authentification.OtpResult
 import com.example.kilt.models.authentification.UserWithMetadata
-import com.example.kilt.models.dataStore.UserDataStoreManager
-import com.example.kilt.models.shardePrefernce.PreferencesHelper
+import com.example.kilt.data.localstorage.dataStore.UserDataStoreManager
+import com.example.kilt.data.localstorage.sharedPreference.PreferencesHelper
 import com.example.kilt.enums.IdentificationTypes
 import com.example.kilt.enums.UserType
 import com.example.kilt.repository.IdentificationRepository
@@ -118,6 +118,7 @@ class AuthViewModel @Inject constructor(
                     firebaseToken = getFirebaseToken(),
                     userType = _authenticationUiState.value.userType.value
                 )
+
             } catch (e: Exception) {
                 _checkOtpResult.value =
                     CheckOtpResult.Failure(ErrorResponse("Не удалось проверить код"))
@@ -129,13 +130,13 @@ class AuthViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val user = userRepository.getUserData(userId)
-                userDataStoreManager.saveUserData(
-                    user = user,
-                    bonus = _currentUser.value?.bonus ?: 0,
-                    created = _currentUser.value?.created ?: false,
-                    expired = _currentUser.value?.expired ?: false,
-                    token = _currentUser.value?.token ?: ""
-                )
+//                userDataStoreManager.saveUserData(
+//                    user = user,
+//                    bonus = _currentUser.value?.bonus ?: 0,
+//                    created = _currentUser.value?.created ?: false,
+//                    expired = _currentUser.value?.expired ?: false,
+//                    token = _currentUser.value?.token ?: ""
+//                )
                 _currentUser.value = _currentUser.value?.copy(user = user)
 
             } catch (e: Exception) {

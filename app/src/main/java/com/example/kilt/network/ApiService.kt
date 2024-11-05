@@ -1,21 +1,23 @@
 package com.example.kilt.network
 
-import com.example.kilt.data.editprofile.dto.AddPhoneDTO
-import com.example.kilt.domain.editprofile.model.Phone
-import com.example.kilt.models.authentification.CheckOtpRequest
+import com.example.kilt.data.editprofile.addnewphonenumberbottomsheet.dto.AddPhoneDTO
+import com.example.kilt.data.editprofile.addnewphonenumberbottomsheet.dto.Filters
+import com.example.kilt.data.editprofile.addnewphonenumberbottomsheet.dto.Phone
+import com.example.kilt.data.editprofile.addnewphonenumberbottomsheet.dto.Send
+import com.example.kilt.data.editprofile.addnewphonenumberbottomsheet.dto.UserFindByOTPResult
+import com.example.kilt.data.editprofile.dto.UniversalUserPhoneResult
+import com.example.kilt.data.editprofile.dto.UserPhone
 import com.example.kilt.models.Config
 import com.example.kilt.models.Count
+import com.example.kilt.models.HomeSale
 import com.example.kilt.models.SearchResponse
 import com.example.kilt.models.THomeSale
-import com.example.kilt.models.kato.KatoResponse
-import com.example.kilt.models.kato.MicroDistrictResponse
-import com.example.kilt.models.kato.ResidentialComplexResponse
-import com.example.kilt.models.HomeSale
 import com.example.kilt.models.authentification.ApiResponse
 import com.example.kilt.models.authentification.BioCheckOTPResult
 import com.example.kilt.models.authentification.BioOtpCheckRequest
 import com.example.kilt.models.authentification.BioOtpRequest
 import com.example.kilt.models.authentification.BioOtpResult
+import com.example.kilt.models.authentification.CheckOtpRequest
 import com.example.kilt.models.authentification.CheckOtpResult
 import com.example.kilt.models.authentification.OtpRequest
 import com.example.kilt.models.authentification.OtpResult
@@ -23,7 +25,11 @@ import com.example.kilt.models.authentification.UniversalUserUpdateRequest
 import com.example.kilt.models.authentification.UniversalUserUpdateResult
 import com.example.kilt.models.authentification.User
 import com.example.kilt.models.authentification.UserFindRequest
+import com.example.kilt.models.kato.KatoResponse
+import com.example.kilt.models.kato.MicroDistrictResponse
+import com.example.kilt.models.kato.ResidentialComplexResponse
 import okhttp3.MultipartBody
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Multipart
@@ -43,13 +49,13 @@ interface ApiService {
     suspend fun search(@Body request: THomeSale): SearchResponse
 
     @POST("listings/count-search")
-    suspend fun getSearchCount(@Body request: THomeSale):Count
+    suspend fun getSearchCount(@Body request: THomeSale): Count
 
     @GET("kato/parent/{id}")
-    suspend fun getKato(@Path("id") id:String): KatoResponse
+    suspend fun getKato(@Path("id") id: String): KatoResponse
 
     @GET("kato/parent/{id}")
-    suspend fun getMicroDistrict(@Path("id") id:String): MicroDistrictResponse
+    suspend fun getMicroDistrict(@Path("id") id: String): MicroDistrictResponse
 
     @GET("residential-complex/all")
     suspend fun getResidentialComplex(@Query("starts") city: String): ResidentialComplexResponse
@@ -64,19 +70,19 @@ interface ApiService {
     suspend fun checkOtp(@Body request: CheckOtpRequest): CheckOtpResult
 
     @POST("users/bio-otp")
-    suspend fun bioOtp(@Body request: BioOtpRequest):BioOtpResult
+    suspend fun bioOtp(@Body request: BioOtpRequest): BioOtpResult
 
     @POST("users/bio-otp-check")
     suspend fun bioOtpCheck(@Body request: BioOtpCheckRequest): BioCheckOTPResult
 
     @POST("universal/User/update")
-    suspend fun universalUserUpdate(@Body request: UniversalUserUpdateRequest):UniversalUserUpdateResult
+    suspend fun universalUserUpdate(@Body request: UniversalUserUpdateRequest): UniversalUserUpdateResult
 
     @POST("universal/User/find")
-    suspend fun universalUserFind(@Body request: UserFindRequest):User
+    suspend fun universalUserFind(@Body request: UserFindRequest): User
 
     @GET("users/get-data/{id}")
-    suspend fun getUsersData(@Path("id")id:String):User
+    suspend fun getUsersData(@Path("id") id: String): User
 
     @Multipart
     @POST("users/upload-agency-verification-documents")
@@ -93,9 +99,17 @@ interface ApiService {
     @POST("users/add-phone")
     suspend fun addPhone(
         @Body phone: Phone
-        ): AddPhoneDTO
+    ): AddPhoneDTO
 
-    @POST("universal/User/find")
-    suspend fun userFindByOTP()
+    @POST("universal/OTP/find")
+    suspend fun userFindByOTP(
+        @Body filters: Filters
+    ): UserFindByOTPResult
+
+    @POST("universal/UserPhone/create")
+    suspend fun universalUserPhoneCreate(@Body create: Send): Response<Any>
+
+    @POST("universal/UserPhone/find")
+    suspend fun universalUserFind(@Body userPhone: UserPhone): UniversalUserPhoneResult
 }
 

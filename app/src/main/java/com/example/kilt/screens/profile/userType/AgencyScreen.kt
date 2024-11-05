@@ -3,7 +3,9 @@ package com.example.kilt.screens.profile.userType
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,6 +19,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -25,10 +32,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,6 +49,9 @@ import com.example.kilt.models.authentification.UserWithMetadata
 import com.example.kilt.enums.IdentificationTypes
 import com.example.kilt.enums.UserType
 import com.example.kilt.navigation.NavPath
+import com.example.kilt.presentation.editprofile.components.CustomButtonForEdit
+import com.example.kilt.presentation.editprofile.gradientBrush
+import com.example.kilt.presentation.editprofile.listColor
 import com.example.kilt.viewmodels.AuthViewModel
 
 @Composable
@@ -59,53 +72,55 @@ fun AgencyScreen(
             .fillMaxSize()
             .background(Color.White)
     ) {
-        if (isUserIdentified.value == 2) {
-            IdentifiedUser(navController = navController,user)
+        Log.d(
+            "agency_verification_status",
+            "AgencyScreen: ${currentUser?.user?.agency_verification_status}"
+        )
+        Log.d("agency_verification_status", "AgencyScreen: ${isUserIdentified.value}")
+        if (currentUser?.user?.agency_verification_status == 2) {
+            IdentifiedUser(navController = navController, user)
             Spacer(modifier = Modifier.height(16.dp))
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(75.dp)
-                    .background(Color(0xFFF2F2F2), shape = RoundedCornerShape(12.dp)),
+                    .background(Color(0xFFF7F8FB), shape = RoundedCornerShape(12.dp)),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(text = "Баланс:", fontSize = 14.sp, fontWeight = FontWeight.W500)
-                    Spacer(modifier = Modifier.height(8.dp))
+                Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                    Text(text = "Баланс:", fontSize = 16.sp, fontWeight = FontWeight.W500)
                     Row(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+                        Text(
+                            "${userWithMetadata?.bonus}",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.W700,
+                            style = TextStyle(
+                                brush = Brush.horizontalGradient(
+                                    colors = listColor,
+                                    tileMode = TileMode.Mirror
+                                ),
+                            )
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
                         Image(
                             painter = painterResource(id = R.drawable.kilt_money),
                             contentDescription = null,
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            "${userWithMetadata?.bonus}",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.W700
+                            modifier = Modifier.size(25.dp)
                         )
                     }
+
                 }
                 Spacer(modifier = Modifier.weight(1f))
-                TextButton(onClick = { }) {
-                    Text("Пополнить баланс", color = Color(0xFF3F4FE0), fontSize = 16.sp)
+                Row(modifier = Modifier.fillMaxWidth(0.9f).padding(horizontal = 16.dp)) {
+                    CustomButtonProfiles(
+                        text = "Пополнить баланс",
+                        onClick = {},
+                        colorList = listColor,
+                        colorBrush = gradientBrush
+                    )
                 }
-                Spacer(
-                    modifier = Modifier
-                        .width(1.dp)
-                        .fillMaxHeight()
-                        .background(color = Color(0xffDBDFE4))
-                )
-                Image(
-                    painter = painterResource(id = R.drawable.question_image),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(58.dp)
-                        .padding(horizontal = 20.dp)
-                        .align(Alignment.CenterVertically)
-                )
             }
         } else {
             IsIdentified(navController = navController, isUserIdentified)
@@ -121,70 +136,117 @@ fun AgencyScreen(
 }
 
 @Composable
-fun IdentifiedUser(navController: NavHostController,user: User) {
-    Row(
+fun CustomButtonProfiles(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    colorList: List<Color>,
+    colorBrush: Brush
+) {
+    Button(
+        onClick = onClick,
+        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+        shape = RoundedCornerShape(12.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .border(
+                width = 1.dp,
+                brush = colorBrush,
+                shape = RoundedCornerShape(12.dp)
+            )
+            .height(45.dp)
+            .width(54.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 8.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = text,
+                    style = TextStyle(
+                        brush = Brush.horizontalGradient(
+                            colors = colorList,
+                            tileMode = TileMode.Mirror
+                        ),
+                    ), fontWeight = FontWeight.W700
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun IdentifiedUser(navController: NavHostController, user: User) {
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color(0xFFF2F2F2), shape = RoundedCornerShape(12.dp))
-            .height(113.dp)
-            .padding(16.dp)
-            .clickable { navController.navigate(NavPath.AGENCYPROFILESCREEN.name) },
-        verticalAlignment = Alignment.CenterVertically
+            .background(Color(0xFFFFFFFF), shape = RoundedCornerShape(12.dp))
+            .clickable { navController.navigate(NavPath.EDITPROFILE.name) },
+        elevation = CardDefaults.cardElevation(8.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFFFFF))
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.non_image),
-            contentDescription = null,
+        Row(
             modifier = Modifier
-                .size(83.dp)
-                .background(color = Color.Transparent, RoundedCornerShape(12.dp))
-        )
-        Spacer(modifier = Modifier.width(16.dp))
-        Column {
-            val firstName = user.firstname
-            val lastName = user.lastname
-            val phoneNumber = user.phone
-            val userTypeText = when (user.user_type) {
-                "owner" -> UserType.OWNER.ruText
-                "specialist" -> UserType.AGENT.ruText
-                "agency" -> UserType.AGENCY.ruText
-                else -> ""
-            }
-            Row(
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.non_image),
+                contentDescription = null,
                 modifier = Modifier
-                    .background(Color.Transparent)
-                    .padding(horizontal = 8.dp, vertical = 4.dp)
-            ) {
-                Image(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.chield_check_fill),
-                    contentDescription = null,
-                    modifier = Modifier
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = userTypeText,
-                    color = Color(0xFF2AA65C),
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.W700
-                )
-            }
-            Text(
-                "$firstName $lastName",
-                fontWeight = FontWeight.W700,
-                fontSize = 20.sp,
-                color = Color(0xff010101)
+                    .size(56.dp)
+                    .background(color = Color.Transparent, RoundedCornerShape(12.dp))
             )
-            Spacer(modifier = Modifier.height(4.dp))
-            val regex = """(\d)(\d{3})(\d{3})(\d{2})(\d{2})""".toRegex()
-            val output = regex.replace(phoneNumber, "$1 $2 $3 $4 $5")
-            Text(output, color = Color(0xff010101), fontSize = 16.sp)
+            Spacer(modifier = Modifier.width(8.dp))
+            Column {
+                val firstName = user.firstname
+                val lastName = user.lastname
+                val userTypeText = when (user.user_type) {
+                    "owner" -> UserType.OWNER.ruText
+                    "specialist" -> UserType.AGENT.ruText
+                    "agency" -> UserType.AGENCY.ruText
+                    else -> ""
+                }
+                Row(
+                    modifier = Modifier
+                        .background(Color.Transparent)
+                        .padding(vertical = 4.dp)
+                ) {
+                    Image(
+                        imageVector = ImageVector.vectorResource(id = R.drawable.chield_check_fill),
+                        contentDescription = null,
+                        modifier = Modifier
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = userTypeText,
+                        color = Color(0xFF2AA65C),
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.W700
+                    )
+                }
+                Text(
+                    "$firstName $lastName",
+                    fontWeight = FontWeight.W700,
+                    fontSize = 20.sp,
+                    color = Color(0xff010101)
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            Icon(
+                Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = null,
+                tint = Color(0xFF566982),
+                modifier = Modifier.size(30.dp)
+            )
         }
-        Spacer(modifier = Modifier.weight(1f))
-        Icon(
-            Icons.AutoMirrored.Filled.KeyboardArrowRight,
-            contentDescription = null,
-            tint = Color(0xFF566982),
-            modifier = Modifier.size(30.dp)
-        )
     }
 }
 

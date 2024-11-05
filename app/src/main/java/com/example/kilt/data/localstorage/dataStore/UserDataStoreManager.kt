@@ -1,4 +1,4 @@
-package com.example.kilt.models.dataStore
+package com.example.kilt.data.localstorage.dataStore
 
 import android.content.Context
 import androidx.datastore.core.DataStore
