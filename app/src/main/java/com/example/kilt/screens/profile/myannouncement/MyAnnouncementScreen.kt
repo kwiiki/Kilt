@@ -193,9 +193,7 @@ fun MyAnnouncementScreen(navController: NavHostController) {
 }
 
 @Composable
-fun ItemSettings(
-
-){
+fun ItemSettings(){
     val options = listOf(
         "Продвигать" to "default",
         "Редактировать объявление" to "new",

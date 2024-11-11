@@ -2,6 +2,7 @@
 
 package com.example.kilt.presentation.editprofile
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -24,14 +25,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -44,22 +44,28 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
 import com.example.kilt.R
 import com.example.kilt.enums.UserType
 import com.example.kilt.navigation.NavPath
+import com.example.kilt.presentation.editprofile.addnewimagebottomsheet.AddNewImage
+import com.example.kilt.presentation.editprofile.addnewimagebottomsheet.viewmodel.AddNewImageViewModel
 import com.example.kilt.presentation.editprofile.addnewphonenumberbottomsheet.AddNewPhoneNumber
 import com.example.kilt.presentation.editprofile.addnewphonenumberbottomsheet.viewmodel.AddNewPhoneNumberViewModel
 import com.example.kilt.presentation.editprofile.components.CustomButtonForEdit
 import com.example.kilt.presentation.editprofile.components.SaveButton
 import com.example.kilt.presentation.editprofile.viewmodel.EditProfileViewModel
+import com.example.kilt.utills.imageKiltUrl
 import com.example.kilt.viewmodels.AuthViewModel
 
 
@@ -72,23 +78,25 @@ val listColor = listOf(Color(0xFF1B278F), Color(0xFF3244E4))
 fun EditProfile(
     navController: NavHostController,
     authViewModel: AuthViewModel,
+    editProfileViewModel: EditProfileViewModel,
     addNewPhoneNumberViewModel: AddNewPhoneNumberViewModel,
-    editProfileViewModel: EditProfileViewModel
+    addNewImageViewModel: AddNewImageViewModel
 ) {
     val scrollState = rememberScrollState()
     val user = authViewModel.user.collectAsState(initial = null).value?.user
-    var agentAbout by remember { mutableStateOf("Текст") }
-    var agentCity by remember { mutableStateOf("Город, район") }
-    var agentFullAddress by remember { mutableStateOf("ул.Абая, д.123, кв.12") }
-    var agentWorkingHours by remember { mutableStateOf("с 9 до 17, обед с 13-14") }
-    var openFilterBottomSheet by remember { mutableStateOf(false) }
-    val bottomSheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true,
-    )
+    val uiState = editProfileViewModel.uiState.value
+    var openEditProfileBottomSheet by remember { mutableStateOf(false) }
+    val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    var openBottomSheet by remember { mutableStateOf(false) }
+    val bottomState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val phoneNumbers = editProfileViewModel.phoneNumbers.value
+    var checkDeleteUserImage by remember {
+        mutableStateOf(false)
+    }
 
     LaunchedEffect(Unit) {
         editProfileViewModel.loadPhoneNumbers()
+        editProfileViewModel.uploadDate()
     }
     Column(
         modifier = Modifier
@@ -119,24 +127,54 @@ fun EditProfile(
                 color = Color(0xff01060E)
             )
         }
+
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.non_image),
-                contentDescription = null,
-                modifier = Modifier.size(84.dp)
-            )
+            if (user?.photo == "" || checkDeleteUserImage ) {
+                Image(
+                    painter = painterResource(id = R.drawable.non_image),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(84.dp)
+                        .background(color = Color.Transparent, RoundedCornerShape(12.dp))
+                        .clip(RoundedCornerShape(12.dp))
+                )
+            } else {
+                AsyncImage(
+                    model = "$imageKiltUrl${user?.photo}",
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(84.dp)
+                        .background(color = Color.Transparent, RoundedCornerShape(12.dp))
+                        .clip(RoundedCornerShape(12.dp))
+                )
+            }
             Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "Заменить",
-                color = Color(0xff3244E4),
-                fontWeight = FontWeight.W400,
-                fontSize = 14.sp
-            )
+            TextButton(onClick = { openBottomSheet = true},) {
+                Text(
+                    text = "Заменить",
+                    color = Color(0xff3244E4),
+                    fontWeight = FontWeight.W400,
+                    fontSize = 14.sp
+                )
+            }
+        }
+        if (openBottomSheet) {
+            ModalBottomSheet(
+                tonalElevation = 20.dp,
+                contentColor = Color.White,
+                containerColor = Color.White,
+                sheetState = bottomState,
+                onDismissRequest = { openBottomSheet = false },
+            ) {
+                AddNewImage(addNewImageViewModel, onClick = { openBottomSheet = false },checkUserImage = { checkDeleteUserImage = true})
+            }
         }
         Spacer(modifier = Modifier.height(16.dp))
+
         Text(
             text = "Личный данные",
             color = Color(0xff01060E),
@@ -151,19 +189,18 @@ fun EditProfile(
             CustomTextField(label = "Имя", value = user?.firstname.toString(), onValueChange = {})
             CustomTextField(
                 label = "Фамилия",
-                value = user?.lastname.toString(),
+                value = uiState.firstname,
                 onValueChange = {})
         }
+        Log.d("uiState", "EditProfile: ${uiState.userAbout}")
         CustomTextField(
-            label = "О себе",
-            value = user?.agent_about.toString(),
-            onValueChange = { agentAbout = it },
+            label = "Описание",
+            value = uiState.userAbout,
+            onValueChange = { editProfileViewModel.updateUserAbout(it) },
             isMultiline = true
         )
         TextSectionTitle("Телефоны")
-
         Spacer(modifier = Modifier.height(8.dp))
-
         CustomTextFieldWithIcon(
             icon = painterResource(id = R.drawable.phone_icon),
             value = user?.phone ?: ""
@@ -180,22 +217,21 @@ fun EditProfile(
 
         CustomButtonForEdit(
             text = "Добавить еще",
-            onClick = { openFilterBottomSheet = true },
-
+            onClick = { openEditProfileBottomSheet = true },
             colorList = listColor,
             colorBrush = gradientBrush
         )
-        if (openFilterBottomSheet) {
+        if (openEditProfileBottomSheet) {
             ModalBottomSheet(
                 tonalElevation = 20.dp,
                 contentColor = Color.White,
                 containerColor = Color.White,
                 sheetState = bottomSheetState,
-                onDismissRequest = { openFilterBottomSheet = false },
+                onDismissRequest = { openEditProfileBottomSheet = false },
             ) {
                 AddNewPhoneNumber(
                     addNewPhoneNumberViewModel,
-                    onClick = { openFilterBottomSheet = false })
+                    onClick = { openEditProfileBottomSheet = false })
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
@@ -218,12 +254,13 @@ fun EditProfile(
             Spacer(modifier = Modifier.height(8.dp))
             CustomTextField(
                 label = "Полный адрес",
-                value = "ул.Абая, д.123, кв.12",
-                onValueChange = { agentFullAddress = it })
+                value = uiState.userFullAddress,
+                onValueChange = { editProfileViewModel.updateUserFullAddress(it) }
+            )
             CustomTextField(
                 label = "График работы",
-                value = "с 9 до 17, обед с 13-14",
-                onValueChange = { agentWorkingHours = it },
+                value = uiState.userWorkHour,
+                onValueChange = { editProfileViewModel.updateUserWorkHour(it) },
                 hasIcon = true
             )
         }
@@ -253,10 +290,8 @@ fun EditProfile(
                 contentDescription = null
             )
         }
-
         Spacer(modifier = Modifier.height(10.dp))
         SaveButton {
-
         }
         Spacer(modifier = Modifier.height(16.dp))
     }
@@ -381,6 +416,7 @@ fun CustomTextFieldWithIcon(icon: Painter, value: String) {
         Spacer(modifier = Modifier.height(16.dp))
     }
 }
+
 @Composable
 fun SwitchAgentCard() {
     Card(

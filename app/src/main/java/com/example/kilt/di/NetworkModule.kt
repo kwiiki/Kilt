@@ -27,6 +27,7 @@ import javax.inject.Singleton
 object NetworkModule {
 
     private const val BASE_URL = "https://kiltapp.kz/api/v1/"
+
     val gson = GsonBuilder()
         .registerTypeAdapter(OtpResult::class.java, OtpResultAdapter())
         .registerTypeAdapter(BioOtpResult::class.java, BioOtpResultAdapter())

@@ -6,13 +6,18 @@ import com.example.kilt.data.localstorage.sharedPreference.PreferencesHelper
 import com.example.kilt.domain.choosecity.usecase.GetKatoByIdUseCase
 import com.example.kilt.domain.choosecity.usecase.GetMicroDistrictByIdUseCase
 import com.example.kilt.domain.common.GetUserIdUseCase
+import com.example.kilt.domain.common.GetUserUseCase
 import com.example.kilt.otp.SmsViewModel
 import com.example.kilt.domain.config.repository.ConfigRepository
 import com.example.kilt.domain.editprofile.addnewphonenumberbottomsheet.usercase.AddPhoneUseCase
 import com.example.kilt.domain.editprofile.addnewphonenumberbottomsheet.usercase.UniversalUserCreateUseCase
 import com.example.kilt.domain.editprofile.addnewphonenumberbottomsheet.usercase.UserFindByOTPUseCase
+import com.example.kilt.domain.editprofile.usecase.AddNewImageUseCase
+import com.example.kilt.domain.editprofile.usecase.DeleteImageUseCase
 import com.example.kilt.domain.editprofile.usecase.GetUserPhoneNumbersUseCase
+import com.example.kilt.domain.userabout.usecase.GetUserListingsUseCase
 import com.example.kilt.presentation.choosecity.viewmodel.ChooseCityInEditViewModel
+import com.example.kilt.presentation.editprofile.addnewimagebottomsheet.viewmodel.AddNewImageViewModel
 import com.example.kilt.repository.HomeSaleRepository
 import com.example.kilt.repository.IdentificationRepository
 import com.example.kilt.repository.KatoRepository
@@ -25,6 +30,7 @@ import com.example.kilt.viewmodels.HomeSaleViewModel
 import com.example.kilt.viewmodels.AuthViewModel
 import com.example.kilt.presentation.editprofile.addnewphonenumberbottomsheet.viewmodel.AddNewPhoneNumberViewModel
 import com.example.kilt.presentation.editprofile.viewmodel.EditProfileViewModel
+import com.example.kilt.presentation.userabout.viewmodel.UserAboutViewModel
 import com.example.kilt.viewmodels.IdentificationViewModel
 import com.example.kilt.viewmodels.SearchViewModel
 import dagger.Module
@@ -119,8 +125,8 @@ object ViewModelModule {
 
     @Provides
     @ViewModelScoped
-    fun provideEditProfileViewModel(getUserPhoneNumbersUseCase: GetUserPhoneNumbersUseCase): EditProfileViewModel {
-        return EditProfileViewModel(getUserPhoneNumbersUseCase)
+    fun provideEditProfileViewModel(getUserPhoneNumbersUseCase: GetUserPhoneNumbersUseCase,getUserUseCase: GetUserUseCase): EditProfileViewModel {
+        return EditProfileViewModel(getUserPhoneNumbersUseCase,getUserUseCase)
     }
 
     @Provides
@@ -130,6 +136,18 @@ object ViewModelModule {
         getMicroDistrictByIdUseCase: GetMicroDistrictByIdUseCase
     ): ChooseCityInEditViewModel {
         return ChooseCityInEditViewModel(getKatoByIdUseCase, getMicroDistrictByIdUseCase)
+    }
+
+    @Provides
+    @ViewModelScoped
+    fun provideAddNewImageViewModel(getUserUseCase: GetUserUseCase,addNewImageUseCase: AddNewImageUseCase,deleteImageUseCase: DeleteImageUseCase) :AddNewImageViewModel{
+        return AddNewImageViewModel(getUserUseCase,addNewImageUseCase,deleteImageUseCase)
+    }
+
+    @Provides
+    @ViewModelScoped
+    fun provideUserAboutViewModel(getUserListingsUseCase: GetUserListingsUseCase):UserAboutViewModel{
+        return UserAboutViewModel(getUserListingsUseCase)
     }
 
     @Provides

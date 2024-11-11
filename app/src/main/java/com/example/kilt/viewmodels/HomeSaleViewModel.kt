@@ -52,13 +52,6 @@ class HomeSaleViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 config.value = configRepository.config.value
-                Log.d("HomeSaleViewModel", "loadHomesale: ${homeSale.value}")
-                Log.d("HomeSaleViewModel", "loadConfig: ${config.value?.listingStructures}")
-                Log.d("HomeSaleViewModel", "probLabels: ${config.value?.propLabels?.size}")
-                Log.d(
-                    "HomeSaleViewModel",
-                    "furniture_list: ${config.value?.propMapping?.furniture_list?.list?.get(0)}"
-                )
                 updateTopListings()
             } catch (e: Exception) {
                 _error.value = e.message ?: "An unknown error occurred"
@@ -108,18 +101,18 @@ class HomeSaleViewModel @Inject constructor(
 
     private fun updateTopListings() {
         val homeSaleValue = homeSale.value
-        Log.d("HomeSaleViewModel", "updateTopListings: ${homeSaleValue}")
         val listingStructures = configRepository.config.value?.listingStructures
 
-        if (homeSaleValue != null) {
-            val topValues = listingStructures?.filter { structure ->
+        if (homeSaleValue != null && listingStructures != null) {
+            val topValues = listingStructures.filter { structure ->
                 structure.deal_type == homeSaleValue.listing.deal_type &&
                         structure.listing_type == homeSaleValue.listing.listing_type &&
                         structure.property_type == homeSaleValue.listing.property_type
-            }?.flatMap { it.top.split(",") }
+            }.flatMap { it.top.split(",") }
 
-            topListings.value = topValues?.distinct() ?: emptyList()
+            topListings.value = topValues.distinct() // Avoid empty list reassignment
+        } else {
+            topListings.value = emptyList()
         }
-        Log.d("HomeSaleViewModel", "updateTopListings: ${topListings.value}")
     }
 }

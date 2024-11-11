@@ -46,10 +46,12 @@ import com.example.kilt.screens.blog.News
 import com.example.kilt.screens.favorite.FavoritesScreen
 import com.example.kilt.screens.home.HomePageContent
 import com.example.kilt.screens.home.addAnnouncement.AddingAnnouncementScreen
-import com.example.kilt.screens.profile.AgencyProfileScreen
+import com.example.kilt.presentation.userabout.UserAboutScreen
 import com.example.kilt.presentation.editprofile.EditProfile
+import com.example.kilt.presentation.editprofile.addnewimagebottomsheet.viewmodel.AddNewImageViewModel
 import com.example.kilt.presentation.editprofile.addnewphonenumberbottomsheet.viewmodel.AddNewPhoneNumberViewModel
 import com.example.kilt.presentation.editprofile.viewmodel.EditProfileViewModel
+import com.example.kilt.presentation.userabout.viewmodel.UserAboutViewModel
 import com.example.kilt.screens.profile.registration.RegistrationForAgencyPage
 import com.example.kilt.screens.profile.EnterFourCodePage
 import com.example.kilt.screens.profile.EnterSixCodePage
@@ -81,12 +83,14 @@ fun KiltApp() {
     val configViewModel: ConfigViewModel = hiltViewModel()
     val homeSaleViewModel: HomeSaleViewModel = hiltViewModel()
     val chooseCityViewModel: ChooseCityViewModel = hiltViewModel()
-    val authViewModel:AuthViewModel = hiltViewModel()
-    val identificationViewModel:IdentificationViewModel = hiltViewModel()
+    val authViewModel: AuthViewModel = hiltViewModel()
+    val identificationViewModel: IdentificationViewModel = hiltViewModel()
     val addNewPhoneNumberViewModel: AddNewPhoneNumberViewModel = hiltViewModel()
-    val editProfileViewModel:EditProfileViewModel = hiltViewModel()
-    val chooseCityInEditViewModel:ChooseCityInEditViewModel = hiltViewModel()
-    val smsViewModel:SmsViewModel = hiltViewModel()
+    val editProfileViewModel: EditProfileViewModel = hiltViewModel()
+    val chooseCityInEditViewModel: ChooseCityInEditViewModel = hiltViewModel()
+    val addNewImageViewModel: AddNewImageViewModel = hiltViewModel()
+    val userAboutViewModel:UserAboutViewModel = hiltViewModel()
+    val smsViewModel: SmsViewModel = hiltViewModel()
 
 
     val bottomBarRoutes = listOf(
@@ -134,7 +138,12 @@ fun KiltApp() {
                 )
             }
             composable(BottomNavigationScreen.Favorites.route) { FavoritesScreen(navController) }
-            composable(BottomNavigationScreen.Profile.route) { ProfileScreen(navController,authViewModel) }
+            composable(BottomNavigationScreen.Profile.route) {
+                ProfileScreen(
+                    navController,
+                    authViewModel
+                )
+            }
             composable(Screen.BlogPage.route) { BlogPage(navController) }
             composable(Screen.News.route) { News(navController) }
             composable(
@@ -152,19 +161,73 @@ fun KiltApp() {
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
                 )
             }
-            composable(Screen.LoginPage.route){ LoginPage(navController = navController, authViewModel = authViewModel)}
-            composable(Screen.EnterFourCodePage.route){ EnterFourCodePage(navController,authViewModel = authViewModel) }
-            composable(Screen.RegistrationPage.route){ RegistrationPage(navController,authViewModel = authViewModel) }
-            composable(Screen.OwnerPage.route){ RegistrationForOwnerPage(navController,authViewModel = authViewModel) }
-            composable(Screen.AgencyPage.route){ RegistrationForAgencyPage(navController,authViewModel = authViewModel) }
-            composable(Screen.EnterSixCodePage.route){ EnterSixCodePage(navController,authViewModel = authViewModel) }
-            composable(Screen.EditProfile.route){ EditProfile(navController,authViewModel = authViewModel, editProfileViewModel = editProfileViewModel, addNewPhoneNumberViewModel = addNewPhoneNumberViewModel) }
-            composable(Screen.AddingAnnouncement.route){ AddingAnnouncementScreen()}
-            composable(Screen.NotificationsScreen.route){ NotificationsScreen(navController) }
-            composable(Screen.MyAnnouncementScreen.route){ MyAnnouncementScreen(navController) }
-            composable(Screen.IdentificationScreen.route){ IdentificationScreen(navController, identificationViewModel = identificationViewModel) }
-            composable(Screen.AgencyProfileScreen.route){ AgencyProfileScreen(navController,authViewModel = authViewModel)}
-            composable(Screen.ChooseCityInEdit.route){ ChooseCityInEdit(navController,chooseCityInEditViewModel) }
+            composable(Screen.LoginPage.route) {
+                LoginPage(
+                    navController = navController,
+                    authViewModel = authViewModel
+                )
+            }
+            composable(Screen.EnterFourCodePage.route) {
+                EnterFourCodePage(
+                    navController,
+                    authViewModel = authViewModel
+                )
+            }
+            composable(Screen.RegistrationPage.route) {
+                RegistrationPage(
+                    navController,
+                    authViewModel = authViewModel
+                )
+            }
+            composable(Screen.OwnerPage.route) {
+                RegistrationForOwnerPage(
+                    navController,
+                    authViewModel = authViewModel
+                )
+            }
+            composable(Screen.AgencyPage.route) {
+                RegistrationForAgencyPage(
+                    navController,
+                    authViewModel = authViewModel
+                )
+            }
+            composable(Screen.EnterSixCodePage.route) {
+                EnterSixCodePage(
+                    navController,
+                    authViewModel = authViewModel
+                )
+            }
+            composable(Screen.EditProfile.route) {
+                EditProfile(
+                    navController,
+                    authViewModel = authViewModel,
+                    editProfileViewModel = editProfileViewModel,
+                    addNewPhoneNumberViewModel = addNewPhoneNumberViewModel,
+                    addNewImageViewModel = addNewImageViewModel
+                )
+            }
+            composable(Screen.AddingAnnouncement.route) { AddingAnnouncementScreen() }
+            composable(Screen.NotificationsScreen.route) { NotificationsScreen(navController) }
+            composable(Screen.MyAnnouncementScreen.route) { MyAnnouncementScreen(navController) }
+            composable(Screen.IdentificationScreen.route) {
+                IdentificationScreen(
+                    navController,
+                    identificationViewModel = identificationViewModel
+                )
+            }
+            composable(Screen.AgencyProfileScreen.route) {
+                UserAboutScreen(
+                    navController,
+                    authViewModel = authViewModel,
+                    userAboutViewModel = userAboutViewModel
+                )
+            }
+            composable(Screen.ChooseCityInEdit.route) {
+                ChooseCityInEdit(
+                    navController,
+                    chooseCityInEditViewModel
+                )
+            }
         }
         val currentRoute = navBackStackEntry?.destination?.route
         Log.d("currentRoute", "KiltApp: $currentRoute")

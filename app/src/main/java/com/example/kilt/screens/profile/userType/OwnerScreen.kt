@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -25,17 +27,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
 import com.example.kilt.R
 import com.example.kilt.models.authentification.User
 import com.example.kilt.models.authentification.UserWithMetadata
 import com.example.kilt.enums.UserType
 import com.example.kilt.navigation.NavPath
+import com.example.kilt.utills.imageKiltUrl
 import com.example.kilt.viewmodels.AuthViewModel
 
 @Composable
@@ -51,69 +56,82 @@ fun OwnerScreen(
             .fillMaxSize()
             .background(Color.White)
     ) {
-        Row(
+        Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color(0xFFF2F2F2), shape = RoundedCornerShape(12.dp))
-                .height(113.dp)
-                .padding(16.dp)
-                .clickable { navController.navigate(NavPath.EDITPROFILE.name) },
-            verticalAlignment = Alignment.CenterVertically
+                .background(Color(0xFFFFFFFF), shape = RoundedCornerShape(12.dp))
+                .clickable { navController.navigate(NavPath.USERPROFILESCREEN.name) },
+            elevation = CardDefaults.cardElevation(8.dp),
+            colors = CardDefaults.cardColors(containerColor = Color(0xFFFFFFFF))
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.non_image),
-                contentDescription = null,
+            Row(
                 modifier = Modifier
-                    .size(83.dp)
-                    .background(color = Color.Transparent, RoundedCornerShape(12.dp))
-            )
-            Spacer(modifier = Modifier.width(16.dp))
-            Column {
-                val firstName = user.firstname
-                val lastName = user.lastname
-                val phoneNumber = user.phone
-                val userTypeText = when (user.user_type) {
-                    "owner" -> UserType.OWNER.ruText
-                    "specialist" -> UserType.AGENT.ruText
-                    "agency" -> UserType.AGENCY.ruText
-                    else -> ""
-                }
-                Row(
-                    modifier = Modifier
-                        .background(Color.Transparent)
-                        .padding( vertical = 4.dp)
-                ) {
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if(user.phone.isEmpty()) {
                     Image(
-                        imageVector = ImageVector.vectorResource(id = R.drawable.chield_check_fill),
+                        painter = painterResource(id = R.drawable.non_image),
                         contentDescription = null,
                         modifier = Modifier
+                            .size(56.dp)
+                            .background(color = Color.Transparent, RoundedCornerShape(12.dp))
                     )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = userTypeText,
-                        color = Color(0xFF2AA65C),
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.W700
+                } else {
+                    AsyncImage(
+                        model = "$imageKiltUrl${user.photo}",
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(56.dp)
+                            .background(color = Color.Transparent, RoundedCornerShape(12.dp))
                     )
                 }
-                Text(
-                    "$firstName $lastName",
-                    fontWeight = FontWeight.W700,
-                    fontSize = 20.sp,
-                    color = Color(0xff010101)
+                Spacer(modifier = Modifier.width(8.dp))
+                Column {
+                    val firstName = user.firstname
+                    val lastName = user.lastname
+                    val userTypeText = when (user.user_type) {
+                        "owner" -> UserType.OWNER.ruText
+                        "specialist" -> UserType.AGENT.ruText
+                        "agency" -> UserType.AGENCY.ruText
+                        else -> ""
+                    }
+                    Row(
+                        modifier = Modifier
+                            .background(Color.Transparent)
+                            .padding(vertical = 4.dp)
+                    ) {
+                        Image(
+                            imageVector = ImageVector.vectorResource(id = R.drawable.chield_check_fill),
+                            contentDescription = null,
+                            modifier = Modifier
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = userTypeText,
+                            color = Color(0xFF2AA65C),
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.W700
+                        )
+                    }
+                    Text(
+                        "$firstName $lastName",
+                        fontWeight = FontWeight.W700,
+                        fontSize = 20.sp,
+                        color = Color(0xff010101)
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                }
+                Spacer(modifier = Modifier.weight(1f))
+                Icon(
+                    Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    contentDescription = null,
+                    tint = Color(0xFF566982),
+                    modifier = Modifier.size(30.dp)
                 )
-                Spacer(modifier = Modifier.height(4.dp))
-                val regex = """(\d)(\d{3})(\d{3})(\d{2})(\d{2})""".toRegex()
-                val output = regex.replace(phoneNumber, "$1 $2 $3 $4 $5")
-                Text(output, color = Color(0xff010101), fontSize = 16.sp)
             }
-            Spacer(modifier = Modifier.weight(1f))
-            Icon(
-                Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                contentDescription = null,
-                tint = Color(0xFF566982),
-                modifier = Modifier.size(30.dp)
-            )
         }
         Spacer(modifier = Modifier.height(16.dp))
         Row(

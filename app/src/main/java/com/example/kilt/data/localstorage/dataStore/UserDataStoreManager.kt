@@ -1,6 +1,7 @@
 package com.example.kilt.data.localstorage.dataStore
 
 import android.content.Context
+import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
@@ -95,6 +96,7 @@ class UserDataStoreManager(private val context: Context) {
             preferences[UPDATED_AT] = user.updatedAt
             preferences[USER_TYPE] = user.user_type
         }
+        Log.d("UserDataStoreManager", "User data saved successfully: $user")
     }
     val userDataFlow: Flow<UserWithMetadata?> = context.userDataStore.data
         .map { preferences ->

@@ -50,9 +50,8 @@ fun SearchPage(
 
     LaunchedEffect(searchResults.loadState) {
         Log.d("SearchPage", "LoadState: $response")
+        Log.d("SearchPage", "LoadState: ${response.value?.list?.get(0).toString()}")
     }
-    Log.d("SearchPage", "Refresh state: ${searchResults.loadState.refresh}")
-    Log.d("SearchPage", "Append state: ${searchResults.loadState.append}")
     Column(
         modifier = Modifier
     ) {

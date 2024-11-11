@@ -63,6 +63,7 @@ import com.example.kilt.R
 import com.example.kilt.models.config.Image
 import com.example.kilt.navigation.NavPath
 import com.example.kilt.utills.imageCdnUrl
+import com.example.kilt.utills.imageKiltUrl
 import com.example.kilt.viewmodels.HomeSaleViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -109,7 +110,7 @@ fun ImageSlider(
                 onPhotoClick = { image ->
                     selectedImageIndex = imageList.indexOf(image)
                 },
-                onBackClick = { navController.navigate(NavPath.SEARCH.name) },
+                onBackClick = { navController.popBackStack() },
                 onFavoriteClick = { /* Handle favorite click */ },
                 listState = listState
             )
@@ -214,6 +215,7 @@ fun PhotosScreen(
 @Composable
 fun PhotoItem(image: Image, onPhotoClick: (Image) -> Unit) {
     val photoUrl = "${imageCdnUrl}${image.link}"
+    val secondUrl = "${imageKiltUrl}${image.link}"
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp.value
 
@@ -221,6 +223,12 @@ fun PhotoItem(image: Image, onPhotoClick: (Image) -> Unit) {
     val adjustedHeight = image.height.toFloat() * scaleFactor
 
     var isLoading by remember { mutableStateOf(true) }
+
+    val selectedUrl = if (image.link.startsWith("local", ignoreCase = true)) {
+        secondUrl
+    } else {
+        photoUrl
+    }
 
     Box(
         modifier = Modifier
@@ -230,7 +238,7 @@ fun PhotoItem(image: Image, onPhotoClick: (Image) -> Unit) {
     ) {
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
-                .data(photoUrl)
+                .data(selectedUrl)
                 .crossfade(true)
                 .listener(
                     onSuccess = { _, _ -> isLoading = false },
@@ -321,8 +329,14 @@ fun FullScreenPhotoScreen(
         ) { page ->
             val image = images[page]
             val photoUrl = "${imageCdnUrl}${image.link}"
+            val secondUrl = "${imageKiltUrl}${image.link}"
+            val selectedUrl = if (image.link.startsWith("local", ignoreCase = true)) {
+                secondUrl
+            } else {
+                photoUrl
+            }
             AsyncImage(
-                model = photoUrl,
+                model = selectedUrl,
                 contentDescription = null,
                 contentScale = ContentScale.Fit,
                 modifier = Modifier.fillMaxSize()

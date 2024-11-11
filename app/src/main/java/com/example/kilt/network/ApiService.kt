@@ -7,6 +7,8 @@ import com.example.kilt.data.editprofile.addnewphonenumberbottomsheet.dto.Send
 import com.example.kilt.data.editprofile.addnewphonenumberbottomsheet.dto.UserFindByOTPResult
 import com.example.kilt.data.editprofile.dto.UniversalUserPhoneResult
 import com.example.kilt.data.editprofile.dto.UserPhone
+import com.example.kilt.data.userabout.dto.Listings
+import com.example.kilt.data.userabout.dto.ListingsDTO
 import com.example.kilt.models.Config
 import com.example.kilt.models.Count
 import com.example.kilt.models.HomeSale
@@ -32,6 +34,7 @@ import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
@@ -111,5 +114,27 @@ interface ApiService {
 
     @POST("universal/UserPhone/find")
     suspend fun universalUserFind(@Body userPhone: UserPhone): UniversalUserPhoneResult
+
+    @GET("listings/agent/{id}")
+    suspend fun getUserListings(@Path("id") id: String):ListingsDTO
+
+    @Multipart
+    @POST("users/add-profile-image")
+    suspend fun addProfileImage(
+        @Part image: MultipartBody.Part,
+        @Header("Authorization") token: String
+    ): Response<Any>
+
+    @POST("users/remove-profile-image")
+    suspend fun deleteProfileImage(
+        @Header("Authorization") token: String
+    ): Response<Any>
+
+    @POST("users/remove-phone")
+    suspend fun removePhone(
+        @Body phone: Phone,
+        @Header("Authorization") token: String
+    )
+
 }
 
