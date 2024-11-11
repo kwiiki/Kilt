@@ -22,9 +22,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TileMode
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.kilt.R
 
 @Composable
 fun CustomButtonForEdit(
@@ -35,6 +39,11 @@ fun CustomButtonForEdit(
     colorBrush: Brush
 ) {
     val tintColor = if (text == "Удалить аккаунт") Color(0xFFE63312) else Color(0xFF1B278F)
+    val gradient = Brush.horizontalGradient(
+        colors = listOf(Color(0xFF326be4), Color(0xFF1B308F)),
+        startX = 100f,
+        endX = 700f
+    )
     Button(
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
@@ -57,11 +66,25 @@ fun CustomButtonForEdit(
             Row(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Icon(
-                    Icons.Default.Add,
-                    contentDescription = null,
-                    tint = tintColor
-                )
+                when (text) {
+                    "Выбрать фото" -> {
+                        Icon(
+                            imageVector = ImageVector.vectorResource(id = R.drawable.gallerya_icon),
+                            contentDescription = null,
+                            tint = Color(0xFF1B278F)
+                        )
+                    }
+                    "Удалить фото" -> {
+
+                    }
+                    else -> {
+                        Icon(
+                            Icons.Default.Add,
+                            contentDescription = null,
+                            tint = tintColor
+                        )
+                    }
+                }
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
                     text = text,

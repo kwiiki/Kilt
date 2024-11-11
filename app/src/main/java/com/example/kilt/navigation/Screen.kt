@@ -1,7 +1,5 @@
 package com.example.kilt.navigation
 
-import kotlin.math.round
-
 sealed class Screen(val route:String) {
     data object BlogPage:Screen(route = NavPath.BLOGPAGE.name)
     data object News:Screen(route = NavPath.NEWS.name)
@@ -17,7 +15,7 @@ sealed class Screen(val route:String) {
     data object NotificationsScreen:Screen(route = NavPath.NOTIFICATIONSSCREEN.name)
     data object MyAnnouncementScreen:Screen(route = NavPath.MYANNOUNCEMENTSCREEN.name)
     data object IdentificationScreen:Screen(route = NavPath.IDENTIFICATIONSCREEN.name)
-    data object AgencyProfileScreen:Screen(route = NavPath.AGENCYPROFILESCREEN.name)
+    data object AgencyProfileScreen:Screen(route = NavPath.USERPROFILESCREEN.name)
     data object ChooseCityInEdit:Screen(route = NavPath.CHOOSECITYINEDIT.name)
 
     data object AddingAnnouncement:Screen(route = NavPath.ADDINGANNOUNCEMENTSCREEN.name)

@@ -1,7 +1,6 @@
 package com.example.kilt.presentation.choosecity
 
 import android.content.pm.ActivityInfo
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -47,6 +47,7 @@ import com.example.kilt.R
 import com.example.kilt.domain.choosecity.modul.MicroDistrict
 import com.example.kilt.models.kato.District
 import com.example.kilt.presentation.choosecity.viewmodel.ChooseCityInEditViewModel
+import com.example.kilt.screens.searchpage.chooseCity.ChooseAllCityRow
 import com.example.kilt.screens.searchpage.chooseCity.CityRow
 import com.example.kilt.screens.searchpage.filter.CustomDivider
 import com.example.kilt.utills.LockScreenOrientation
@@ -60,6 +61,7 @@ fun ChooseCityInEdit(
     val selectedCity by chooseCityInEditViewModel.selectedCity
     val currentScreen by chooseCityInEditViewModel.currentScreen
     val districts by chooseCityInEditViewModel.districts
+
     val cities = listOf(
         "г.Алматы",
         "г.Астана",
@@ -130,8 +132,11 @@ fun ChooseCityInEdit(
                     }
                 }
                 1 -> {
-                    if (loadingDistrict){
-                        Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
+                    if (loadingDistrict) {
+                        Row(
+                            horizontalArrangement = Arrangement.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
                             CircularProgressIndicator(
                                 color = Color.Gray,
                                 strokeWidth = 3.dp,
@@ -142,6 +147,41 @@ fun ChooseCityInEdit(
                         }
                     } else {
                         LazyColumn(modifier = Modifier.fillMaxSize()) {
+                            item {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(start = 16.dp, end = 8.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        imageVector = ImageVector.vectorResource(id = R.drawable.all_districk_icon),
+                                        contentDescription = "Location",
+                                        tint = Color(0xff566982)
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(
+                                        text = "Выбрать весь город",
+                                        fontSize = 16.sp,
+                                        color = Color(0xff010101),
+                                        fontWeight = FontWeight.W700
+                                    )
+                                    Spacer(modifier = Modifier.weight(1f))
+                                    Checkbox(
+                                        checked = chooseCityInEditViewModel.selectAllInCity[selectedCity] == true,
+                                        onCheckedChange = {
+                                            chooseCityInEditViewModel.toggleSelectAllInCity(selectedCity!!)
+                                        },
+                                        enabled = chooseCityInEditViewModel.selectAllInCity[selectedCity] == true || chooseCityInEditViewModel.selectAllInCity.all { it.value == false },
+                                        colors = CheckboxDefaults.colors(
+                                            uncheckedColor = Color.Black,
+                                            checkmarkColor = Color.White,
+                                            checkedColor = Color(0xff3F4FE0)
+                                        )
+                                    )
+                                }
+                                CustomDivider()
+                            }
                             items(districts?.size ?: 0) { index ->
                                 val district = districts!![index]
                                 District(
@@ -157,6 +197,7 @@ fun ChooseCityInEdit(
         }
         Button(
             onClick = {
+                chooseCityInEditViewModel.applySelection()
                 navController.popBackStack()
             },
             modifier = Modifier
@@ -186,10 +227,14 @@ fun District(
     val districtMicroDistricts = chooseCityInEditViewModel.microDistrictsByDistrict[district.id] ?: emptyList()
     val isLoading = chooseCityInEditViewModel.loadingDistricts[district.id] == true
     val selectAllInDistrict = chooseCityInEditViewModel.selectAllInDistrict[district.id] ?: false
+    val isCitySelected = chooseCityInEditViewModel.selectAllInCity[selectedCity] == true
+    val isEnabled = !isCitySelected && !chooseCityInEditViewModel.isAnyCitySelected()
 
     val isOtherDistrictSelected = chooseCityInEditViewModel.districts.value!!
         .any { districtItem ->
-            districtItem.id != district.id && chooseCityInEditViewModel.isDistrictSelected(districtItem.id)
+            districtItem.id != district.id && chooseCityInEditViewModel.isDistrictSelected(
+                districtItem.id
+            )
         }
     Row(
         modifier = Modifier
@@ -241,8 +286,11 @@ fun District(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable {
-                        chooseCityInEditViewModel.toggleSelectAllInDistrict(district.id)
+                    .clickable(enabled = isEnabled) {
+                        chooseCityInEditViewModel.toggleSelectAllInDistrict(
+                            district.id,
+                            district.name
+                        )
                     }
                     .padding(vertical = 8.dp)
                     .padding(start = 16.dp, end = 8.dp),
@@ -265,8 +313,12 @@ fun District(
                 Checkbox(
                     checked = selectAllInDistrict,
                     onCheckedChange = {
-                        chooseCityInEditViewModel.toggleSelectAllInDistrict(district.id)
+                        chooseCityInEditViewModel.toggleSelectAllInDistrict(
+                            district.id,
+                            district.name
+                        )
                     },
+                    enabled = isEnabled ,
                     colors = CheckboxDefaults.colors(
                         uncheckedColor = Color.Black,
                         checkmarkColor = Color.White,
@@ -279,7 +331,7 @@ fun District(
                 MicroDistrict(
                     microDistrict = microDistrict,
                     chooseCityInEditViewModel = chooseCityInEditViewModel,
-                    isEnabled = !selectAllInDistrict && !isOtherDistrictSelected // Отключаем микрорайоны в других районах, если один район выбран
+                    isEnabled = !selectAllInDistrict && !isOtherDistrictSelected && isEnabled
                 )
             }
         }
@@ -294,11 +346,12 @@ fun MicroDistrict(
     isEnabled: Boolean
 ) {
     val isSelected = chooseCityInEditViewModel.selectedMicroDistrict.value == microDistrict
+    val isCitySelected = chooseCityInEditViewModel.selectAllInCity[chooseCityInEditViewModel.selectedCity.value] == true
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(enabled = isEnabled) {
+            .clickable(enabled = isEnabled && !isCitySelected) {
                 chooseCityInEditViewModel.selectMicroDistrict(microDistrict)
             }
             .padding(vertical = 10.dp)
@@ -323,7 +376,7 @@ fun MicroDistrict(
             onCheckedChange = {
                 chooseCityInEditViewModel.selectMicroDistrict(microDistrict)
             },
-            enabled = isEnabled,
+            enabled = isEnabled && !isCitySelected,
             colors = CheckboxDefaults.colors(
                 uncheckedColor = Color.Black,
                 checkmarkColor = Color.White,

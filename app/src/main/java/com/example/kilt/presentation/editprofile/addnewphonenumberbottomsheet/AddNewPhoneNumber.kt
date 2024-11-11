@@ -87,6 +87,7 @@ fun AddNewPhoneNumber(addNewPhoneNumberViewModel: AddNewPhoneNumberViewModel, on
                     }
                 }
             )
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }

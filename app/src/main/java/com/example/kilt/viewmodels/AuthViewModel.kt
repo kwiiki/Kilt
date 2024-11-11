@@ -30,6 +30,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.coroutines.resume
@@ -74,6 +76,9 @@ class AuthViewModel @Inject constructor(
     private val _currentUser = mutableStateOf<UserWithMetadata?>(null)
     val currentUser: State<UserWithMetadata?> = _currentUser
 
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
+
     private var timerJob: Job? = null
 
     init {
@@ -96,6 +101,7 @@ class AuthViewModel @Inject constructor(
     fun checkVerificationStatus(userId: String) {
         viewModelScope.launch {
             val status = identificationRepository.checkIdentifiedStatus(userId)
+            Log.d("status", "checkVerificationStatus: $status")
             when (status) {
                 1 -> {
                     _isUserIdentified.value = IdentificationTypes.NotIdentified
@@ -128,19 +134,23 @@ class AuthViewModel @Inject constructor(
 
     fun refreshUserData(userId: String) {
         viewModelScope.launch {
+            _isLoading.value = true
             try {
+
                 val user = userRepository.getUserData(userId)
-//                userDataStoreManager.saveUserData(
-//                    user = user,
-//                    bonus = _currentUser.value?.bonus ?: 0,
-//                    created = _currentUser.value?.created ?: false,
-//                    expired = _currentUser.value?.expired ?: false,
-//                    token = _currentUser.value?.token ?: ""
-//                )
                 _currentUser.value = _currentUser.value?.copy(user = user)
 
+                userDataStoreManager.saveUserData(
+                    user = user,
+                    bonus = _currentUser.value?.bonus ?: 0,
+                    created = _currentUser.value?.created ?: false,
+                    expired = _currentUser.value?.expired ?: false,
+                    token = _currentUser.value?.token ?: ""
+                )
             } catch (e: Exception) {
                 Log.e("AuthViewModel", "Error refreshing user data: ${e.message}")
+            }finally {
+                _isLoading.value = false
             }
         }
     }

@@ -32,6 +32,7 @@ import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
@@ -111,5 +112,21 @@ interface ApiService {
 
     @POST("universal/UserPhone/find")
     suspend fun universalUserFind(@Body userPhone: UserPhone): UniversalUserPhoneResult
+
+    @GET("listings/agent/{id}")
+    suspend fun getMyListing(@Path("id") id:String)
+
+    @Multipart
+    @POST("users/add-profile-image")
+    suspend fun addProfileImage(
+        @Part image: MultipartBody.Part,
+        @Header("Authorization") token: String
+    ): Response<Any>
+
+    @POST("users/remove-profile-image")
+    suspend fun deleteProfileImage(
+        @Header("Authorization") token: String
+    ): Response<Any>
+
 }
 

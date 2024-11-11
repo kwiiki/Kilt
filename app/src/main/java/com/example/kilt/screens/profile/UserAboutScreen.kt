@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
-
 package com.example.kilt.screens.profile
 
 import androidx.compose.animation.AnimatedVisibility
@@ -23,28 +21,23 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -55,11 +48,12 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import com.example.kilt.R
 import com.example.kilt.models.authentification.User
 import com.example.kilt.enums.UserType
 import com.example.kilt.navigation.NavPath
-import com.example.kilt.screens.searchpage.homedetails.DetailItem
+import com.example.kilt.utills.imageKiltUrl
 import com.example.kilt.viewmodels.AuthViewModel
 
 @Composable
@@ -117,13 +111,25 @@ fun AgencyProfileScreen(navController: NavHostController, authViewModel: AuthVie
                     .padding(16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.non_image),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(56.dp)
-                        .background(color = Color.Transparent, RoundedCornerShape(12.dp))
-                )
+                if (user?.photo != "") {
+                    AsyncImage(
+                        model = "$imageKiltUrl${user?.photo}",
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(56.dp)
+                            .background(color = Color.Transparent, RoundedCornerShape(12.dp))
+                            .clip(RoundedCornerShape(12.dp))
+                    )
+                } else {
+                    Image(
+                        painter = painterResource(id = R.drawable.non_image),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(56.dp)
+                            .background(color = Color.Transparent, RoundedCornerShape(12.dp))
+                    )
+                }
                 Spacer(modifier = Modifier.width(16.dp))
                 Column {
                     Row {

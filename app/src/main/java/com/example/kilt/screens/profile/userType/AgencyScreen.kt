@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,23 +18,23 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
@@ -43,17 +42,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
 import com.example.kilt.R
 import com.example.kilt.models.authentification.User
 import com.example.kilt.models.authentification.UserWithMetadata
 import com.example.kilt.enums.IdentificationTypes
 import com.example.kilt.enums.UserType
 import com.example.kilt.navigation.NavPath
-import com.example.kilt.presentation.editprofile.components.CustomButtonForEdit
 import com.example.kilt.presentation.editprofile.gradientBrush
 import com.example.kilt.presentation.editprofile.listColor
+import com.example.kilt.utills.imageCdnUrl
+import com.example.kilt.utills.imageKiltUrl
 import com.example.kilt.viewmodels.AuthViewModel
 
+val listColor1 = listOf(Color(0xFF3244E4), Color(0xFF1B278F))
 @Composable
 fun AgencyScreen(
     authViewModel: AuthViewModel,
@@ -72,11 +74,8 @@ fun AgencyScreen(
             .fillMaxSize()
             .background(Color.White)
     ) {
-        Log.d(
-            "agency_verification_status",
-            "AgencyScreen: ${currentUser?.user?.agency_verification_status}"
-        )
-        Log.d("agency_verification_status", "AgencyScreen: ${isUserIdentified.value}")
+        Log.d("agency_verification_status", "AgencyScreen: ${currentUser?.user?.agency_verification_status}")
+        Log.d("agency_verification_status111", "AgencyScreen: ${isUserIdentified.value}")
         if (currentUser?.user?.agency_verification_status == 2) {
             IdentifiedUser(navController = navController, user)
             Spacer(modifier = Modifier.height(16.dp))
@@ -107,17 +106,18 @@ fun AgencyScreen(
                         Image(
                             painter = painterResource(id = R.drawable.kilt_money),
                             contentDescription = null,
-                            modifier = Modifier.size(25.dp)
+                            modifier = Modifier.size(22.dp)
                         )
                     }
-
                 }
                 Spacer(modifier = Modifier.weight(1f))
-                Row(modifier = Modifier.fillMaxWidth(0.9f).padding(horizontal = 16.dp)) {
+                Row(modifier = Modifier
+                    .fillMaxWidth(0.9f)
+                    .padding(horizontal = 8.dp)) {
                     CustomButtonProfiles(
                         text = "Пополнить баланс",
                         onClick = {},
-                        colorList = listColor,
+                        colorList = listColor1,
                         colorBrush = gradientBrush
                     )
                 }
@@ -134,7 +134,6 @@ fun AgencyScreen(
         )
     }
 }
-
 @Composable
 fun CustomButtonProfiles(
     text: String,
@@ -186,7 +185,7 @@ fun IdentifiedUser(navController: NavHostController, user: User) {
         modifier = Modifier
             .fillMaxWidth()
             .background(Color(0xFFFFFFFF), shape = RoundedCornerShape(12.dp))
-            .clickable { navController.navigate(NavPath.EDITPROFILE.name) },
+            .clickable { navController.navigate(NavPath.USERPROFILESCREEN.name) },
         elevation = CardDefaults.cardElevation(8.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xFFFFFFFF))
     ) {
@@ -196,13 +195,26 @@ fun IdentifiedUser(navController: NavHostController, user: User) {
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.non_image),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(56.dp)
-                    .background(color = Color.Transparent, RoundedCornerShape(12.dp))
-            )
+            Log.d("userPhoto", "IdentifiedUser: ${user.photo}")
+            if(user.photo == "") {
+                Image(
+                    painter = painterResource(id = R.drawable.non_image),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(56.dp)
+                        .background(color = Color.Transparent, RoundedCornerShape(12.dp))
+                )
+            } else {
+                AsyncImage(
+                    model = "$imageKiltUrl${user.photo}",
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(56.dp)
+                        .background(color = Color.Transparent, RoundedCornerShape(12.dp))
+                        .clip(RoundedCornerShape(12.dp))
+                )
+            }
             Spacer(modifier = Modifier.width(8.dp))
             Column {
                 val firstName = user.firstname
