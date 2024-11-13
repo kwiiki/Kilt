@@ -120,6 +120,9 @@ class AddNewPhoneNumberViewModel @Inject constructor(
     fun clearSecondPhoneNumber(){
         editProfileUiState.value.secondPhoneNumber = ""
     }
+    fun clearSuccessfulyAdding(){
+        isPhoneAddedSuccessfully.value = false
+    }
 
     fun clear(){
         isUserCreated.value = false

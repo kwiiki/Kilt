@@ -24,6 +24,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -207,7 +208,7 @@ fun EditProfile(
         )
         if (phoneNumbers.isNotEmpty()) {
             phoneNumbers.forEach {
-                CustomTextFieldWithIcon(
+                CustomTextFiledForListPhoneNumber(
                     icon = painterResource(id = R.drawable.phone_icon),
                     value = it
                 )
@@ -414,6 +415,40 @@ fun CustomTextFieldWithIcon(icon: Painter, value: String) {
             )
         }
         Spacer(modifier = Modifier.height(16.dp))
+    }
+}
+
+@Composable
+fun CustomTextFiledForListPhoneNumber(icon: Painter, value: String){
+    Column {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                painter = icon,
+                contentDescription = null,
+                tint = Color(0xFF3244E4),
+                modifier = Modifier.size(21.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            val regex = """(\d)(\d{3})(\d{3})(\d{2})(\d{2})""".toRegex()
+            val output = regex.replace(value, "$1 ($2) $3 $4 $5")
+            Text(
+                text = output,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.W700,
+                lineHeight = 22.sp,
+                color = Color(0xFF01060E),
+                modifier = Modifier.weight(1f)
+            )
+        }
+        Spacer(modifier = Modifier.weight(1f))
+        Icon(
+            Icons.Default.Close,
+            contentDescription = null,
+            tint = Color.Black
+        )
     }
 }
 

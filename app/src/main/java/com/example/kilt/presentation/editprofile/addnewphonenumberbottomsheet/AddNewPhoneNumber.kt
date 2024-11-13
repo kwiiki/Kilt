@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,14 +30,17 @@ fun AddNewPhoneNumber(addNewPhoneNumberViewModel: AddNewPhoneNumberViewModel, on
     val uiState = addNewPhoneNumberViewModel.editProfileUiState.value
     val showError = addNewPhoneNumberViewModel.showError.value
     val errorMessage = addNewPhoneNumberViewModel.errorMessage.value
-    val isLoading = addNewPhoneNumberViewModel.isLoading.value
     val isPhoneAddedSuccessfully = addNewPhoneNumberViewModel.isPhoneAddedSuccessfully.value
     val focusManager = LocalFocusManager.current
 
-
     if (isPhoneAddedSuccessfully) {
-        EnterCodeBottomSheet(addNewPhoneNumberViewModel,onClick)
-
+        EnterCodeBottomSheet(
+            addNewPhoneNumberViewModel,
+            onClick = {
+                onClick()
+                addNewPhoneNumberViewModel.clearSuccessfulyAdding()
+            }
+        )
     } else {
         Column(
             modifier = Modifier
@@ -54,9 +58,8 @@ fun AddNewPhoneNumber(addNewPhoneNumberViewModel: AddNewPhoneNumberViewModel, on
                     color = Color.Black
                 )
                 IconButton(onClick = { onClick() }) {
-                    Icons.Default.Close
+                    Icon(Icons.Default.Close, contentDescription = null)
                 }
-
             }
             PhoneNumberTextField(
                 value = uiState.secondPhoneNumber,

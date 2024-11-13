@@ -188,14 +188,12 @@ fun FilterContent(
                         matchingLabel.label_ru,
                         searchViewModel
                     )
-
                     "list-multiple" -> ListFilter(
                         configViewModel,
                         prop,
                         matchingLabel.label_ru,
                         searchViewModel
                     )
-
                     "range" -> RangeFilter(
                         prop = prop,
                         title = matchingLabel.label_ru,

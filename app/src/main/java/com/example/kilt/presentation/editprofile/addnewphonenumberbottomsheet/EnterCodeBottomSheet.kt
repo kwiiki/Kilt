@@ -30,12 +30,16 @@ import com.example.kilt.presentation.editprofile.addnewphonenumberbottomsheet.vi
 import com.example.kilt.presentation.editprofile.components.SaveButton
 
 @Composable
-fun EnterCodeBottomSheet(addNewPhoneNumberViewModel: AddNewPhoneNumberViewModel, onClick: () -> Unit) {
+fun EnterCodeBottomSheet(
+    addNewPhoneNumberViewModel: AddNewPhoneNumberViewModel,
+    onClick: () -> Unit
+) {
     val uiState = addNewPhoneNumberViewModel.editProfileUiState.value
     val showError = addNewPhoneNumberViewModel.showError.value
     val errorMessage = addNewPhoneNumberViewModel.errorMessage.value
     val isOTPVerified = addNewPhoneNumberViewModel.isOTPVerified.value
     val isUserCreated = addNewPhoneNumberViewModel.isUserCreated.value
+
     Column(
         modifier = Modifier
             .fillMaxWidth()

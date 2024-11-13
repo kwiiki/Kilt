@@ -19,8 +19,10 @@ fun ListingsDTO.toListingList(): ListingList {
                 numRooms = listing.num_rooms,
                 area = listing.area,
                 address = listing.address_string as? String?:"",
-                image = listing.first_image as? String ?:" "
-
+                image = listing.first_image as? String ?:" ",
+                dealType = listing.deal_type,
+                listingType = listing.listing_type,
+                propertyType = listing.property_type
             )
         }
     )

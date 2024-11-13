@@ -8,6 +8,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,6 +21,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -49,6 +51,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -81,12 +84,17 @@ fun UserAboutScreen(
     val agencyAboutList = listOf("Личные данные", "Место работы", "О себе")
     val expandedItems = remember { mutableStateMapOf<String, Boolean>() }
     val userListings by userAboutViewModel.userListings
+    val salesCount = userAboutViewModel.countOfDealType1
+    val rentCount = userAboutViewModel.countOfDealType2
 
     LaunchedEffect(Unit) {
         userAboutViewModel.fetchUserListings()
+            userAboutViewModel.updateFilter(
+                dealType = userAboutViewModel.selectedDealType,
+                propertyType = userAboutViewModel.selectedPropertyType
+            )
         Log.d("listings", "UserAboutScreen: ${userListings.listing}")
     }
-
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -116,7 +124,6 @@ fun UserAboutScreen(
                 )
             }
         }
-
         item {
             val userTypeText = when (user?.user_type) {
                 "owner" -> UserType.OWNER.ruText
@@ -190,11 +197,9 @@ fun UserAboutScreen(
                 }
             }
         }
-
         item {
             Spacer(modifier = Modifier.height(24.dp))
         }
-
         items(agencyAboutList) { item ->
             val isExpanded = expandedItems[item] ?: false
             DocumentRow(
@@ -215,7 +220,6 @@ fun UserAboutScreen(
             }
             Spacer(modifier = Modifier.height(24.dp))
         }
-
         item {
             CustomDivider()
             Spacer(modifier = Modifier.height(8.dp))
@@ -225,21 +229,109 @@ fun UserAboutScreen(
                 fontWeight = FontWeight.W700,
                 color = Color(0xFF01060E)
             )
+            Spacer(modifier = Modifier.height(8.dp))
         }
-
-        item{
-            Row {
-                Button(onClick = { /*TODO*/ }) {
-                    Text(text = "Аренда(3)")
+        item {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    FilterButton(
+                        text = "Аренда (${salesCount.value})",
+                        isSelected = userAboutViewModel.selectedDealType == 1,
+                        onClick = {
+                            userAboutViewModel.updateFilter(
+                                dealType = 1,
+                                propertyType = userAboutViewModel.selectedPropertyType
+                            )
+                        }
+                    )
+                    FilterButton(
+                        text = "Продажа (${rentCount.value})",
+                        isSelected = userAboutViewModel.selectedDealType == 2,
+                        onClick = {
+                            userAboutViewModel.updateFilter(
+                                dealType = 2,
+                                propertyType = userAboutViewModel.selectedPropertyType
+                            )
+                        }
+                    )
                 }
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    FilterButton(
+                        text = "Квартира",
+                        isSelected = userAboutViewModel.selectedPropertyType == 1,
+                        onClick = {
+                            Log.d("flatButton", "UserAboutScreen: flat button clicked")
+                            userAboutViewModel.updateFilter(
+                                dealType = userAboutViewModel.selectedDealType,
+                                propertyType = 1
+                            )
+                        }
+                    )
+                    FilterButton(
+                        text = "Дом",
+                        isSelected = userAboutViewModel.selectedPropertyType == 2,
+                        onClick = {
+                            userAboutViewModel.updateFilter(
+                                dealType = userAboutViewModel.selectedDealType,
+                                propertyType = 2
+                            )
+                        }
+                    )
+                    FilterButton(
+                        text = "Коммерция",
+                        isSelected = userAboutViewModel.selectedPropertyType == 6,
+                        onClick = {
+                            userAboutViewModel.updateFilter(
+                                dealType = userAboutViewModel.selectedDealType,
+                                propertyType = 6
+                            )
+                        }
+                    )
+                }
+
             }
+            Spacer(modifier = Modifier.height(16.dp))
         }
-        items(userListings.listing) { listing ->
-            MyAnnouncement(navController,listing)
+        items(userAboutViewModel.filteredListings.value.listing) { listing ->
+            MyAnnouncement(navController, listing)
         }
     }
 }
 
+@Composable
+fun FilterButton(text: String, isSelected: Boolean, onClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .height(42.dp)
+            .border(
+                width = 1.5.dp,
+                color = if (isSelected) Color.Blue else Color.LightGray,
+                shape = RoundedCornerShape(12.dp)
+            )
+            .background(
+                color = if (isSelected) Color(0xFFEFF1F4) else Color.White,
+                shape = RoundedCornerShape(12.dp)
+            )
+            .clickable(onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = text,
+            fontSize = 14.sp,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            color = if (isSelected) Color.Blue else Color.Black,
+            textAlign = TextAlign.Center
+        )
+    }
+}
 
 @Composable
 fun MyAnnouncement(navController: NavHostController, announcementItem: Listing) {
@@ -363,7 +455,7 @@ fun MyAnnouncement(navController: NavHostController, announcementItem: Listing) 
                     text = "Посмотреть объявление",
                     textColor = Color.White,
                     gradient = gradient,
-                    onClick = { navController.navigate("${NavPath.HOMEDETAILS.name}/${announcementItem.id}")},
+                    onClick = { navController.navigate("${NavPath.HOMEDETAILS.name}/${announcementItem.id}") },
                     modifier = Modifier.weight(1f)
                 )
             }
