@@ -32,22 +32,17 @@ fun AddNewPhoneNumber(addNewPhoneNumberViewModel: AddNewPhoneNumberViewModel, on
     val errorMessage = addNewPhoneNumberViewModel.errorMessage.value
     val isPhoneAddedSuccessfully = addNewPhoneNumberViewModel.isPhoneAddedSuccessfully.value
     val focusManager = LocalFocusManager.current
-
     if (isPhoneAddedSuccessfully) {
-        EnterCodeBottomSheet(
-            addNewPhoneNumberViewModel,
-            onClick = {
-                onClick()
-                addNewPhoneNumberViewModel.clearSuccessfulyAdding()
-            }
-        )
+        EnterCodeBottomSheet(addNewPhoneNumberViewModel, onDismiss = {
+            addNewPhoneNumberViewModel.clear()
+        })
     } else {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color.White)
                 .padding(horizontal = 16.dp)
-                .height(180.dp),
+                .height(200.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Row {
@@ -72,7 +67,6 @@ fun AddNewPhoneNumber(addNewPhoneNumberViewModel: AddNewPhoneNumberViewModel, on
                 focusManager = focusManager,
                 showError = showError
             )
-
             if (showError) {
                 Text(
                     text = errorMessage,
@@ -80,9 +74,9 @@ fun AddNewPhoneNumber(addNewPhoneNumberViewModel: AddNewPhoneNumberViewModel, on
                     fontSize = 12.sp
                 )
             }
-
             Spacer(modifier = Modifier.height(8.dp))
             SaveButton(
+                text = "Сохранить",
                 onClick = {
                     if (uiState.secondPhoneNumber.length == 12) {
                         val phone = Phone(uiState.secondPhoneNumber)

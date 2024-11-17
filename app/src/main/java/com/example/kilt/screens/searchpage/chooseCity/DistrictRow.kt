@@ -19,7 +19,6 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,7 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.kilt.R
-import com.example.kilt.domain.choosecity.modul.MicroDistrict
+import com.example.kilt.domain.choosecity.model.MicroDistrict
 import com.example.kilt.models.kato.District
 import com.example.kilt.screens.searchpage.filter.CustomDivider
 import com.example.kilt.viewmodels.ChooseCityViewModel

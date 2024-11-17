@@ -8,9 +8,12 @@ import com.example.kilt.domain.common.GetUserIdUseCase
 import com.example.kilt.data.editprofile.addnewphonenumberbottomsheet.dto.Create
 import com.example.kilt.data.editprofile.addnewphonenumberbottomsheet.dto.Filters
 import com.example.kilt.data.editprofile.addnewphonenumberbottomsheet.dto.Phone
+import com.example.kilt.domain.common.GetUserUseCase
 import com.example.kilt.domain.editprofile.addnewphonenumberbottomsheet.usercase.AddPhoneUseCase
+import com.example.kilt.domain.editprofile.addnewphonenumberbottomsheet.usercase.DeleteSecondPhoneNumberUseCase
 import com.example.kilt.domain.editprofile.addnewphonenumberbottomsheet.usercase.UniversalUserCreateUseCase
 import com.example.kilt.domain.editprofile.addnewphonenumberbottomsheet.usercase.UserFindByOTPUseCase
+import com.example.kilt.domain.editprofile.usecase.GetUserPhoneNumbersUseCase
 import com.example.kilt.presentation.editprofile.EditProfileUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -19,10 +22,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddNewPhoneNumberViewModel @Inject constructor(
+    private val getUserPhoneNumbersUseCase: GetUserPhoneNumbersUseCase,
     private val addPhoneUseCase: AddPhoneUseCase,
     private val userFindByOTPUseCase: UserFindByOTPUseCase,
     private val universalUserCreateUseCase: UniversalUserCreateUseCase,
-    private val getUserIdUseCase: GetUserIdUseCase
+    private val getUserIdUseCase: GetUserIdUseCase,
+    private val deleteSecondPhoneNumberUseCase: DeleteSecondPhoneNumberUseCase,
+    private val getUserUseCase: GetUserUseCase
 ) : ViewModel() {
     var editProfileUiState = mutableStateOf(EditProfileUiState())
         private set
@@ -33,9 +39,24 @@ class AddNewPhoneNumberViewModel @Inject constructor(
     var isPhoneAddedSuccessfully = mutableStateOf(false)
     val isOTPVerified = mutableStateOf(false)
     val isUserCreated = mutableStateOf(false)
+    val phoneNumbers = mutableStateOf<List<String>>(emptyList())
 
     fun updatePhoneNumber(newNumber: String) {
         editProfileUiState.value = editProfileUiState.value.copy(secondPhoneNumber = newNumber)
+    }
+
+    fun loadPhoneNumbers() {
+        viewModelScope.launch {
+            try {
+                val numbers = getUserPhoneNumbersUseCase.invoke()
+                phoneNumbers.value = numbers
+            } catch (e: Exception) {
+                Log.d("phone numbers", "loadPhoneNumbers: Some error")
+            } finally {
+                Log.d("phone numbers", "loadPhoneNumbers: error")
+
+            }
+        }
     }
 
     fun addPhoneNumber(phone: Phone) {
@@ -102,12 +123,8 @@ class AddNewPhoneNumberViewModel @Inject constructor(
                 user_id = getUserIdUseCase.execute(),
                 phone = editProfileUiState.value.secondPhoneNumber
             )
-            clearSecondPhoneNumber()
-            Log.d("create", "universalUserCreate: $create")
             isLoading.value = true
-            val result = universalUserCreateUseCase(
-                create
-            )
+            val result = universalUserCreateUseCase(create)
             isLoading.value = false
             result.onSuccess {
                 isUserCreated.value = true
@@ -117,18 +134,35 @@ class AddNewPhoneNumberViewModel @Inject constructor(
             }
         }
     }
-    fun clearSecondPhoneNumber(){
-        editProfileUiState.value.secondPhoneNumber = ""
-    }
-    fun clearSuccessfulyAdding(){
-        isPhoneAddedSuccessfully.value = false
+
+    fun deleteSecondPhoneNumber(phone: String) {
+        viewModelScope.launch {
+            isLoading.value = true
+            val token = getUserUseCase.execute()?.token
+            val phoneToDelete = Phone(phone)
+            val result = deleteSecondPhoneNumberUseCase.invoke(phoneToDelete, token!!)
+            result.onSuccess {
+                phoneNumbers.value = phoneNumbers.value.filter { it != phone }
+                isPhoneAddedSuccessfully.value = false
+                showError.value = false
+                errorMessage.value = ""
+            }.onFailure {
+                showError.value = true
+                errorMessage.value = it.message ?: "Ошибка при удалении номера"
+            }
+
+            isLoading.value = false
+        }
     }
 
+    fun clearSuccessState(){
+        isPhoneAddedSuccessfully.value = false
+    }
     fun clear(){
         isUserCreated.value = false
         isPhoneAddedSuccessfully.value = false
-        isOTPVerified.value = false
         editProfileUiState.value.secondPhoneNumber = ""
+        isOTPVerified.value = false
         editProfileUiState.value.code = ""
     }
 }

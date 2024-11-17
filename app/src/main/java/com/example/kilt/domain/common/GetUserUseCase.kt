@@ -6,8 +6,7 @@ import com.example.kilt.models.authentification.UserWithMetadata
 import kotlinx.coroutines.flow.firstOrNull
 
 class GetUserUseCase(private val userDataStoreManager: UserDataStoreManager) {
-    suspend fun execute(): UserWithMetadata {
-        val userWithMetadata = userDataStoreManager.userDataFlow.firstOrNull()
-        return userWithMetadata!!
+    suspend fun execute(): UserWithMetadata? {
+        return userDataStoreManager.userDataFlow.firstOrNull()
     }
 }

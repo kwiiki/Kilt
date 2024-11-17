@@ -24,7 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun SaveButton(onClick: () -> Unit) {
+fun SaveButton(text:String,onClick: () -> Unit) {
     val gradient = Brush.horizontalGradient(
         colors = listOf(Color(0xFF3244E4), Color(0xFF1B278F)),
         startX = 0f,
@@ -56,7 +56,7 @@ fun SaveButton(onClick: () -> Unit) {
                 ) {
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Сохранить",
+                        text = text,
                         style = MaterialTheme.typography.bodyLarge,
                         color = Color.White
                     )

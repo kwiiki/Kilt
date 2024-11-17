@@ -26,7 +26,7 @@ class AddNewImageViewModel @Inject constructor(
     fun uploadProfileImage(uri: Uri, context: Context) {
         viewModelScope.launch {
             val user = getUserUseCase.execute()
-            val token = user.token
+            val token = user?.token
 
             val file = uriToFile(uri, context)
             val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
@@ -57,7 +57,7 @@ class AddNewImageViewModel @Inject constructor(
     fun deleteProfileImage() {
         viewModelScope.launch {
             val user = getUserUseCase.execute()
-            val token = user.token
+            val token = user?.token
             try {
                 val response = deleteImageUseCase.invoke(token = "Bearer $token")
                 if (response.isSuccessful) {

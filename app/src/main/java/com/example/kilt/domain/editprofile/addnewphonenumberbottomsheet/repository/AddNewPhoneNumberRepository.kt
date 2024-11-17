@@ -10,4 +10,6 @@ interface AddNewPhoneNumberRepository {
     suspend fun addPhone(phone: Phone): Result<AddPhoneDTO>
     suspend fun userFindByOTP(filters: Filters): Result<UserFindByOTPResult>
     suspend fun universalUserCreate(create: Create) :Result<Any>
+    suspend fun removePhone(phone: Phone, token: String): Result<Unit>
+
 }

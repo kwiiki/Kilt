@@ -7,8 +7,10 @@ import com.example.kilt.repository.ConfigRepositoryImpl
 import com.example.kilt.domain.editprofile.addnewphonenumberbottomsheet.repository.AddNewPhoneNumberRepository
 import com.example.kilt.data.editprofile.addnewphonenumberbottomsheet.repository.AddNewPhoneNumberRepositoryImpl
 import com.example.kilt.data.editprofile.repository.EditProfileRepositoryImpl
+import com.example.kilt.data.profile.repostirory.ProfileRepositoryImpl
 import com.example.kilt.data.userabout.repository.UserAboutRepositoryImpl
 import com.example.kilt.domain.editprofile.repository.EditProfileRepository
+import com.example.kilt.domain.profile.repository.ProfileRepository
 import com.example.kilt.domain.userabout.repository.UserAboutRepository
 import com.example.kilt.repository.HomeSaleRepository
 import com.example.kilt.repository.HomeSaleRepositoryImpl
@@ -105,6 +107,12 @@ object RepositoryModule {
     @Singleton
     fun provideUserAboutRepository(apiService: ApiService):UserAboutRepository{
         return UserAboutRepositoryImpl(apiService)
+    }
+
+    @Provides
+    @Singleton
+    fun provideProfileRepository(apiService: ApiService):ProfileRepository{
+        return ProfileRepositoryImpl(apiService)
     }
 
 }

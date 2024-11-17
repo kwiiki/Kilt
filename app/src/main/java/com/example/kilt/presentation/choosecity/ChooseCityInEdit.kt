@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -44,10 +43,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.kilt.R
-import com.example.kilt.domain.choosecity.modul.MicroDistrict
+import com.example.kilt.domain.choosecity.model.MicroDistrict
 import com.example.kilt.models.kato.District
 import com.example.kilt.presentation.choosecity.viewmodel.ChooseCityInEditViewModel
-import com.example.kilt.screens.searchpage.chooseCity.ChooseAllCityRow
 import com.example.kilt.screens.searchpage.chooseCity.CityRow
 import com.example.kilt.screens.searchpage.filter.CustomDivider
 import com.example.kilt.utills.LockScreenOrientation
@@ -127,6 +125,8 @@ fun ChooseCityInEdit(
                         items(cities.size) { index ->
                             CityRow(cityName = cities[index], onCityClick = { city ->
                                 chooseCityInEditViewModel.selectCity(city)
+                                chooseCityInEditViewModel.selectCites(city)
+
                             })
                         }
                     }
@@ -171,6 +171,7 @@ fun ChooseCityInEdit(
                                         checked = chooseCityInEditViewModel.selectAllInCity[selectedCity] == true,
                                         onCheckedChange = {
                                             chooseCityInEditViewModel.toggleSelectAllInCity(selectedCity!!)
+                                            chooseCityInEditViewModel.selectCites(selectedCity!!)
                                         },
                                         enabled = chooseCityInEditViewModel.selectAllInCity[selectedCity] == true || chooseCityInEditViewModel.selectAllInCity.all { it.value == false },
                                         colors = CheckboxDefaults.colors(
@@ -199,6 +200,7 @@ fun ChooseCityInEdit(
             onClick = {
                 chooseCityInEditViewModel.applySelection()
                 navController.popBackStack()
+                chooseCityInEditViewModel.resetSelection()
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -244,6 +246,7 @@ fun District(
                 if (isExpanded && districtMicroDistricts.isEmpty()) {
                     chooseCityInEditViewModel.loadMicroDistricts(district.id)
                 }
+                chooseCityInEditViewModel.selectDistrict(district.name)
             }
             .padding(vertical = 12.dp, horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -317,6 +320,7 @@ fun District(
                             district.id,
                             district.name
                         )
+                        chooseCityInEditViewModel.selectDistrict(district.name)
                     },
                     enabled = isEnabled ,
                     colors = CheckboxDefaults.colors(
@@ -375,6 +379,7 @@ fun MicroDistrict(
             checked = isSelected,
             onCheckedChange = {
                 chooseCityInEditViewModel.selectMicroDistrict(microDistrict)
+                chooseCityInEditViewModel.selectMicroDistricts(microDistrict)
             },
             enabled = isEnabled && !isCitySelected,
             colors = CheckboxDefaults.colors(

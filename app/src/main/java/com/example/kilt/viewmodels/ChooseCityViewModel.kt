@@ -8,7 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.kilt.domain.choosecity.modul.MicroDistrict
+import com.example.kilt.domain.choosecity.model.MicroDistrict
 import com.example.kilt.models.kato.District
 import com.example.kilt.models.kato.ResidentialComplex
 import com.example.kilt.repository.KatoRepository

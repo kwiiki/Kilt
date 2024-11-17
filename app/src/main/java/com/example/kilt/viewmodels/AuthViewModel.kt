@@ -136,9 +136,10 @@ class AuthViewModel @Inject constructor(
         viewModelScope.launch {
             _isLoading.value = true
             try {
-
                 val user = userRepository.getUserData(userId)
                 _currentUser.value = _currentUser.value?.copy(user = user)
+
+                Log.d("token", "refreshUserData: ${_currentUser.value?.token}")
 
                 userDataStoreManager.saveUserData(
                     user = user,

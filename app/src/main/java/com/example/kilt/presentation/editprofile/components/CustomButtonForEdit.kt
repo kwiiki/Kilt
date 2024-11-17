@@ -74,15 +74,14 @@ fun CustomButtonForEdit(
                             tint = Color(0xFF1B278F)
                         )
                     }
-                    "Удалить фото" -> {
-
-                    }
-                    else -> {
+                    "Сохранить" -> {
                         Icon(
                             Icons.Default.Add,
                             contentDescription = null,
                             tint = tintColor
                         )
+                    }
+                    else -> {
                     }
                 }
                 Spacer(modifier = Modifier.width(6.dp))

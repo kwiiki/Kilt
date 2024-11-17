@@ -1,6 +1,6 @@
 package com.example.kilt.repository
 
-import com.example.kilt.domain.choosecity.modul.MicroDistrict
+import com.example.kilt.domain.choosecity.model.MicroDistrict
 import com.example.kilt.models.kato.KatoResponse
 import com.example.kilt.models.kato.ResidentialComplexResponse
 

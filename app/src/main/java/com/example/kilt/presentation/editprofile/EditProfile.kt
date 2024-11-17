@@ -66,6 +66,7 @@ import com.example.kilt.presentation.editprofile.addnewphonenumberbottomsheet.vi
 import com.example.kilt.presentation.editprofile.components.CustomButtonForEdit
 import com.example.kilt.presentation.editprofile.components.SaveButton
 import com.example.kilt.presentation.editprofile.viewmodel.EditProfileViewModel
+import com.example.kilt.ui.theme.DefaultBlack
 import com.example.kilt.utills.imageKiltUrl
 import com.example.kilt.viewmodels.AuthViewModel
 
@@ -90,14 +91,14 @@ fun EditProfile(
     val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var openBottomSheet by remember { mutableStateOf(false) }
     val bottomState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val phoneNumbers = editProfileViewModel.phoneNumbers.value
-    var checkDeleteUserImage by remember {
-        mutableStateOf(false)
-    }
+    val phoneNumbers = addNewPhoneNumberViewModel.phoneNumbers.value
+    var checkDeleteUserImage by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        editProfileViewModel.loadPhoneNumbers()
-        editProfileViewModel.uploadDate()
+        addNewPhoneNumberViewModel.loadPhoneNumbers()
+//        editProfileViewModel.uploadDate()
+        editProfileViewModel.loadUserData()
+        Log.d("userCity", "EditProfile: ${uiState.userCity}")
     }
     Column(
         modifier = Modifier
@@ -133,7 +134,7 @@ fun EditProfile(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxWidth()
         ) {
-            if (user?.photo == "" || checkDeleteUserImage ) {
+            if (user?.photo == "" || checkDeleteUserImage) {
                 Image(
                     painter = painterResource(id = R.drawable.non_image),
                     contentDescription = null,
@@ -154,7 +155,7 @@ fun EditProfile(
                 )
             }
             Spacer(modifier = Modifier.height(8.dp))
-            TextButton(onClick = { openBottomSheet = true},) {
+            TextButton(onClick = { openBottomSheet = true }) {
                 Text(
                     text = "Заменить",
                     color = Color(0xff3244E4),
@@ -171,7 +172,10 @@ fun EditProfile(
                 sheetState = bottomState,
                 onDismissRequest = { openBottomSheet = false },
             ) {
-                AddNewImage(addNewImageViewModel, onClick = { openBottomSheet = false },checkUserImage = { checkDeleteUserImage = true})
+                AddNewImage(
+                    addNewImageViewModel,
+                    onClick = { openBottomSheet = false },
+                    checkUserImage = { checkDeleteUserImage = true })
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
@@ -183,23 +187,33 @@ fun EditProfile(
             fontSize = 24.sp
         )
         Spacer(modifier = Modifier.height(16.dp))
+        if (user?.user_type == UserType.AGENCY.value) {
+            CustomTextField(
+                label = "Название",
+                value = user?.firstname.toString(),
+                onValueChange = {})
+            CustomTextField(
+                label = "Описание",
+                value = uiState.userAbout,
+                onValueChange = { editProfileViewModel.updateUserAbout(it) },
+                isMultiline = true
+            )
 
-        CustomTextField(label = "Название", value = user?.firstname.toString(), onValueChange = {})
-
-        if (user?.user_type != UserType.AGENCY.value) {
+        } else {
             CustomTextField(label = "Имя", value = user?.firstname.toString(), onValueChange = {})
             CustomTextField(
                 label = "Фамилия",
                 value = uiState.firstname,
                 onValueChange = {})
+
+            CustomTextField(
+                label = "О себе",
+                value = uiState.userAbout,
+                onValueChange = { editProfileViewModel.updateUserAbout(it) },
+                isMultiline = true
+            )
         }
-        Log.d("uiState", "EditProfile: ${uiState.userAbout}")
-        CustomTextField(
-            label = "Описание",
-            value = uiState.userAbout,
-            onValueChange = { editProfileViewModel.updateUserAbout(it) },
-            isMultiline = true
-        )
+
         TextSectionTitle("Телефоны")
         Spacer(modifier = Modifier.height(8.dp))
         CustomTextFieldWithIcon(
@@ -207,10 +221,11 @@ fun EditProfile(
             value = user?.phone ?: ""
         )
         if (phoneNumbers.isNotEmpty()) {
-            phoneNumbers.forEach {
+            phoneNumbers.forEach { phone ->
                 CustomTextFiledForListPhoneNumber(
                     icon = painterResource(id = R.drawable.phone_icon),
-                    value = it
+                    value = phone,
+                    onClick = { addNewPhoneNumberViewModel.deleteSecondPhoneNumber(phone) }
                 )
             }
         }
@@ -228,11 +243,18 @@ fun EditProfile(
                 contentColor = Color.White,
                 containerColor = Color.White,
                 sheetState = bottomSheetState,
-                onDismissRequest = { openEditProfileBottomSheet = false },
+                onDismissRequest = {
+                    openEditProfileBottomSheet = false
+                    addNewPhoneNumberViewModel.clear()
+                },
             ) {
                 AddNewPhoneNumber(
                     addNewPhoneNumberViewModel,
-                    onClick = { openEditProfileBottomSheet = false })
+                    onClick = {
+                        openEditProfileBottomSheet = false
+                        addNewPhoneNumberViewModel.clearSuccessState()
+                    }
+                )
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
@@ -251,7 +273,7 @@ fun EditProfile(
                 fontSize = 24.sp
             )
             Spacer(modifier = Modifier.height(16.dp))
-            ChooseCityTextField(navController = navController)
+            ChooseCityTextField(navController = navController, fullAddress = uiState.userCity)
             Spacer(modifier = Modifier.height(8.dp))
             CustomTextField(
                 label = "Полный адрес",
@@ -292,41 +314,44 @@ fun EditProfile(
             )
         }
         Spacer(modifier = Modifier.height(10.dp))
-        SaveButton {
+        SaveButton(text = "Сохранить") {
         }
         Spacer(modifier = Modifier.height(16.dp))
     }
 }
 
 @Composable
-fun ChooseCityTextField(navController: NavHostController) {
-    Column(modifier = Modifier.padding()) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp)
-                .clickable { navController.navigate(NavPath.CHOOSECITYINEDIT.name) }
-                .background(Color.Transparent, shape = RoundedCornerShape(14.dp))
-                .border(
-                    width = 1.dp,
-                    color = Color(0xFFC4C9D3),
-                    shape = RoundedCornerShape(12.dp)
-                )
-                .padding(horizontal = 16.dp, vertical = 12.dp)
-        ) {
-            Text(
-                text = "Город, район",
-                color = Color.Gray,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.W400,
-                modifier = Modifier.align(Alignment.CenterStart)
+fun ChooseCityTextField(
+    navController: NavHostController,
+    fullAddress: String
+) {
+    Log.d("ChooseCityTextField", "Received fullAddress: $fullAddress")
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(48.dp)
+            .clickable { navController.navigate(NavPath.CHOOSECITYINEDIT.name) }
+            .background(Color.Transparent, shape = RoundedCornerShape(12.dp))
+            .border(
+                width = 1.dp,
+                color = Color(0xFFC4C9D3),
+                shape = RoundedCornerShape(12.dp)
             )
-            Icon(
-                Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                contentDescription = "Arrow",
-                modifier = Modifier.align(Alignment.CenterEnd)
-            )
-        }
+            .padding(horizontal = 16.dp, vertical = 14.dp)
+    ) {
+        Text(
+            text = fullAddress,
+            color = Color.Black,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.W500,
+            modifier = Modifier.align(Alignment.CenterStart)
+        )
+        Icon(
+            Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            contentDescription = "Arrow",
+            modifier = Modifier.align(Alignment.CenterEnd)
+        )
     }
 }
 
@@ -374,13 +399,13 @@ fun CustomTextField(
                 unfocusedContainerColor = Color(0xFFFFFFFF),
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
-                focusedTextColor = Color(0xFF01060E),
-                unfocusedTextColor = Color(0xFF6D7384),
+                focusedTextColor = DefaultBlack,
+                unfocusedTextColor = DefaultBlack,
                 disabledContainerColor = Color.White,
-                disabledIndicatorColor = Color.Transparent
+                disabledIndicatorColor = Color.Transparent,
+                disabledTextColor = Color(0xFF6D7384)
             ),
             singleLine = !isMultiline,
-            maxLines = if (isMultiline) 5 else 1,
             trailingIcon = if (hasIcon) {
                 { Icon(Icons.Default.DateRange, contentDescription = null) }
             } else null
@@ -419,7 +444,7 @@ fun CustomTextFieldWithIcon(icon: Painter, value: String) {
 }
 
 @Composable
-fun CustomTextFiledForListPhoneNumber(icon: Painter, value: String){
+fun CustomTextFiledForListPhoneNumber(icon: Painter, value: String, onClick: () -> Unit) {
     Column {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -442,13 +467,15 @@ fun CustomTextFiledForListPhoneNumber(icon: Painter, value: String){
                 color = Color(0xFF01060E),
                 modifier = Modifier.weight(1f)
             )
+            Spacer(modifier = Modifier.weight(1f))
+            Icon(
+                Icons.Default.Close,
+                contentDescription = null,
+                tint = Color.Black,
+                modifier = Modifier.clickable { onClick() }
+            )
         }
-        Spacer(modifier = Modifier.weight(1f))
-        Icon(
-            Icons.Default.Close,
-            contentDescription = null,
-            tint = Color.Black
-        )
+        Spacer(modifier = Modifier.height(8.dp))
     }
 }
 

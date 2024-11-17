@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterialApi::class)
 
-package com.example.kilt.screens.profile
+package com.example.kilt.presentation.profile
 
 import android.util.Log
 import androidx.compose.foundation.background
@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.kilt.enums.UserType
+import com.example.kilt.presentation.profile.viewmodel.ProfileViewModel
 import com.example.kilt.screens.profile.userType.AgencyScreen
 import com.example.kilt.screens.profile.userType.OwnerScreen
 import com.example.kilt.screens.profile.userType.SpecialistScreen
@@ -35,7 +36,11 @@ import com.example.kilt.screens.profile.userType.UnAuthenticatedProfileScreen
 import com.example.kilt.viewmodels.AuthViewModel
 
 @Composable
-fun ProfileScreen(navController: NavHostController, authViewModel: AuthViewModel) {
+fun ProfileScreen(
+    navController: NavHostController,
+    authViewModel: AuthViewModel,
+    profileViewModel: ProfileViewModel
+) {
     val userWithMetadata by authViewModel.user.collectAsState(initial = null)
     val isUserAuthenticated by authViewModel.isUserAuthenticated
     val scrollState = rememberScrollState()
@@ -49,6 +54,7 @@ fun ProfileScreen(navController: NavHostController, authViewModel: AuthViewModel
             currentUser?.user?.id?.let { userId ->
                 authViewModel.refreshUserData(userId.toString())
             }
+            profileViewModel.checkModerationStatus()
             refreshing = false
         }
     )
@@ -59,7 +65,6 @@ fun ProfileScreen(navController: NavHostController, authViewModel: AuthViewModel
             authViewModel.checkVerificationStatus(userId.toString())
         }
     }
-
     Box(modifier = Modifier.pullRefresh(pullRefreshState)) {
         Column(
             modifier = Modifier
@@ -86,7 +91,8 @@ fun ProfileScreen(navController: NavHostController, authViewModel: AuthViewModel
                             authViewModel = authViewModel,
                             userWithMetadata = userWithMetadata,
                             user = userWithMetadata!!.user,
-                            navController = navController
+                            navController = navController,
+                            profileViewModel = profileViewModel
                         )
                     }
                     UserType.OWNER.value -> {
@@ -94,7 +100,8 @@ fun ProfileScreen(navController: NavHostController, authViewModel: AuthViewModel
                             navController = navController,
                             authViewModel = authViewModel,
                             userWithMetadata = userWithMetadata!!,
-                            user = userWithMetadata!!.user
+                            user = userWithMetadata!!.user,
+                            profileViewModel = profileViewModel
                         )
                     }
                     UserType.AGENT.value -> {
@@ -102,7 +109,8 @@ fun ProfileScreen(navController: NavHostController, authViewModel: AuthViewModel
                             navController = navController,
                             authViewModel = authViewModel,
                             userWithMetadata = userWithMetadata!!,
-                            user = userWithMetadata!!.user
+                            user = userWithMetadata!!.user,
+                            profileViewModel = profileViewModel
                         )
                     }
                 }

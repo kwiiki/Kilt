@@ -1,5 +1,6 @@
 package com.example.kilt.data.editprofile.addnewphonenumberbottomsheet.repository
 
+import android.util.Log
 import com.example.kilt.data.editprofile.addnewphonenumberbottomsheet.dto.AddPhoneDTO
 import com.example.kilt.data.editprofile.addnewphonenumberbottomsheet.dto.UserFindByOTPResult
 import com.example.kilt.data.editprofile.addnewphonenumberbottomsheet.dto.Create
@@ -33,6 +34,16 @@ class AddNewPhoneNumberRepositoryImpl(private val apiService: ApiService): AddNe
             val response = apiService.universalUserPhoneCreate(Send( create))
             Result.success(response)
         } catch (e:Exception){
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun removePhone(phone: Phone, token: String): Result<Unit> {
+        return try {
+            Log.d("deleteSecondPhoneNumber", "removePhone: $phone")
+            apiService.removePhone(phone, "Bearer $token")
+            Result.success(Unit)
+        } catch (e: Exception) {
             Result.failure(e)
         }
     }

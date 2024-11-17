@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -51,7 +52,7 @@ import com.example.kilt.enums.UserType
 import com.example.kilt.navigation.NavPath
 import com.example.kilt.presentation.editprofile.gradientBrush
 import com.example.kilt.presentation.editprofile.listColor
-import com.example.kilt.utills.imageCdnUrl
+import com.example.kilt.presentation.profile.viewmodel.ProfileViewModel
 import com.example.kilt.utills.imageKiltUrl
 import com.example.kilt.viewmodels.AuthViewModel
 
@@ -61,77 +62,85 @@ fun AgencyScreen(
     authViewModel: AuthViewModel,
     userWithMetadata: UserWithMetadata?,
     user: User,
-    navController: NavHostController
+    navController: NavHostController,
+    profileViewModel: ProfileViewModel
 ) {
     val currentUser by authViewModel.currentUser
     val isUserIdentified by authViewModel.isUserIdentified
-    Log.d("AgencyScreen", "AgencyScreen: InAgencyScreen")
+    val userModerationStatus by profileViewModel.moderationStatus
+
     LaunchedEffect(Unit) {
         authViewModel.checkVerificationStatus(currentUser?.user?.id.toString())
+        profileViewModel.checkModerationStatus()
     }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
     ) {
-        Log.d("agency_verification_status", "AgencyScreen: ${currentUser?.user?.agency_verification_status}")
-        Log.d("agency_verification_status111", "AgencyScreen: ${isUserIdentified.value}")
-        if (currentUser?.user?.agency_verification_status == 2) {
-            IdentifiedUser(navController = navController, user)
-            Spacer(modifier = Modifier.height(16.dp))
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(75.dp)
-                    .background(Color(0xFFF7F8FB), shape = RoundedCornerShape(12.dp)),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-                    Text(text = "Баланс:", fontSize = 16.sp, fontWeight = FontWeight.W500)
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            "${userWithMetadata?.bonus}",
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.W700,
-                            style = TextStyle(
-                                brush = Brush.horizontalGradient(
-                                    colors = listColor,
-                                    tileMode = TileMode.Mirror
-                                ),
-                            )
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Image(
-                            painter = painterResource(id = R.drawable.kilt_money),
-                            contentDescription = null,
-                            modifier = Modifier.size(22.dp)
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.weight(1f))
-                Row(modifier = Modifier
-                    .fillMaxWidth(0.9f)
-                    .padding(horizontal = 8.dp)) {
-                    CustomButtonProfiles(
-                        text = "Пополнить баланс",
-                        onClick = {},
-                        colorList = listColor1,
-                        colorBrush = gradientBrush
-                    )
-                }
+        Log.d("AgencyScreen", "AgencyScreen: currentUser=${currentUser?.user?.agency_verification_status}, isUserIdentified=$isUserIdentified, moderationStatus=$userModerationStatus")
+
+        when {
+            currentUser?.user?.agency_verification_status == 2 && !userModerationStatus -> {
+                IdentifiedUser(navController = navController, user)
+                Spacer(modifier = Modifier.height(16.dp))
+                BalanceSection(userWithMetadata)
             }
-        } else {
-            IsIdentified(navController = navController, isUserIdentified)
+            currentUser?.user?.agency_verification_status == 2 && userModerationStatus -> {
+                IsModeration()
+            }
+            else -> {
+                IsIdentified(navController = navController, isUserIdentified)
+            }
         }
+
         Spacer(modifier = Modifier.height(24.dp))
-        UserMenu(navController = navController)
-        Text(text = "Выйти",
-            fontSize = 18.sp,
-            color = Color.Red,
-            modifier = Modifier.clickable { authViewModel.logout() }
-        )
+        UserMenu(navController = navController, authViewModel)
+    }
+}
+@Composable
+fun BalanceSection(userWithMetadata: UserWithMetadata?) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(75.dp)
+            .background(Color(0xFFF7F8FB), shape = RoundedCornerShape(12.dp)),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+            Text(text = "Баланс:", fontSize = 16.sp, fontWeight = FontWeight.W500)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = "${userWithMetadata?.bonus ?: 0}",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.W700,
+                    style = TextStyle(
+                        brush = Brush.horizontalGradient(
+                            colors = listColor,
+                            tileMode = TileMode.Mirror
+                        )
+                    )
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Image(
+                    painter = painterResource(id = R.drawable.kilt_money),
+                    contentDescription = null,
+                    modifier = Modifier.size(22.dp)
+                )
+            }
+        }
+        Spacer(modifier = Modifier.weight(1f))
+        Row(modifier = Modifier
+            .fillMaxWidth(0.9f)
+            .padding(end = 16.dp)) {
+            CustomButtonProfiles(
+                text = "Пополнить баланс",
+                onClick = {},
+                colorList = listColor1,
+                colorBrush = gradientBrush
+            )
+        }
     }
 }
 @Composable
@@ -262,6 +271,40 @@ fun IdentifiedUser(navController: NavHostController, user: User) {
     }
 }
 
+@Composable
+fun IsModeration() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color(0xFFF2F2F2), shape = RoundedCornerShape(12.dp))
+            .height(113.dp)
+            .padding(16.dp)
+            .clickable(enabled = false) { },
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.succesful_image),
+            contentDescription = null,
+            modifier = Modifier.size(40.dp)
+        )
+        Spacer(modifier = Modifier.width(24.dp))
+        Text(
+            text = "Ваши изменения на проверке",
+            fontSize = 20.sp,
+            fontWeight = FontWeight.W700,
+            lineHeight = 24.sp,
+            color = Color(0xff010101),
+            modifier = Modifier.width(160.dp)
+        )
+        Spacer(modifier = Modifier.weight(1f))
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            contentDescription = null,
+            tint = Color.Gray,
+            modifier = Modifier.size(30.dp)
+        )
+    }
+}
 @Composable
 fun IsIdentified(navController: NavHostController, isUserIdentified: IdentificationTypes) {
     val isEnabled = isUserIdentified != IdentificationTypes.IsIdentified

@@ -2,15 +2,14 @@ package com.example.kilt.presentation.choosecity.viewmodel
 
 import android.util.Log
 import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.kilt.data.singelton.LocationManager
-import com.example.kilt.domain.choosecity.modul.MicroDistrict
+import com.example.kilt.domain.choosecity.model.MicroDistrict
 import com.example.kilt.domain.choosecity.usecase.GetKatoByIdUseCase
 import com.example.kilt.domain.choosecity.usecase.GetMicroDistrictByIdUseCase
+import com.example.kilt.domain.choosecity.usecase.LocationSaverUseCase
 import com.example.kilt.models.kato.District
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -19,7 +18,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ChooseCityInEditViewModel @Inject constructor(
     private val getKatoByIdUseCase: GetKatoByIdUseCase,
-    private val getMicroDistrictByIdUseCase: GetMicroDistrictByIdUseCase
+    private val getMicroDistrictByIdUseCase: GetMicroDistrictByIdUseCase,
+    private val locationSaverUseCase: LocationSaverUseCase
 ) : ViewModel() {
 
     private val _microDistrictsByDistrict = mutableStateMapOf<String, List<MicroDistrict>>()
@@ -51,11 +51,11 @@ class ChooseCityInEditViewModel @Inject constructor(
     private val _selectedAllDistrictId = mutableStateOf<String?>(null)
     val selectedAllDistrictId:State<String?> = _selectedAllDistrictId
 
-    private val _selectedDistrict = mutableStateListOf<String>()
+    private val _selectedDistrict = mutableStateOf<String>("")
     val selectedDistrict = _selectedDistrict
 
     private val _tempCity = mutableStateOf<String?>(null)
-    private val _tempDistricts = mutableStateListOf<String>()
+    private val _tempDistricts = mutableStateOf<String>("")
     private val _tempMicroDistrict = mutableStateOf<MicroDistrict?>(null)
 
     //* Это нужно чтобы следить за состоянием выбранного микрорайона для того чтобы другие микрорайоны сделать enabled
@@ -64,11 +64,11 @@ class ChooseCityInEditViewModel @Inject constructor(
         // Если микрорайон уже выбран, удаляем его
         if (currentSelection == microDistrict) {
             _selectedMicroDistrict.value = null
-            LocationManager.setSelectedMicroDistrict("")  // Убираем выбранный микрорайон из LocationManager
+//            locationSaverUseCase.setSelectedMicroDistrict("")
         } else {
             // Если микрорайон не выбран, выбираем его
             _selectedMicroDistrict.value = microDistrict
-            LocationManager.setSelectedMicroDistrict(microDistrict.name)  // Добавляем микрорайон в LocationManager
+//            locationSaverUseCase.setSelectedMicroDistrict(microDistrict.name)
         }
         Log.d("selectedMicroDistricts", "changeValue: ${_selectedMicroDistrict.value?.name}")
     }
@@ -80,8 +80,7 @@ class ChooseCityInEditViewModel @Inject constructor(
 
         // Включаем или выключаем все микрорайоны для других районов в зависимости от состояния
         if (isSelectingAll) {
-            LocationManager.setSelectedDistrict(name)  // Добавляем выбранный район в LocationManager
-
+//            locationSaverUseCase.setSelectedDistrict(name)
             // Блокируем выбор микрорайонов для других районов
             _selectAllInDistrict.keys.forEach { id ->
                 if (id != districtId) {
@@ -89,8 +88,8 @@ class ChooseCityInEditViewModel @Inject constructor(
                 }
             }
         } else {
-            selectedDistrict.remove(name)
-            LocationManager.setSelectedDistrict("")  // Убираем выбранный район из LocationManager
+            selectedDistrict.value = ""
+//            locationSaverUseCase.setSelectedDistrict("")
         }
     }
     fun toggleSelectAllInCity(selectedCity: String) {
@@ -98,17 +97,16 @@ class ChooseCityInEditViewModel @Inject constructor(
         _selectAllInCity[selectedCity] = !isSelected
         Log.d("city", "toggleSelectAllInCity: $selectedCity")
 
-        if (isSelected) {
-            LocationManager.setSelectedCity("")  // Clear city if it's being de-selected
-        } else {
-            LocationManager.setSelectedCity(selectedCity)  // Set city if it's being selected
-        }
+//        if (isSelected) {
+//            locationSaverUseCase.setSelectedCity("")
+//        } else {
+//            locationSaverUseCase.setSelectedCity(selectedCity)
+//        }
 
         _selectAllInCity.keys.forEach { city ->
             _selectAllInCity[city] = city == selectedCity && !isSelected
         }
 
-        // Reset districts and microdistricts if city is deselected
         if (!isSelected) {
             _selectAllInDistrict.keys.forEach { districtId ->
                 _selectAllInDistrict[districtId] = false
@@ -132,7 +130,7 @@ class ChooseCityInEditViewModel @Inject constructor(
             try {
                 val microDistricts = getMicroDistrictByIdUseCase.execute(districtId)
                 _microDistrictsByDistrict[districtId] = microDistricts.sortedBy { it.name }
-            } catch (e: Exception) {
+            } catch (_: Exception) {
             } finally {
                 _loadingDistricts[districtId] = false
             }
@@ -182,11 +180,13 @@ class ChooseCityInEditViewModel @Inject constructor(
 
     // Temporary select district
     fun selectDistrict(district: String) {
-        if (!_tempDistricts.contains(district)) {
-            _tempDistricts.add(district)
-        } else {
-            _tempDistricts.remove(district)
+        Log.d("EditProfileViewModel", "selectDistrict123: $district")
+        if (!_tempDistricts.value.contains(district)) {
+            _tempDistricts.value = district
         }
+//        else {
+//            _tempDistricts.value = ""
+//        }
     }
 
     // Temporary select microdistrict
@@ -197,14 +197,14 @@ class ChooseCityInEditViewModel @Inject constructor(
     // Apply selected city, district, and microdistrict
     fun applySelection() {
         _selectedCity.value = _tempCity.value
-        _selectedDistrict.clear()
-        _selectedDistrict.addAll(_tempDistricts)
-        _selectedMicroDistrict.value = _tempMicroDistrict.value
+        _selectedDistrict.value = _tempDistricts.value
+        Log.d("EditProfileViewModel", "selectDistrict1233: ${_selectedDistrict.value}")
+        Log.d("EditProfileViewModel", "selectDistrict123: ${_tempDistricts.value}")
 
-        // Optional: save selections to location manager
-        LocationManager.setSelectedCity(_selectedCity.value ?: "")
-        LocationManager.setSelectedDistrict(_selectedDistrict.joinToString(","))
-        LocationManager.setSelectedMicroDistrict(_selectedMicroDistrict.value?.name ?: "")
+        _selectedMicroDistrict.value = _tempMicroDistrict.value
+        locationSaverUseCase.setSelectedCity(_selectedCity.value?:"")
+        locationSaverUseCase.setSelectedDistrict(_selectedDistrict.value)
+        locationSaverUseCase.setSelectedMicroDistrict(_selectedMicroDistrict.value?.name?:"")
     }
     fun resetSelection() {
         _currentScreen.value = 0
@@ -212,7 +212,7 @@ class ChooseCityInEditViewModel @Inject constructor(
         _selectAllInDistrict.clear()
         _selectAllInCity.clear()
         _tempCity.value = null
-        _tempDistricts.clear()
+        _tempDistricts.value = " "
         _tempMicroDistrict.value = null
     }
 }

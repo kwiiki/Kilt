@@ -58,7 +58,8 @@ import com.example.kilt.screens.profile.EnterSixCodePage
 import com.example.kilt.screens.profile.IdentificationScreen
 import com.example.kilt.screens.profile.login.LoginPage
 import com.example.kilt.screens.profile.registration.RegistrationForOwnerPage
-import com.example.kilt.screens.profile.ProfileScreen
+import com.example.kilt.presentation.profile.ProfileScreen
+import com.example.kilt.presentation.profile.viewmodel.ProfileViewModel
 import com.example.kilt.screens.profile.myannouncement.MyAnnouncementScreen
 import com.example.kilt.screens.profile.notifications.NotificationsScreen
 import com.example.kilt.screens.profile.registration.RegistrationPage
@@ -90,6 +91,7 @@ fun KiltApp() {
     val chooseCityInEditViewModel: ChooseCityInEditViewModel = hiltViewModel()
     val addNewImageViewModel: AddNewImageViewModel = hiltViewModel()
     val userAboutViewModel:UserAboutViewModel = hiltViewModel()
+    val profileViewModel:ProfileViewModel = hiltViewModel()
     val smsViewModel: SmsViewModel = hiltViewModel()
 
 
@@ -141,7 +143,8 @@ fun KiltApp() {
             composable(BottomNavigationScreen.Profile.route) {
                 ProfileScreen(
                     navController,
-                    authViewModel
+                    authViewModel,
+                    profileViewModel
                 )
             }
             composable(Screen.BlogPage.route) { BlogPage(navController) }
@@ -225,7 +228,7 @@ fun KiltApp() {
             composable(Screen.ChooseCityInEdit.route) {
                 ChooseCityInEdit(
                     navController,
-                    chooseCityInEditViewModel
+                    chooseCityInEditViewModel,
                 )
             }
         }

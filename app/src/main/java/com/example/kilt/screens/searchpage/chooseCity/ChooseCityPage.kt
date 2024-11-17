@@ -40,7 +40,6 @@ import com.example.kilt.custom.CustomToggleButton
 import com.example.kilt.utills.LockScreenOrientation
 import com.example.kilt.viewmodels.ChooseCityViewModel
 import com.example.kilt.viewmodels.SearchViewModel
-import com.example.kilt.domain.choosecity.modul.MicroDistrict
 
 @Composable
 fun ChooseCityPage(

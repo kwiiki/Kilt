@@ -27,12 +27,15 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.kilt.presentation.editprofile.addnewphonenumberbottomsheet.viewmodel.AddNewPhoneNumberViewModel
+import com.example.kilt.presentation.editprofile.components.CustomButtonForEdit
 import com.example.kilt.presentation.editprofile.components.SaveButton
+import com.example.kilt.presentation.editprofile.gradientBrush
+import com.example.kilt.presentation.editprofile.listColor
 
 @Composable
 fun EnterCodeBottomSheet(
     addNewPhoneNumberViewModel: AddNewPhoneNumberViewModel,
-    onClick: () -> Unit
+    onDismiss: () -> Unit
 ) {
     val uiState = addNewPhoneNumberViewModel.editProfileUiState.value
     val showError = addNewPhoneNumberViewModel.showError.value
@@ -45,7 +48,7 @@ fun EnterCodeBottomSheet(
             .fillMaxWidth()
             .background(Color.White)
             .padding(horizontal = 16.dp)
-            .height(180.dp),
+            .height(240.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Text(
@@ -95,14 +98,18 @@ fun EnterCodeBottomSheet(
         }
         Spacer(modifier = Modifier.height(8.dp))
         SaveButton(
+            text = "Сохранить",
             onClick = {
                 addNewPhoneNumberViewModel.userFindByOTP(uiState.code)
                 addNewPhoneNumberViewModel.universalUserCreate()
                 if (isOTPVerified && isUserCreated) {
-                    onClick()
                     addNewPhoneNumberViewModel.clear()
                 }
             }
         )
+        CustomButtonForEdit(text = "Вернутся назад",
+            onClick = { onDismiss() },
+            colorList = listColor,
+            colorBrush = gradientBrush)
     }
 }

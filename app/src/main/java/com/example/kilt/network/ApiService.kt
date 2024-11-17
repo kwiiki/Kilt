@@ -7,8 +7,9 @@ import com.example.kilt.data.editprofile.addnewphonenumberbottomsheet.dto.Send
 import com.example.kilt.data.editprofile.addnewphonenumberbottomsheet.dto.UserFindByOTPResult
 import com.example.kilt.data.editprofile.dto.UniversalUserPhoneResult
 import com.example.kilt.data.editprofile.dto.UserPhone
-import com.example.kilt.data.userabout.dto.Listings
 import com.example.kilt.data.userabout.dto.ListingsDTO
+import com.example.kilt.domain.editprofile.model.UpdatedUser
+import com.example.kilt.domain.profile.model.Result
 import com.example.kilt.models.Config
 import com.example.kilt.models.Count
 import com.example.kilt.models.HomeSale
@@ -96,7 +97,7 @@ interface ApiService {
     @POST("users/update/{id}")
     suspend fun userUpdate(
         @Path("id") id: String,
-        @Body user: User
+        @Body user: UpdatedUser
     ): ApiResponse
 
     @POST("users/add-phone")
@@ -116,7 +117,7 @@ interface ApiService {
     suspend fun universalUserFind(@Body userPhone: UserPhone): UniversalUserPhoneResult
 
     @GET("listings/agent/{id}")
-    suspend fun getUserListings(@Path("id") id: String):ListingsDTO
+    suspend fun getUserListings(@Path("id") id: String): ListingsDTO
 
     @Multipart
     @POST("users/add-profile-image")
@@ -135,6 +136,12 @@ interface ApiService {
         @Body phone: Phone,
         @Header("Authorization") token: String
     )
+
+    @GET("users/agency-data-change-request")
+    suspend fun getUserModerationStatus(
+        @Header("Authorization") token: String
+    ): Result
+
 
 }
 

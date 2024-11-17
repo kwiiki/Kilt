@@ -22,6 +22,7 @@ import javax.inject.Inject
 import android.util.Base64
 import com.example.kilt.models.authentification.UserUpdateResult
 import com.example.kilt.data.localstorage.sharedPreference.PreferencesHelper
+import com.example.kilt.domain.editprofile.model.UpdatedUser
 import com.example.kilt.enums.IdentificationTypes
 
 @HiltViewModel
@@ -117,7 +118,7 @@ class IdentificationViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             try {
-                val user = User(
+                val user = UpdatedUser(
                     agent_about = agentAbout,
                     agent_city = agentCity,
                     agent_full_address = agentFullAddress,

@@ -14,3 +14,7 @@ val Pink40 = Color(0xFF7D5260)
 
 val BorderLight = Color(0xFFBCD3E6)
 val BorderDark = Color(0xFF63798D)
+
+
+val DefaultBlack = Color(0xFF01060E)
+val DefaultGray = Color(0xFF6D7384)

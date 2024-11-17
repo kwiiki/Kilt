@@ -1,4 +1,4 @@
-package com.example.kilt.domain.choosecity.modul
+package com.example.kilt.domain.choosecity.model
 
 data class MicroDistrict(
     val id: String,
