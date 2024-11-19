@@ -8,6 +8,8 @@ plugins {
 //    kotlin("plugin.serialization") version "2.0.20"
 }
 
+val dgisApiKey: String = project.findProperty("DGIS_API_KEY") as? String ?: ""
+
 android {
     namespace = "com.example.kilt"
     compileSdk = 34
@@ -23,6 +25,7 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+        buildConfigField("String", "DGIS_API_KEY", "\"$dgisApiKey\"")
     }
     buildTypes {
         release {
@@ -33,19 +36,24 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
     buildFeatures {
         compose = true
     }
+
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
     }
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -121,7 +129,7 @@ dependencies {
     implementation ("com.google.android.gms:play-services-auth:21.2.0")
     implementation ("com.google.android.gms:play-services-auth-api-phone:18.1.0")
 
-//    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1")
+    implementation("ru.dgis.sdk:sdk-map:12.2.0")
+
     implementation ("androidx.datastore:datastore-preferences:1.0.0")
-//    implementation ("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")
 }

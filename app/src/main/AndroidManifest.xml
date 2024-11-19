@@ -45,6 +45,9 @@
                 <action android:name="com.google.android.gms.auth.api.phone.SMS_RETRIEVED" />
             </intent-filter>
         </receiver>
+        <meta-data
+            android:name="ru.dgis.sdk.maps.API_KEY"
+            android:value="35c20748-a280-4583-b8e2-cc4d1eebed62" />
     </application>
 
 </manifest>

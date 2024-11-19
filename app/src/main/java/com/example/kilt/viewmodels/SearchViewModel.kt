@@ -52,6 +52,8 @@ class SearchViewModel @Inject constructor(
     private val _searchResultCount = MutableStateFlow<String?>("")
     val searchResultCount: StateFlow<String?> = _searchResultCount.asStateFlow()
 
+    val points = searchResult.value?.map
+
     private val _isLoading = mutableStateOf(false)
     val isLoading:State<Boolean> = _isLoading
 
@@ -255,9 +257,10 @@ class SearchViewModel @Inject constructor(
                     (_filters.value.filterMap[TypeFilters.PROPERTY_TYPE.value] as? FilterValue.SingleValue)?.value?: 1
                 val pager = Pager(
                     config = PagingConfig(
-                        pageSize = 30,
+                        pageSize = 10,
                         enablePlaceholders = false,
-                        initialLoadSize = 30
+                        initialLoadSize = 10
+//                        initialLoadSize = 30
                     ),
                     pagingSourceFactory = {
                         SearchPagingSource(

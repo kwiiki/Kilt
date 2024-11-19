@@ -5,6 +5,7 @@ package com.example.kilt.screens.searchpage
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,6 +19,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.BottomSheetDefaults
+import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -27,6 +29,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -40,20 +43,34 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavHostController
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.example.kilt.KiltApplication
 import com.example.kilt.R
+import ru.dgis.sdk.Context
 import com.example.kilt.screens.searchpage.filter.FilterPage
 import com.example.kilt.viewmodels.ChooseCityViewModel
 import com.example.kilt.viewmodels.ConfigViewModel
 import com.example.kilt.viewmodels.HomeSaleViewModel
 import com.example.kilt.viewmodels.SearchViewModel
+import ru.dgis.sdk.coordinates.GeoPoint
+import ru.dgis.sdk.geometry.Elevation
+import ru.dgis.sdk.geometry.GeoPointWithElevation
+import ru.dgis.sdk.map.CameraPosition
+import ru.dgis.sdk.map.Map
+import ru.dgis.sdk.map.MapTheme
+import ru.dgis.sdk.map.MapView
+import ru.dgis.sdk.map.Marker
+import ru.dgis.sdk.map.Source
+import ru.dgis.sdk.map.Zoom
 
 
 @Composable
@@ -64,17 +81,16 @@ fun SearchPage(
     navController: NavHostController,
     searchViewModel: SearchViewModel
 ) {
+    val context = LocalContext.current
+    val sdkContext = (context.applicationContext as KiltApplication).sdkContext
     val response = searchViewModel.searchResult.collectAsState()
     val searchResults = searchViewModel.searchResultsFlow.collectAsLazyPagingItems()
     val listState by searchViewModel.listState.collectAsState()
-    var openListingsBottomSheet by remember { mutableStateOf(false) }
-    val filterBottomSheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true,
-//        confirmValueChange = { it != SheetValue.Hidden }
-    )
+    val points = searchViewModel.points?.size
+    val scaffoldState = rememberBottomSheetScaffoldState()
 
     LaunchedEffect(searchResults.loadState) {
-        Log.d("SearchPage", "LoadState: $response")
+        Log.d("SearchPage", "LoadState: $points")
         Log.d("SearchPage", "LoadState: ${response.value?.list?.get(0).toString()}")
     }
     Column(
@@ -89,119 +105,129 @@ fun SearchPage(
                 .padding(horizontal = 10.dp)
                 .padding(top = 8.dp)
         )
-
-            ModalBottomSheet(
-                tonalElevation = 20.dp,
-                shape = RectangleShape,
-                sheetState = filterBottomSheetState,
-                onDismissRequest = { openListingsBottomSheet = false },
-                dragHandle = {
-                    BottomSheetDefaults.DragHandle()
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(Color.White),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-
+        BottomSheetScaffold(
+            sheetContainerColor = Color(0xffffffff),
+            scaffoldState = scaffoldState,
+            sheetDragHandle = {},
+            sheetPeekHeight = 130.dp,
+            sheetContent = {
+                when {
+                    searchResults.loadState.refresh is LoadState.Loading -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(color = Color.Gray)
+                        }
                     }
-                }
-            ) {
-            }
-        when {
-            searchResults.loadState.refresh is LoadState.Loading -> {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = Color.Gray)
-                }
-            }
-            searchResults.loadState.refresh is LoadState.Error -> {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(text = "Error: ERRRRROR", color = Color.Red)
-                }
-            }
-            searchResults.itemCount == 0 && searchResults.loadState.refresh is LoadState.NotLoading -> {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Image(
-                        painter = painterResource(id = R.drawable.image_empty),
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.align(alignment = Alignment.Center)
-                    ) {
-                        Text(
-                            text = "Нет объявлений",
-                            textAlign = TextAlign.Center,
-                            fontSize = 22.sp,
-                            fontWeight = FontWeight.Medium
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = "По данным фильтрам ничего не найдено.",
-                            textAlign = TextAlign.Center,
-                            fontSize = 16.sp
-                        )
+
+                    searchResults.loadState.refresh is LoadState.Error -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(text = "Error: ERRRRROR", color = Color.Red)
+                        }
                     }
-                }
-            }
-            else -> {
-                Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-                    LazyColumn(
-                        state = listState, // Сохранение состояния скролла
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        items(searchResults.itemCount) { index ->
-                            val property = searchResults[index]
-                            property?.let {
-                                HouseItem(homeSaleViewModel, it, navController, configViewModel)
+
+                    searchResults.itemCount == 0 && searchResults.loadState.refresh is LoadState.NotLoading -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.image_empty),
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.fillMaxSize()
+                            )
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier.align(alignment = Alignment.Center)
+                            ) {
+                                Text(
+                                    text = "Нет объявлений",
+                                    textAlign = TextAlign.Center,
+                                    fontSize = 22.sp,
+                                    fontWeight = FontWeight.Medium
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    text = "По данным фильтрам ничего не найдено.",
+                                    textAlign = TextAlign.Center,
+                                    fontSize = 16.sp
+                                )
                             }
                         }
-                        searchResults.apply {
-                            when {
-                                loadState.refresh is LoadState.Loading -> {
-                                    item {
-                                        Box(
-                                            modifier = Modifier.fillParentMaxSize(),
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            CircularProgressIndicator()
-                                        }
-                                    }
-                                }
-                                loadState.refresh is LoadState.Error -> {
-                                    val error = loadState.refresh as LoadState.Error
-                                    item {
-                                        ErrorMessage(
-                                            modifier = Modifier.fillParentMaxSize(),
-                                            message = error.error.localizedMessage ?: "Ошибка загрузки",
-                                            onClickRetry = { retry() }
+                    }
+
+                    else -> {
+                        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                            LazyColumn(
+                                state = listState, // Сохранение состояния скролла
+                                modifier = Modifier.fillMaxSize()
+                            ) {
+                                items(searchResults.itemCount) { index ->
+                                    val property = searchResults[index]
+                                    property?.let {
+                                        HouseItem(
+                                            homeSaleViewModel,
+                                            it,
+                                            navController,
+                                            configViewModel
                                         )
                                     }
                                 }
-                                loadState.append is LoadState.Loading -> {
-                                    item { LoadingNextPageItem(modifier = Modifier) }
-                                }
-                                loadState.append.endOfPaginationReached -> {
-                                    item {
-                                        Column(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(16.dp),
-                                            horizontalAlignment = Alignment.CenterHorizontally
-                                        ) {
-                                            Text(
-                                                text = "Мы показали все объявления!",
-                                                textAlign = TextAlign.Center,
-                                                fontSize = 22.sp,
-                                                fontWeight = FontWeight.Medium
-                                            )
-                                            Spacer(modifier = Modifier.height(8.dp))
-                                            Text(
-                                                text = "Попробуйте изменить параметры поиска, чтобы увидеть больше вариантов.",
-                                                textAlign = TextAlign.Center
-                                            )
+                                searchResults.apply {
+                                    when {
+                                        loadState.refresh is LoadState.Loading -> {
+                                            item {
+                                                Box(
+                                                    modifier = Modifier.fillParentMaxSize(),
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    CircularProgressIndicator()
+                                                }
+                                            }
+                                        }
+
+                                        loadState.refresh is LoadState.Error -> {
+                                            val error = loadState.refresh as LoadState.Error
+                                            item {
+                                                ErrorMessage(
+                                                    modifier = Modifier.fillParentMaxSize(),
+                                                    message = error.error.localizedMessage
+                                                        ?: "Ошибка загрузки",
+                                                    onClickRetry = { retry() }
+                                                )
+                                            }
+                                        }
+
+                                        loadState.append is LoadState.Loading -> {
+                                            item { LoadingNextPageItem(modifier = Modifier) }
+                                        }
+
+                                        loadState.append.endOfPaginationReached -> {
+                                            item {
+                                                Column(
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .padding(16.dp),
+                                                    horizontalAlignment = Alignment.CenterHorizontally
+                                                ) {
+                                                    Text(
+                                                        text = "Мы показали все объявления!",
+                                                        textAlign = TextAlign.Center,
+                                                        fontSize = 22.sp,
+                                                        fontWeight = FontWeight.Medium
+                                                    )
+                                                    Spacer(modifier = Modifier.height(8.dp))
+                                                    Text(
+                                                        text = "Попробуйте изменить параметры поиска, чтобы увидеть больше вариантов.",
+                                                        textAlign = TextAlign.Center
+                                                    )
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -210,6 +236,34 @@ fun SearchPage(
                     }
                 }
             }
+        ) {
+            AndroidView(
+                factory = { context ->
+                    val mapView = MapView(context).apply {
+                        getMapAsync { map ->
+                            map.camera.move(
+                                CameraPosition(
+                                    point = GeoPoint(43.238949, 76.889709),
+                                    zoom = Zoom(value = 12.0f)
+
+                                )
+
+
+
+                            )
+                        }
+                    }
+                    val geoPointWithElevation = GeoPointWithElevation(
+                        latitude = 51.107937589155,
+                        longitude = 71.4461636632,
+                        elevation = Elevation(value = 23f)
+                    )
+
+                    mapView.setTheme(MapTheme.defaultTheme)
+                    mapView
+                },
+                modifier = Modifier.fillMaxSize()
+            )
         }
     }
 }
@@ -225,6 +279,7 @@ fun LoadingNextPageItem(modifier: Modifier = Modifier) {
         CircularProgressIndicator()
     }
 }
+
 @Composable
 fun ErrorMessage(
     modifier: Modifier = Modifier,

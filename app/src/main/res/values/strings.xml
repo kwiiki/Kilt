@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">Kilt</string>
     <string name="failure">Номер телефона введён неверно,либо вы не зарегистрированы.Пожалуйсто, зарегистрируйтесь</string>
+    <string name="dgis_api_key">${<Bu></Bu>ildConfig.DGIS_API_KEY}</string>
+
 </resources>

@@ -96,7 +96,6 @@ fun EditProfile(
 
     LaunchedEffect(Unit) {
         addNewPhoneNumberViewModel.loadPhoneNumbers()
-//        editProfileViewModel.uploadDate()
         editProfileViewModel.loadUserData()
         Log.d("userCity", "EditProfile: ${uiState.userCity}")
     }
