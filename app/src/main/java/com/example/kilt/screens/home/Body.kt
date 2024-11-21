@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.kilt.R
-import com.example.kilt.custom.CustomToggleButton
+import com.example.kilt.presentation.custom.CustomToggleButton
 import com.example.kilt.viewmodels.SearchViewModel
 
 

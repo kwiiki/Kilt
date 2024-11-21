@@ -38,7 +38,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.kilt.navigation.BottomNavigationScreen
 import com.example.kilt.navigation.Screen
-import com.example.kilt.otp.SmsViewModel
+import com.example.kilt.utills.otp.SmsViewModel
 import com.example.kilt.presentation.choosecity.ChooseCityInEdit
 import com.example.kilt.presentation.choosecity.viewmodel.ChooseCityInEditViewModel
 import com.example.kilt.screens.blog.BlogPage
@@ -63,7 +63,7 @@ import com.example.kilt.presentation.profile.viewmodel.ProfileViewModel
 import com.example.kilt.screens.profile.myannouncement.MyAnnouncementScreen
 import com.example.kilt.screens.profile.notifications.NotificationsScreen
 import com.example.kilt.screens.profile.registration.RegistrationPage
-import com.example.kilt.screens.searchpage.SearchPage
+import com.example.kilt.presentation.search.SearchPage
 import com.example.kilt.screens.searchpage.chooseCity.ChooseCityPage
 import com.example.kilt.screens.searchpage.homedetails.HomeDetailsScreen
 import com.example.kilt.viewmodels.ChooseCityViewModel

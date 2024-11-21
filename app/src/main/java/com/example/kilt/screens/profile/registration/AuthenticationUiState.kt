@@ -1,6 +1,6 @@
 package com.example.kilt.screens.profile.registration
 
-import com.example.kilt.enums.UserType
+import com.example.kilt.utills.enums.UserType
 
 data class AuthenticationUiState(
     var phone: String = "",

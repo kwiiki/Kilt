@@ -1,6 +1,6 @@
 package com.example.kilt.presentation.login
 
-import com.example.kilt.enums.UserType
+import com.example.kilt.utills.enums.UserType
 
 data class LoginUiState(
     var phone: String = "",

@@ -81,7 +81,7 @@ fun HomeDetailsScreen(
         skipPartiallyExpanded = true
     )
 
-    val searchResult by searchViewModel.searchResult.collectAsState()
+    val searchResult by searchViewModel.searchResult
 
     val propertyItem = remember(searchResult, id) {
         id?.let { searchViewModel.getPropertyById(it) }

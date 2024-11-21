@@ -1,4 +1,4 @@
-package com.example.kilt.otp
+package com.example.kilt.utills.otp
 
 import android.content.BroadcastReceiver
 import android.content.Context

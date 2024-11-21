@@ -47,8 +47,8 @@ import coil.compose.AsyncImage
 import com.example.kilt.R
 import com.example.kilt.models.authentification.User
 import com.example.kilt.models.authentification.UserWithMetadata
-import com.example.kilt.enums.IdentificationTypes
-import com.example.kilt.enums.UserType
+import com.example.kilt.utills.enums.IdentificationTypes
+import com.example.kilt.utills.enums.UserType
 import com.example.kilt.navigation.NavPath
 import com.example.kilt.presentation.editprofile.gradientBrush
 import com.example.kilt.presentation.editprofile.listColor

@@ -50,8 +50,8 @@ import com.example.kilt.presentation.editprofile.components.SaveButton
 import com.example.kilt.presentation.editprofile.gradientBrush
 import com.example.kilt.presentation.editprofile.listColor
 import com.example.kilt.screens.profile.login.PhoneNumberTextField
-import com.example.kilt.ui.theme.DefaultBlack
-import com.example.kilt.ui.theme.DefaultGray
+import com.example.kilt.presentation.theme.DefaultBlack
+import com.example.kilt.presentation.theme.DefaultGray
 import com.example.kilt.viewmodels.AuthViewModel
 
 @Composable

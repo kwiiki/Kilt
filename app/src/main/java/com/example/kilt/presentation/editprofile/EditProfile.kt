@@ -57,16 +57,17 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.kilt.R
-import com.example.kilt.enums.UserType
+import com.example.kilt.utills.enums.UserType
 import com.example.kilt.navigation.NavPath
 import com.example.kilt.presentation.editprofile.addnewimagebottomsheet.AddNewImage
 import com.example.kilt.presentation.editprofile.addnewimagebottomsheet.viewmodel.AddNewImageViewModel
 import com.example.kilt.presentation.editprofile.addnewphonenumberbottomsheet.AddNewPhoneNumber
 import com.example.kilt.presentation.editprofile.addnewphonenumberbottomsheet.viewmodel.AddNewPhoneNumberViewModel
+import com.example.kilt.presentation.editprofile.changeusertypebottomsheet.ChangeUserTypeBottomSheet
 import com.example.kilt.presentation.editprofile.components.CustomButtonForEdit
 import com.example.kilt.presentation.editprofile.components.SaveButton
 import com.example.kilt.presentation.editprofile.viewmodel.EditProfileViewModel
-import com.example.kilt.ui.theme.DefaultBlack
+import com.example.kilt.presentation.theme.DefaultBlack
 import com.example.kilt.utills.imageKiltUrl
 import com.example.kilt.viewmodels.AuthViewModel
 
@@ -178,7 +179,6 @@ fun EditProfile(
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
-
         Text(
             text = "Личный данные",
             color = Color(0xff01060E),
@@ -189,7 +189,7 @@ fun EditProfile(
         if (user?.user_type == UserType.AGENCY.value) {
             CustomTextField(
                 label = "Название",
-                value = user?.firstname.toString(),
+                value = user.firstname,
                 onValueChange = {})
             CustomTextField(
                 label = "Описание",
@@ -259,7 +259,7 @@ fun EditProfile(
         Spacer(modifier = Modifier.height(16.dp))
 
         if (user?.user_type == UserType.OWNER.value) {
-            SwitchAgentCard()
+            SwitchAgentCard(editProfileViewModel, navController)
         }
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -313,8 +313,14 @@ fun EditProfile(
             )
         }
         Spacer(modifier = Modifier.height(10.dp))
-        SaveButton(text = "Сохранить") {
-        }
+        SaveButton(
+            text = "Сохранить",
+            enabled = editProfileViewModel.isSaveEnabled.value,
+            onClick = {
+                editProfileViewModel.updateUser()
+                navController.navigate(NavPath.PROFILE.name)
+            }
+        )
         Spacer(modifier = Modifier.height(16.dp))
     }
 }
@@ -479,9 +485,10 @@ fun CustomTextFiledForListPhoneNumber(icon: Painter, value: String, onClick: () 
 }
 
 @Composable
-fun SwitchAgentCard() {
+fun SwitchAgentCard(editProfileViewModel: EditProfileViewModel, navController: NavHostController) {
+    var openChangeUserTypeBottomSheet by remember { mutableStateOf(false) }
+    val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     Card(
-        onClick = { /*TODO*/ },
         elevation = CardDefaults.cardElevation(3.dp),
         modifier = Modifier
             .height(162.dp)
@@ -509,10 +516,31 @@ fun SwitchAgentCard() {
             Spacer(modifier = Modifier.height(12.dp))
             CustomButtonForEdit(
                 text = "Переключиться",
-                onClick = { /*TODO*/ },
+                onClick = {
+                    openChangeUserTypeBottomSheet = true
+                },
                 colorList = listColor,
                 colorBrush = gradientBrush
             )
+        }
+    }
+    if (openChangeUserTypeBottomSheet) {
+        ModalBottomSheet(
+            tonalElevation = 20.dp,
+            contentColor = Color.White,
+            containerColor = Color.White,
+            sheetState = bottomSheetState,
+            onDismissRequest = {
+                openChangeUserTypeBottomSheet = false
+            },
+        ) {
+            ChangeUserTypeBottomSheet(
+                editProfileViewModel,
+                onClick = { openChangeUserTypeBottomSheet = false },
+                navController
+            )
+
+
         }
     }
 }

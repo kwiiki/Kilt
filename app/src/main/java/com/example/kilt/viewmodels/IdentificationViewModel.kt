@@ -23,7 +23,7 @@ import android.util.Base64
 import com.example.kilt.models.authentification.UserUpdateResult
 import com.example.kilt.data.localstorage.sharedPreference.PreferencesHelper
 import com.example.kilt.domain.editprofile.model.UpdatedUser
-import com.example.kilt.enums.IdentificationTypes
+import com.example.kilt.utills.enums.IdentificationTypes
 
 @HiltViewModel
 class IdentificationViewModel @Inject constructor(

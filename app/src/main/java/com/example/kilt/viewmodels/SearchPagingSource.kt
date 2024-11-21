@@ -5,6 +5,7 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.example.kilt.models.Filters
 import com.example.kilt.models.PropertyItem
+import com.example.kilt.models.SearchResponse
 import com.example.kilt.repository.SearchRepository
 
 class SearchPagingSource(
@@ -28,25 +29,10 @@ class SearchPagingSource(
                 sorting = sort
             )
 
-//            Log.d("SearchPagingSource", "Request created with page=$currentPage: $request")
-
-            // Выполняем запрос
             val response = searchRepository.performSearch(request)
-            Log.d("SearchPagingSource", "Response received for page=$${response.map}")
-//            Log.d("SearchPagingSource", "Response received for page=$currentPage: $response")
-
-            // Проверяем, что список не пустой
-            if (response.list.isEmpty()) {
-//                Log.d("SearchPagingSource", "No items found for page $currentPage")
-            } else {
-                response.list.forEach { Log.d("SearchPagingSource", "Item ID: ${it.id}") }
-            }
-
             val items = response.list
-            val nextKey = if (response.list.isNotEmpty()) currentPage + 1 else null
+            val nextKey = if (items.isNotEmpty()) currentPage + 1 else null
             val prevKey = if (currentPage == 0) null else currentPage - 1
-
-//            Log.d("SearchPagingSource", "Returning LoadResult.Page with nextKey=$nextKey, prevKey=$prevKey")
 
             LoadResult.Page(
                 data = items,

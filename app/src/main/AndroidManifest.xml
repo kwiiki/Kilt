@@ -38,7 +38,7 @@
             </intent-filter>
         </activity>
         <receiver
-            android:name="com.example.kilt.otp.SmsBroadcastReceiver"
+            android:name="com.example.kilt.utills.otp.SmsBroadcastReceiver"
             android:exported="false"
             android:permission="com.google.android.gms.auth.api.phone.permission.SEND">
             <intent-filter>

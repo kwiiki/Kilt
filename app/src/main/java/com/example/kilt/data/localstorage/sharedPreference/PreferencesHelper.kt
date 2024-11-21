@@ -3,7 +3,7 @@ package com.example.kilt.data.localstorage.sharedPreference
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
-import com.example.kilt.enums.IdentificationTypes
+import com.example.kilt.utills.enums.IdentificationTypes
 
 class PreferencesHelper(context: Context) {
     private val sharedPreferences: SharedPreferences =

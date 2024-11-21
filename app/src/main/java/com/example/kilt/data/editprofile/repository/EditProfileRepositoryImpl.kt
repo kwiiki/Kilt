@@ -18,11 +18,15 @@ class EditProfileRepositoryImpl(private val apiService: ApiService):EditProfileR
        return  apiService.addProfileImage(image = image, token = token)
     }
 
-    override suspend fun updateUser(id: String, user: UpdatedUser) {
-        TODO("Not yet implemented")
+    override suspend fun updateUser(id: String, user: UpdatedUser){
+        apiService.userUpdate(id = id, user = user)
     }
 
     override suspend fun deleteImage(token: String): Response<Any> {
         return apiService.deleteProfileImage(token)
+    }
+
+    override suspend fun changeUserType(token: String) {
+        apiService.changeUserType("Bearer $token")
     }
 }

@@ -11,4 +11,5 @@ interface EditProfileRepository {
     suspend fun addNewImage(image:MultipartBody.Part,token:String) : Response<Any>
     suspend fun updateUser(id:String,user:UpdatedUser)
     suspend fun deleteImage(token:String):Response<Any>
+    suspend fun changeUserType(token: String)
 }

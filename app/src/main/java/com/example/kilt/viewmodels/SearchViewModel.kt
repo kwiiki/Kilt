@@ -25,7 +25,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import androidx.compose.runtime.State
-import com.example.kilt.enums.TypeFilters
+import com.example.kilt.utills.enums.TypeFilters
+import com.example.kilt.models.PropertyCoordinate
 
 
 @HiltViewModel
@@ -46,13 +47,14 @@ class SearchViewModel @Inject constructor(
 
     private var isDataLoaded = false
 
-    private val _searchResult = MutableStateFlow<SearchResponse?>(null)
-    val searchResult: StateFlow<SearchResponse?> = _searchResult.asStateFlow()
+    private val _searchResult = mutableStateOf<SearchResponse?>(null)
+    val searchResult: State<SearchResponse?> = _searchResult
+
+    private val _propertyCoordinates = MutableStateFlow<List<PropertyCoordinate>>(emptyList())
+    val propertyCoordinates: StateFlow<List<PropertyCoordinate>> = _propertyCoordinates
 
     private val _searchResultCount = MutableStateFlow<String?>("")
     val searchResultCount: StateFlow<String?> = _searchResultCount.asStateFlow()
-
-    val points = searchResult.value?.map
 
     private val _isLoading = mutableStateOf(false)
     val isLoading:State<Boolean> = _isLoading
@@ -96,7 +98,6 @@ class SearchViewModel @Inject constructor(
     }
     private fun resetNonMainFilters() {
         val newFilters = Filters()
-        // Save only main filters
         _filters.value.filterMap[TypeFilters.DEAL_TYPE.value]?.let {
             newFilters.filterMap[TypeFilters.DEAL_TYPE.value] = it
         }
@@ -252,15 +253,15 @@ class SearchViewModel @Inject constructor(
                 val dealType =
                     (_filters.value.filterMap[TypeFilters.DEAL_TYPE.value] as? FilterValue.SingleValue)?.value ?: 1
                 val listingType =
-                    (_filters.value.filterMap[TypeFilters.LISTING_TYPE.value] as? FilterValue.SingleValue)?.value?: 1
+                    (_filters.value.filterMap[TypeFilters.LISTING_TYPE.value] as? FilterValue.SingleValue)?.value ?: 1
                 val propertyType =
-                    (_filters.value.filterMap[TypeFilters.PROPERTY_TYPE.value] as? FilterValue.SingleValue)?.value?: 1
+                    (_filters.value.filterMap[TypeFilters.PROPERTY_TYPE.value] as? FilterValue.SingleValue)?.value ?: 1
+
                 val pager = Pager(
                     config = PagingConfig(
                         pageSize = 10,
                         enablePlaceholders = false,
                         initialLoadSize = 10
-//                        initialLoadSize = 30
                     ),
                     pagingSourceFactory = {
                         SearchPagingSource(
@@ -281,11 +282,11 @@ class SearchViewModel @Inject constructor(
                 _error.value = e.message ?: "Unknown error occurred"
             } finally {
                 _isLoading.value = false
-                Log.d("SearchViewModel", "Finished performSearch")
             }
         }
         getCountBySearchResult()
     }
+
 }
 
 

@@ -1,4 +1,4 @@
-package com.example.kilt.ui.theme
+package com.example.kilt.presentation.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.graphics.Color

@@ -1,4 +1,4 @@
-package com.example.kilt.firebase
+package com.example.kilt.utills.firebase
 
 import android.annotation.SuppressLint
 import android.util.Log

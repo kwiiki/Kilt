@@ -16,10 +16,11 @@ class SearchRepositoryImpl(
     private val configRepository: ConfigRepository,
     private val configHelper: ConfigHelper
 ) : SearchRepository {
-    override suspend fun performSearch(request: THomeSale): SearchResponse {
-        Log.d("SearchRepository", "Performing search with request: $request")
-        return apiService.search(request)
 
+    override suspend fun performSearch(request: THomeSale): SearchResponse {
+        Log.d("SearchRepository", "Starting performSearch")
+        val response = apiService.search(request)
+        return response
     }
 
     override suspend fun getResultBySearchCount(request: THomeSale): Count {
@@ -39,6 +40,7 @@ class SearchRepositoryImpl(
         updatedMap[prop] = newFilters.filterMap[prop] ?: return currentFilters
         return Filters(updatedMap)
     }
+
     override fun updateRangeFilter(
         currentFilters: Filters,
         prop: String,
@@ -49,6 +51,7 @@ class SearchRepositoryImpl(
         updatedMap[prop] = FilterValue.RangeValue(from = min, to = max)
         return Filters(updatedMap)
     }
+
     override fun updateListFilter(
         currentFilters: Filters,
         prop: String,
@@ -58,6 +61,8 @@ class SearchRepositoryImpl(
         updatedMap[prop] = FilterValue.ListValue(values = selectedValues)
         return Filters(updatedMap)
     }
+
+
     override suspend fun createSearchRequest(
         filters: Filters,
         dealType: Int,

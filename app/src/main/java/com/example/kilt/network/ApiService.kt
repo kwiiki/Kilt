@@ -142,6 +142,9 @@ interface ApiService {
         @Header("Authorization") token: String
     ): Result
 
-
+    @POST("users/change-user-type")
+    suspend fun changeUserType(
+        @Header("Authorization") token: String
+    )
 }
 

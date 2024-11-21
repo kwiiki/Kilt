@@ -3,6 +3,7 @@ package com.example.kilt.presentation.editprofile
 data class EditProfileUiState(
     var userImage: String = "",
     val firstname: String = "",
+    val lastname:String = "",
     var userAbout: String = "",
     val firstPhoneNumber: String = "",
     var secondPhoneNumber: String = "",

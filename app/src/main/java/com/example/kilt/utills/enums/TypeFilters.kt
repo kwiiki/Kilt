@@ -1,4 +1,4 @@
-package com.example.kilt.enums
+package com.example.kilt.utills.enums
 
 enum class TypeFilters(val value:String) {
     DEAL_TYPE("deal_type"),

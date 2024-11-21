@@ -27,7 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.kilt.enums.UserType
+import com.example.kilt.utills.enums.UserType
 import com.example.kilt.presentation.profile.viewmodel.ProfileViewModel
 import com.example.kilt.screens.profile.userType.AgencyScreen
 import com.example.kilt.screens.profile.userType.OwnerScreen

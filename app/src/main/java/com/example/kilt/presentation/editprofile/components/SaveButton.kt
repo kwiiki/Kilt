@@ -24,18 +24,33 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun SaveButton(text:String,onClick: () -> Unit) {
-    val gradient = Brush.horizontalGradient(
-        colors = listOf(Color(0xFF3244E4), Color(0xFF1B278F)),
-        startX = 0f,
-        endX = 600f
-    )
+fun SaveButton(
+    text: String,
+    onClick: () -> Unit,
+    enabled: Boolean = true
+) {
+    val gradient = if (enabled) {
+        Brush.horizontalGradient(
+            colors = listOf(Color(0xFF3244E4), Color(0xFF1B278F)),
+            startX = 0f,
+            endX = 600f
+        )
+    } else {
+        Brush.horizontalGradient(
+            colors = listOf(Color(0xFFBEC1CC), Color(0xFFBEC1CC)),
+            startX = 0f,
+            endX = 600f
+        )
+    }
 
     Row(modifier = Modifier.fillMaxWidth()) {
         OutlinedButton(
             onClick = {
-                onClick()
+                if (enabled) {
+                    onClick()
+                }
             },
+            enabled = enabled,
             contentPadding = PaddingValues(0.dp),
             colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.Transparent),
             shape = RoundedCornerShape(12.dp),
@@ -58,7 +73,7 @@ fun SaveButton(text:String,onClick: () -> Unit) {
                     Text(
                         text = text,
                         style = MaterialTheme.typography.bodyLarge,
-                        color = Color.White
+                        color = Color.White  // Цвет текста для отключенного состояния
                     )
                 }
             }

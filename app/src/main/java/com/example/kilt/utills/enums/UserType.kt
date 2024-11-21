@@ -1,4 +1,4 @@
-package com.example.kilt.enums
+package com.example.kilt.utills.enums
 
 enum class UserType(val value:String,val ruText:String) {
     OWNER("owner","Собственник"),

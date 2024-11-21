@@ -1,4 +1,4 @@
-package com.example.kilt.ui.theme
+package com.example.kilt.presentation.theme
 
 import android.app.Activity
 import android.os.Build

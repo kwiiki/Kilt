@@ -11,5 +11,4 @@ data class UpdatedUser(
     val lastname: String ="",
     val phone: String = "",
     val photo: String = "",
-    val referred_by: String = "",
 )

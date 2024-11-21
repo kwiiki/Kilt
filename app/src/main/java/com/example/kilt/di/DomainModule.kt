@@ -14,8 +14,10 @@ import com.example.kilt.domain.editprofile.addnewphonenumberbottomsheet.usercase
 import com.example.kilt.domain.editprofile.addnewphonenumberbottomsheet.usercase.UserFindByOTPUseCase
 import com.example.kilt.domain.editprofile.repository.EditProfileRepository
 import com.example.kilt.domain.editprofile.usecase.AddNewImageUseCase
+import com.example.kilt.domain.editprofile.usecase.ChangeUserTypeUseCase
 import com.example.kilt.domain.editprofile.usecase.DeleteImageUseCase
 import com.example.kilt.domain.editprofile.usecase.GetUserPhoneNumbersUseCase
+import com.example.kilt.domain.editprofile.usecase.UserUpdateUseCase
 import com.example.kilt.domain.profile.repository.ProfileRepository
 import com.example.kilt.domain.profile.usecase.CheckUserModerationStatusUseCase
 import com.example.kilt.domain.userabout.repository.UserAboutRepository
@@ -134,5 +136,18 @@ object DomainModule {
     ): CheckUserModerationStatusUseCase {
         return CheckUserModerationStatusUseCase(repository, getUserUseCase)
     }
+    @Provides
+    @Singleton
+    fun provideChangeUserTypeUseCase(repository: EditProfileRepository,getUserUseCase: GetUserUseCase):ChangeUserTypeUseCase{
+        return ChangeUserTypeUseCase(repository,getUserUseCase)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUpdateUserUseCase(repository: EditProfileRepository,getUserIdUseCase: GetUserIdUseCase):UserUpdateUseCase{
+        return UserUpdateUseCase(repository,getUserIdUseCase)
+    }
+
+
 
 }

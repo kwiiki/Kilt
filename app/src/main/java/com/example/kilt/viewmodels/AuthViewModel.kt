@@ -17,8 +17,8 @@ import com.example.kilt.models.authentification.OtpResult
 import com.example.kilt.models.authentification.UserWithMetadata
 import com.example.kilt.data.localstorage.dataStore.UserDataStoreManager
 import com.example.kilt.data.localstorage.sharedPreference.PreferencesHelper
-import com.example.kilt.enums.IdentificationTypes
-import com.example.kilt.enums.UserType
+import com.example.kilt.utills.enums.IdentificationTypes
+import com.example.kilt.utills.enums.UserType
 import com.example.kilt.repository.IdentificationRepository
 import com.example.kilt.repository.LoginRepository
 import com.example.kilt.repository.RegistrationRepository

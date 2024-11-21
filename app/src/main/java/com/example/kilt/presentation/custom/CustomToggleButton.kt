@@ -1,4 +1,4 @@
-package com.example.kilt.custom
+package com.example.kilt.presentation.custom
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

@@ -9,15 +9,17 @@ import com.example.kilt.domain.choosecity.usecase.GetMicroDistrictByIdUseCase
 import com.example.kilt.domain.choosecity.usecase.LocationSaverUseCase
 import com.example.kilt.domain.common.GetUserIdUseCase
 import com.example.kilt.domain.common.GetUserUseCase
-import com.example.kilt.otp.SmsViewModel
+import com.example.kilt.utills.otp.SmsViewModel
 import com.example.kilt.domain.config.repository.ConfigRepository
 import com.example.kilt.domain.editprofile.addnewphonenumberbottomsheet.usercase.AddPhoneUseCase
 import com.example.kilt.domain.editprofile.addnewphonenumberbottomsheet.usercase.DeleteSecondPhoneNumberUseCase
 import com.example.kilt.domain.editprofile.addnewphonenumberbottomsheet.usercase.UniversalUserCreateUseCase
 import com.example.kilt.domain.editprofile.addnewphonenumberbottomsheet.usercase.UserFindByOTPUseCase
 import com.example.kilt.domain.editprofile.usecase.AddNewImageUseCase
+import com.example.kilt.domain.editprofile.usecase.ChangeUserTypeUseCase
 import com.example.kilt.domain.editprofile.usecase.DeleteImageUseCase
 import com.example.kilt.domain.editprofile.usecase.GetUserPhoneNumbersUseCase
+import com.example.kilt.domain.editprofile.usecase.UserUpdateUseCase
 import com.example.kilt.domain.profile.usecase.CheckUserModerationStatusUseCase
 import com.example.kilt.domain.userabout.usecase.GetUserListingsUseCase
 import com.example.kilt.presentation.choosecity.viewmodel.ChooseCityInEditViewModel
@@ -139,9 +141,11 @@ object ViewModelModule {
     fun provideEditProfileViewModel(
         getUserUseCase: GetUserUseCase,
         getFullAddressUseCase: GetFullAddressUseCase,
-        locationSaverUseCase: LocationSaverUseCase
+        locationSaverUseCase: LocationSaverUseCase,
+        changeUserTypeUseCase: ChangeUserTypeUseCase,
+        userUpdateUseCase: UserUpdateUseCase
     ): EditProfileViewModel {
-        return EditProfileViewModel(getUserUseCase, getFullAddressUseCase, locationSaverUseCase)
+        return EditProfileViewModel(getUserUseCase, getFullAddressUseCase, locationSaverUseCase,changeUserTypeUseCase,userUpdateUseCase)
     }
 
     @Provides
