@@ -42,6 +42,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.kilt.R
+import com.example.kilt.presentation.search.FiltersViewModel
+import com.example.kilt.presentation.search.SearchResultsViewModel
 import com.example.kilt.screens.searchpage.filter.FilterPage
 import com.example.kilt.screens.searchpage.filter.PriorityBottomSheet
 import com.example.kilt.screens.searchpage.quickFilters.QuickFilters
@@ -54,7 +56,8 @@ fun SearchAndQuickFilters(
     chooseCityViewModel: ChooseCityViewModel,
     navController: NavHostController,
     configViewModel: ConfigViewModel,
-    searchViewModel: SearchViewModel,
+    searchResultViewModel: SearchResultsViewModel,
+    filtersViewModel: FiltersViewModel,
     modifier: Modifier
 ) {
     var openPriorityBottomSheet by remember { mutableStateOf(false) }
@@ -98,7 +101,8 @@ fun SearchAndQuickFilters(
                 }
             ) {
                 PriorityBottomSheet(
-                    searchViewModel = searchViewModel,
+                    searchResultViewModel,
+                    filtersViewModel = filtersViewModel,
                     selectedOption = selectedOption,
                     onOptionSelected = { option ->
                         selectedOption = option
@@ -109,7 +113,8 @@ fun SearchAndQuickFilters(
         }
         QuickFilters(
             configViewModel = configViewModel,
-            searchViewModel = searchViewModel,
+            searchResultViewModel = searchResultViewModel,
+            filtersViewModel = filtersViewModel,
             onFilterButtonClicked = { openFilterBottomSheet = it })
     }
     if (openFilterBottomSheet) {
@@ -148,7 +153,7 @@ fun SearchAndQuickFilters(
                         textAlign = TextAlign.Center
                     )
                     TextButton(
-                        onClick = { searchViewModel.clearAllFilters()
+                        onClick = { filtersViewModel.clearFilters()
                                     chooseCityViewModel.resetSelection()},
                         modifier = Modifier.padding(end = 16.dp)
                     ) {
@@ -163,10 +168,11 @@ fun SearchAndQuickFilters(
             }
         ) {
             FilterPage(
+                searchResultViewModel,
                 chooseCityViewModel = chooseCityViewModel,
                 navController,
                 configViewModel,
-                searchViewModel,
+                filtersViewModel,
                 onCloseFilterBottomSheet = { openFilterBottomSheet = false })
         }
     }

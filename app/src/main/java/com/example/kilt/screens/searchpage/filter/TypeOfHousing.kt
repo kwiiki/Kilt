@@ -18,6 +18,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,7 +30,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.kilt.R
+import com.example.kilt.models.FilterValue
 import com.example.kilt.presentation.custom.CustomToggleButton
+import com.example.kilt.presentation.search.FiltersViewModel
 import com.example.kilt.viewmodels.ConfigViewModel
 import com.example.kilt.viewmodels.SearchViewModel
 
@@ -37,11 +40,13 @@ import com.example.kilt.viewmodels.SearchViewModel
 fun TypeOfHousing(
     modifier: Modifier = Modifier,
     configViewModel: ConfigViewModel,
-    searchViewModel: SearchViewModel,
+    filtersViewModel: FiltersViewModel
 ) {
-    val dealType by searchViewModel.dealType
-    val listingType by searchViewModel.listingType
-    val propertyType by searchViewModel.propertyType
+    val filtersState by filtersViewModel.filtersState.collectAsState()
+
+    val dealType = (filtersState.filters["deal_type"] as? FilterValue.SingleValue)?.value ?: 1
+    val listingType = (filtersState.filters["listing_type"] as? FilterValue.SingleValue)?.value ?: 1
+    val propertyType = (filtersState.filters["property_type"] as? FilterValue.SingleValue)?.value ?: 1
 
     val isResidentialSelected = listingType == 1
     val isCommercialSelected = listingType == 2
@@ -52,6 +57,7 @@ fun TypeOfHousing(
         2 -> "house"
         else -> ""
     }
+
     Column(modifier = modifier) {
         Row(
             modifier = modifier
@@ -65,19 +71,21 @@ fun TypeOfHousing(
             CustomToggleButton(
                 text = "Арендовать",
                 isSelected = isRentSelected,
-                onClick = { searchViewModel.selectRent() },
+                onClick = { filtersViewModel.updateFilter("deal_type", FilterValue.SingleValue(1)) },
                 modifier = Modifier.weight(1f)
             )
             CustomToggleButton(
                 text = "Купить",
                 isSelected = isBuySelected,
-                onClick = { searchViewModel.selectBuy() },
+                onClick = { filtersViewModel.updateFilter("deal_type", FilterValue.SingleValue(2)) },
                 modifier = Modifier.weight(1f)
             )
         }
+
         Spacer(modifier = Modifier.height(24.dp))
         CustomDivider()
         Spacer(modifier = Modifier.height(12.dp))
+
         Text(
             "Тип Жилья",
             color = Color(0xff010101),
@@ -85,7 +93,9 @@ fun TypeOfHousing(
             fontSize = 18.sp,
             modifier = Modifier.padding(start = 10.dp)
         )
+
         Spacer(modifier = Modifier.height(12.dp))
+
         Row(
             modifier = modifier
                 .fillMaxWidth()
@@ -98,16 +108,19 @@ fun TypeOfHousing(
             CustomToggleButton(
                 text = "Жилая",
                 isSelected = isResidentialSelected,
-                onClick = { searchViewModel.selectResidential() },
+                onClick = { filtersViewModel.updateFilter("property_type", FilterValue.SingleValue(1))
+                    filtersViewModel.updateFilter("listing_type", FilterValue.SingleValue(1))},
                 modifier = Modifier.weight(1f)
             )
             CustomToggleButton(
                 text = "Коммерческая",
                 isSelected = isCommercialSelected,
-                onClick = { searchViewModel.selectCommercial() },
+                onClick = { filtersViewModel.updateFilter("property_type", FilterValue.SingleValue(6))
+                    filtersViewModel.updateFilter("listing_type", FilterValue.SingleValue(2))},
                 modifier = Modifier.weight(1f)
             )
         }
+
         if (isResidentialSelected) {
             Spacer(modifier = Modifier.height(16.dp))
             Row(
@@ -128,7 +141,7 @@ fun TypeOfHousing(
                                 color = Color(0xffF2F2F2),
                                 RoundedCornerShape(14.dp)
                             )
-                            .clickable { searchViewModel.selectPropertyType(1) }
+                            .clickable { filtersViewModel.updateFilter("property_type", FilterValue.SingleValue(1)) }
                     ) {
                         Icon(
                             imageVector = ImageVector.vectorResource(
@@ -163,7 +176,7 @@ fun TypeOfHousing(
                                 color = Color(0xffF2F2F2),
                                 RoundedCornerShape(14.dp)
                             )
-                            .clickable { searchViewModel.selectPropertyType(2) }
+                            .clickable { filtersViewModel.updateFilter("property_type", FilterValue.SingleValue(2)) }
                     ) {
                         Icon(
                             imageVector = ImageVector.vectorResource(

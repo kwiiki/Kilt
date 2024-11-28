@@ -9,9 +9,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.kilt.models.config.FilterItem
+import com.example.kilt.presentation.search.FiltersViewModel
 import com.example.kilt.viewmodels.ConfigViewModel
 import com.example.kilt.viewmodels.SearchViewModel
 import com.example.kilt.screens.searchpage.filter.FilterButton
@@ -22,17 +25,17 @@ fun ListFilterForQuick(
     viewModel: ConfigViewModel,
     prop: String,
     title: String,
-    searchViewModel: SearchViewModel
+    filtersViewModel: FiltersViewModel
 ) {
-    val filters = viewModel.getFilterOptions(prop)
-    val selectedFilters = searchViewModel.getSelectedFilters(prop)
+    val filters by viewModel.getFilterOptions(prop).collectAsState(initial = emptyList())
+    val selectedFilters by filtersViewModel.getSelectedFilters(prop).collectAsState(initial = emptyList())
     Log.d("selectedFilters", "ListFilter: $prop $selectedFilters")
     FilterButtonsForQuickSearch(
         filters = filters,
         title = title,
         selectedFilters = selectedFilters,
         onFilterSelected = { newSelectedFilters ->
-            searchViewModel.updateListFilter(prop, newSelectedFilters)
+            filtersViewModel.updateListFilter(prop, newSelectedFilters)
         }
     )
 }
@@ -75,7 +78,6 @@ fun FilterButtonsForQuickSearch(
                             }
                         )
                     }
-
                     else -> {
                     }
                 }

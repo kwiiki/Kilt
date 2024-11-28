@@ -12,32 +12,31 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.kilt.presentation.search.FiltersViewModel
+import com.example.kilt.presentation.search.SearchResultsViewModel
 import com.example.kilt.viewmodels.ConfigViewModel
 import com.example.kilt.viewmodels.SearchViewModel
 
 
 @Composable
 fun ListQuickFilter(
+    searchResultsViewModel: SearchResultsViewModel,
     configViewModel: ConfigViewModel,
-    searchViewModel: SearchViewModel,
+    filtersViewModel: FiltersViewModel,
     prop: String,
     title: String,
     onApplyClick: () -> Unit,
 ) {
+    val filtersState by filtersViewModel.filtersState.collectAsState()
+    val sorting by filtersViewModel.sorting.collectAsState()
     Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-        Spacer(
-            modifier = Modifier
-                .padding(start = 150.dp)
-                .padding(bottom = 8.dp) // Add some padding if needed
-                .height(5.dp)
-                .width(52.dp)
-                .background(Color(0xffDBDFE4), RoundedCornerShape(12.dp))
-        )
         Spacer(modifier = Modifier.height(5.dp))
         Text(
             text = "Количество комнат",
@@ -50,12 +49,12 @@ fun ListQuickFilter(
             viewModel = configViewModel,
             prop = prop,
             title = title,
-            searchViewModel = searchViewModel
+            filtersViewModel = filtersViewModel,
         )
         Spacer(modifier = Modifier.height(16.dp))
         Button(
             onClick = {
-                searchViewModel.performSearch()
+                searchResultsViewModel.updateFiltersAndPerformSearch(filtersState,sorting)
                 onApplyClick()
             },
             modifier = Modifier

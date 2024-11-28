@@ -57,7 +57,7 @@ fun HouseItem(
     homeSaleViewModel: HomeSaleViewModel,
     search: PropertyItem,
     navController: NavHostController,
-    configViewModel: ConfigViewModel
+    configViewModel: ConfigViewModel,
 ) {
     val topListings by configViewModel.listingTop.collectAsState()
 
@@ -73,7 +73,7 @@ fun HouseItem(
     Card(
         shape = RoundedCornerShape(16.dp),
         modifier = Modifier
-            .padding(vertical = 8.dp)
+            .padding(bottom = 8.dp)
             .fillMaxWidth()
             .background(Color(0xffFFFFFF))
             .clickable {

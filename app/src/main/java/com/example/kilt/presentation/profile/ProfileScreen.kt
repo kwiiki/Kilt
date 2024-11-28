@@ -84,7 +84,10 @@ fun ProfileScreen(
             )
 
             if (isUserAuthenticated && userWithMetadata != null && currentUser != null) {
-                Log.d("user_type111", "AuthenticatedProfileScreen: ${userWithMetadata?.user?.user_type}")
+                Log.d(
+                    "user_type111",
+                    "AuthenticatedProfileScreen: ${userWithMetadata?.user?.user_type}"
+                )
                 when (currentUser!!.user.user_type) {
                     UserType.AGENCY.value -> {
                         AgencyScreen(
@@ -95,6 +98,7 @@ fun ProfileScreen(
                             profileViewModel = profileViewModel
                         )
                     }
+
                     UserType.OWNER.value -> {
                         OwnerScreen(
                             navController = navController,
@@ -104,6 +108,7 @@ fun ProfileScreen(
                             profileViewModel = profileViewModel
                         )
                     }
+
                     UserType.AGENT.value -> {
                         SpecialistScreen(
                             navController = navController,
@@ -112,6 +117,10 @@ fun ProfileScreen(
                             user = userWithMetadata!!.user,
                             profileViewModel = profileViewModel
                         )
+                    }
+
+                    else -> {
+                        UnAuthenticatedProfileScreen(navController = navController)
                     }
                 }
             } else {

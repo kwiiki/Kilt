@@ -22,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,16 +38,22 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.kilt.presentation.search.FiltersViewModel
+import com.example.kilt.presentation.search.SearchResultsViewModel
 import com.example.kilt.viewmodels.SearchViewModel
 
 @Composable
 fun QuickRangeFilter(
     prop: String,
-    searchViewModel: SearchViewModel,
+    filtersViewModel: FiltersViewModel,
+    searchResultsViewModel: SearchResultsViewModel,
     onApplyClick: () -> Unit,
     title: String
 ) {
-    val (initialMin, initialMax) = searchViewModel.getRangeFilterValues(prop)
+
+    val filterState by filtersViewModel.filtersState.collectAsState()
+    val sorting by filtersViewModel.sorting.collectAsState()
+    val (initialMin, initialMax) = filtersViewModel.getRangeFilterValues(prop)
     var minValue by remember { mutableStateOf(if (initialMin > 0) initialMin.toString() else "") }
     var maxValue by remember { mutableStateOf(if (initialMax < Long.MAX_VALUE && initialMax > 0) initialMax.toString() else "") }
 
@@ -57,14 +64,6 @@ fun QuickRangeFilter(
     }
 
     Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-        Spacer(
-            modifier = Modifier
-                .padding(start = 150.dp)
-                .padding(bottom = 8.dp)
-                .height(5.dp)
-                .width(52.dp)
-                .background(Color(0xffDBDFE4), RoundedCornerShape(12.dp))
-        )
         Text(
             text = title,
             fontSize = 18.sp,
@@ -104,7 +103,7 @@ fun QuickRangeFilter(
         Spacer(modifier = Modifier.height(32.dp))
         Button(
             onClick = {
-                searchViewModel.performSearch()
+                searchResultsViewModel.performSearch(filterState,sorting)
                 onApplyClick()
             },
             modifier = Modifier
@@ -122,7 +121,7 @@ fun QuickRangeFilter(
     LaunchedEffect(minValue, maxValue) {
         val min = minValue.toLongOrNull() ?: 0
         val max = maxValue.toLongOrNull() ?: 0
-        searchViewModel.updateRangeFilter(prop, min, max)
+        filtersViewModel.updateRangeFilter(prop, min, max)
     }
 }
 
@@ -134,7 +133,14 @@ fun NumberTextField(
     trailingText: String,
     focusManager: FocusManager
 ) {
-    var textFieldValueState by remember { mutableStateOf(TextFieldValue(text = formatNumber(value), selection = TextRange(formatNumber(value).length))) }
+    var textFieldValueState by remember {
+        mutableStateOf(
+            TextFieldValue(
+                text = formatNumber(value),
+                selection = TextRange(formatNumber(value).length)
+            )
+        )
+    }
 
     OutlinedTextField(
         value = textFieldValueState,
@@ -156,7 +162,8 @@ fun NumberTextField(
 
             val newCursorPosition = formattedNewText.mapIndexed { index, c ->
                 if (c.isDigit()) index else -1
-            }.filter { it != -1 }.getOrNull(oldFormattedCursorPosition + cursorOffset) ?: formattedNewText.length
+            }.filter { it != -1 }.getOrNull(oldFormattedCursorPosition + cursorOffset)
+                ?: formattedNewText.length
 
             textFieldValueState = TextFieldValue(
                 text = formattedNewText,

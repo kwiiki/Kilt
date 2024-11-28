@@ -38,16 +38,18 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.kilt.presentation.search.FiltersViewModel
 import com.example.kilt.viewmodels.SearchViewModel
 
 @Composable
 fun RangeFilter(
     prop: String,
     title: String,
-    searchViewModel: SearchViewModel,
+    filtersViewModel: FiltersViewModel, // Используем FiltersViewModel
     onFocusChanged: (Boolean) -> Unit,
 ) {
-    val (initialMin, initialMax) = searchViewModel.getRangeFilterValues(prop)
+    val filtersState by filtersViewModel.filtersState.collectAsState()
+    val (initialMin, initialMax) = filtersViewModel.getRangeFilterValues(prop)
     var minValue by remember { mutableStateOf(if (initialMin > 0) initialMin.toString() else "") }
     var maxValue by remember { mutableStateOf(if (initialMax < Long.MAX_VALUE && initialMax > 0) initialMax.toString() else "") }
 
@@ -81,7 +83,7 @@ fun RangeFilter(
                     minValue = newValue
                     val min = newValue.toLongOrNull() ?: 0
                     val max = maxValue.replace(" ", "").toLongOrNull() ?: Long.MAX_VALUE
-                    searchViewModel.updateRangeFilter(prop, min, max)
+                    filtersViewModel.updateRangeFilter(prop, min, max) // Обновляем через FiltersViewModel
                 },
                 modifier = Modifier
                     .weight(1f)
@@ -98,8 +100,8 @@ fun RangeFilter(
                 onValueChange = { newValue ->
                     maxValue = newValue
                     val min = minValue.replace(" ", "").toLongOrNull() ?: 0
-                    val max = newValue.toLongOrNull() ?: 0
-                    searchViewModel.updateRangeFilter(prop, min, max)
+                    val max = newValue.toLongOrNull() ?: Long.MAX_VALUE
+                    filtersViewModel.updateRangeFilter(prop, min, max) // Обновляем через FiltersViewModel
                 },
                 modifier = Modifier
                     .weight(1f)
@@ -113,9 +115,10 @@ fun RangeFilter(
         }
     }
     CustomDivider()
-    val filters by searchViewModel.filters.collectAsState()
-    LaunchedEffect(filters) {
-        val (min, max) = searchViewModel.getRangeFilterValues(prop)
+
+    // Следим за изменениями фильтров
+    LaunchedEffect(filtersState) {
+        val (min, max) = filtersViewModel.getRangeFilterValues(prop)
         minValue = if (min > 0) min.toString() else ""
         maxValue = if (max < Long.MAX_VALUE) max.toString() else ""
     }

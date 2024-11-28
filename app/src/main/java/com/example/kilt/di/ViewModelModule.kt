@@ -37,6 +37,9 @@ import com.example.kilt.viewmodels.AuthViewModel
 import com.example.kilt.presentation.editprofile.addnewphonenumberbottomsheet.viewmodel.AddNewPhoneNumberViewModel
 import com.example.kilt.presentation.editprofile.viewmodel.EditProfileViewModel
 import com.example.kilt.presentation.profile.viewmodel.ProfileViewModel
+import com.example.kilt.presentation.search.FiltersViewModel
+import com.example.kilt.presentation.search.SearchResultsViewModel
+import com.example.kilt.presentation.search.viewmodel.MapViewModel
 import com.example.kilt.presentation.userabout.viewmodel.UserAboutViewModel
 import com.example.kilt.viewmodels.IdentificationViewModel
 import com.example.kilt.viewmodels.SearchViewModel
@@ -183,6 +186,33 @@ object ViewModelModule {
     fun provideProfileViewModel(checkUserModerationStatusUseCase: CheckUserModerationStatusUseCase):ProfileViewModel{
         return ProfileViewModel(checkUserModerationStatusUseCase)
     }
+
+    @Provides
+    @ViewModelScoped
+    fun provideFiltersViewModel(): FiltersViewModel {
+        return FiltersViewModel()
+    }
+
+    @Provides
+    @ViewModelScoped
+    fun provideSearchResultsViewModel(
+        searchRepository: SearchRepository,
+        filtersViewModel: FiltersViewModel // Получаем FiltersViewModel
+    ): SearchResultsViewModel {
+        return SearchResultsViewModel(
+            searchRepository = searchRepository,
+            filtersStateFlow = filtersViewModel.filtersState,
+            sortingFlow = filtersViewModel.sorting// Передаём StateFlow из FiltersViewModel
+        )
+    }
+
+    @Provides
+    @ViewModelScoped
+    fun provideMapViewModel(): MapViewModel{
+        return MapViewModel()
+    }
+
+
 
     @Provides
     @ViewModelScoped

@@ -4,15 +4,13 @@ package com.example.kilt.screens.searchpage.quickFilters
 
 import android.annotation.SuppressLint
 import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -22,6 +20,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -40,58 +39,44 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.example.kilt.R
 import com.example.kilt.models.FilterValue
-import com.example.kilt.models.Filters
-import com.example.kilt.utills.enums.TypeFilters
+import com.example.kilt.presentation.search.FiltersViewModel
+import com.example.kilt.presentation.search.SearchResultsViewModel
 import com.example.kilt.viewmodels.ConfigViewModel
 import com.example.kilt.viewmodels.SearchViewModel
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun FilterButtons(
     configViewModel: ConfigViewModel,
     filterEng: List<String>,
-    searchViewModel: SearchViewModel,
+    filtersViewModel: FiltersViewModel,
+    searchResultsViewModel: SearchResultsViewModel,
     filters: List<String>,
-    onFilterButtonClicked: (Boolean) -> Unit,
-    onFilterSelected: (String) -> Unit,
-    currentFilters: Filters
+    onFilterButtonClicked: (Boolean) -> Unit
 ) {
-    var selectedFilter by remember { mutableStateOf<String?>(null) }
     var selectedFilterEng by remember { mutableStateOf<String?>(null) }
     var showBottomSheet by remember { mutableStateOf(false) }
     var isDealTypeClicked by remember { mutableStateOf(false) }
     val bottomSheetState = rememberModalBottomSheetState()
-
-    fun resetSelectedFilter() {
-        selectedFilter = null
-        selectedFilterEng = null
-    }
-
+    val currentFilters = filtersViewModel.filtersState.value.filters
     val filterMap = filterEng.zip(filters).toMap()
+
+    val propertyType = filtersViewModel.getPropertyType()
+    val propertyTypeText = when (propertyType) {
+        1 -> "Квартира"
+        2 -> "Дом"
+        else -> "Тип недвижимости"
+    }
 
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 8.dp, end = 8.dp),
-        contentPadding = PaddingValues(vertical = 8.dp),
+            .padding(end = 8.dp)
+            .padding(vertical = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item {
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .background(Color(0xffF2F2F2), shape = RoundedCornerShape(16.dp))
-                    .clickable {
-                        onFilterButtonClicked(true)
-                    }
-            ) {
-                Image(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.filter_icon),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(18.dp)
-                        .align(alignment = Alignment.Center)
-                )
-            }
+            FilterIconButton(onClick = { onFilterButtonClicked(true) })
         }
         item {
             Box(
@@ -105,7 +90,7 @@ fun FilterButtons(
                     )
                     .background(
                         color = Color.Blue.copy(alpha = 0.05f),
-                        shape = RoundedCornerShape(16.dp)
+                        shape = RoundedCornerShape(12.dp)
                     )
                     .clickable {
                         showBottomSheet = true
@@ -114,7 +99,7 @@ fun FilterButtons(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = if (searchViewModel.dealType.value == 1) "Арендовать" else "Купить",
+                    text = if (filtersViewModel.getDealType() == 1) "Арендовать" else "Купить",
                     style = MaterialTheme.typography.bodyLarge,
                     color = Color.Blue,
                     modifier = Modifier.padding(horizontal = 16.dp)
@@ -122,32 +107,29 @@ fun FilterButtons(
             }
         }
         items(filters.zip(filterEng)) { (filter, filterEngValue) ->
-            Log.d("filter123", "FilterButtons: ${currentFilters.filterMap[filterEngValue]}")
-            val isActive = currentFilters.filterMap[filterEngValue]?.let {
+            val isActive = currentFilters[filterEngValue]?.let {
                 when (it) {
-                    is FilterValue.RangeValue -> {
-                        it.from > 0 || it.to > 0
-                    }
-                    is FilterValue.ListValue1 -> it.values.isNotEmpty()
-                    is FilterValue.SingleValue -> it.value != 0
+                    is FilterValue.RangeValue -> it.from > 0 || it.to > 0
                     is FilterValue.ListValue -> it.values.isNotEmpty()
+                    is FilterValue.SingleValue -> it.value != 0
+                    else -> false
                 }
             } ?: false
-
+            val displayText = if (filterEngValue == "property_type") propertyTypeText else filter
+            val isSelected =
+                selectedFilterEng == filterEngValue || filterEngValue == "property_type" // Force property_type selected
             FilterButton(
-                text = filter,
+                text = displayText,
                 filterEngValue = filterEngValue,
-                isSelected = showBottomSheet && filterEngValue == selectedFilterEng,
                 isActive = isActive,
+                isSelected = isSelected,
                 onClick = {
                     selectedFilterEng = filterEngValue
                     showBottomSheet = true
-                    onFilterSelected(filter)
                 }
             )
         }
     }
-
     if (showBottomSheet) {
         ModalBottomSheet(
             onDismissRequest = {
@@ -157,58 +139,93 @@ fun FilterButtons(
             },
             sheetState = bottomSheetState,
             shape = RoundedCornerShape(16.dp),
+            dragHandle = {},
             contentColor = Color.White,
-            containerColor = Color.White,
-            dragHandle = {}
+            containerColor = Color.White
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(250.dp)
-            ) {
-                Log.d("selectedFilterEng", "FilterButtons: $selectedFilterEng")
-                when {
-                    isDealTypeClicked -> {
-                        DealTypeContent(searchViewModel) {
-                            showBottomSheet = false
-                            isDealTypeClicked = false
-                        }
-                    }
-                    selectedFilterEng == "num_rooms" -> ListQuickFilter(
-                        configViewModel = configViewModel,
-                        searchViewModel = searchViewModel,
-                        prop = selectedFilterEng!!,
-                        title = filterMap[selectedFilterEng] ?: selectedFilter!!,
-                        onApplyClick = {
-                            showBottomSheet = false
-                        }
-                    )
-                    selectedFilterEng in listOf("property_type") -> HouseOrFlat(
-                        searchViewModel,
-                        selectedFilterEng!!,
-                        title = filterMap[selectedFilterEng] ?: selectedFilter!!,
-                        onApplyClick = {
-                            showBottomSheet = false
-                        }
-                    )
-                    selectedFilterEng in listOf("price", "area") -> QuickRangeFilter(
-                        selectedFilterEng!!,
-                        searchViewModel,
-                        title = filterMap[selectedFilterEng] ?: selectedFilter!!,
-                        onApplyClick = {
-                            showBottomSheet = false
-                            resetSelectedFilter()
-                        }
-                    )
-                    else -> {
-                        Text("Выберите фильтр")
-                    }
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-            }
+            BottomSheetContent(
+                selectedFilterEng = selectedFilterEng,
+                isDealTypeClicked = isDealTypeClicked,
+                configViewModel = configViewModel,
+                filtersViewModel = filtersViewModel,
+                searchResultsViewModel = searchResultsViewModel,
+                filterMap = filterMap,
+                onClose = { showBottomSheet = false }
+            )
         }
     }
 }
+
+
+@Composable
+fun BottomSheetContent(
+    selectedFilterEng: String?,
+    isDealTypeClicked: Boolean,
+    configViewModel: ConfigViewModel,
+    filtersViewModel: FiltersViewModel,
+    searchResultsViewModel: SearchResultsViewModel,
+    filterMap: Map<String, String>,
+    onClose: () -> Unit
+) {
+    when {
+        isDealTypeClicked -> {
+            DealTypeContent(filtersViewModel, searchResultsViewModel) {
+                onClose()
+            }
+        }
+
+        selectedFilterEng == "property_type" -> HouseOrFlat(
+            filtersViewModel = filtersViewModel,
+            searchResultsViewModel = searchResultsViewModel,
+            selectedFilterEng,
+            title = filterMap[selectedFilterEng] ?: "",
+            onApplyClick = {
+                onClose()
+            }
+        )
+
+        selectedFilterEng == "num_rooms" -> ListQuickFilter(
+            searchResultsViewModel = searchResultsViewModel,
+            configViewModel = configViewModel,
+            filtersViewModel = filtersViewModel,
+            prop = selectedFilterEng,
+            title = filterMap[selectedFilterEng] ?: "",
+            onApplyClick = { onClose() }
+        )
+
+        selectedFilterEng in listOf("price", "area") -> QuickRangeFilter(
+            searchResultsViewModel = searchResultsViewModel,
+            prop = selectedFilterEng!!,
+            filtersViewModel = filtersViewModel,
+            title = filterMap[selectedFilterEng] ?: "",
+            onApplyClick = { onClose() }
+        )
+
+        else -> {
+            Text("Выберите фильтр")
+        }
+    }
+}
+
+@Composable
+fun FilterIconButton(onClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .size(40.dp)
+            .background(Color(0xffF2F2F2), shape = RoundedCornerShape(16.dp))
+            .clickable(onClick = onClick)
+    ) {
+        Icon(
+            imageVector = ImageVector.vectorResource(R.drawable.filter_icon),
+            contentDescription = null,
+            modifier = Modifier
+                .size(18.dp)
+                .align(Alignment.Center)
+        )
+    }
+}
+
+
 @Composable
 fun FilterButton(
     text: String,
@@ -260,55 +277,51 @@ fun FilterButton(
     }
 }
 
-
-
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun QuickFilters(
     configViewModel: ConfigViewModel,
-    searchViewModel: SearchViewModel,
+    searchResultViewModel: SearchResultsViewModel,
+    filtersViewModel: FiltersViewModel,
     onFilterButtonClicked: (Boolean) -> Unit
 ) {
-    val currentFilters by searchViewModel.filters.collectAsState()
+    val filtersState by filtersViewModel.filtersState.collectAsState()
     val advancedConfig = configViewModel.config.value?.advanced
     val propLabels = configViewModel.config.value?.propLabels
-    val propertyTypes = configViewModel.config.value?.propertyTypes
-    val currentPropertyType = propertyTypes?.find { it.id == searchViewModel.propertyType.value }
-    val currentListingType = currentPropertyType?.listing_type ?: searchViewModel.listingType.value
+    val dealType = filtersViewModel.getDealType()
+    val listingType = filtersViewModel.getListingType()
+    val propertyType = filtersViewModel.getPropertyType()
+
     val filters = when {
-        searchViewModel.dealType.value == 1 && currentPropertyType?.id == 1 && currentListingType == 1 ->
+        dealType == 1 && propertyType == 1 && listingType == 1 ->
             advancedConfig?.quick_filters_1_1_1
 
-        searchViewModel.dealType.value == 1 && currentPropertyType?.id == 2 && currentListingType == 1 ->
+        dealType == 1 && propertyType == 2 && listingType == 1 ->
             advancedConfig?.quick_filters_1_1_2
 
-        searchViewModel.dealType.value == 2 && currentPropertyType?.id == 1 && currentListingType == 1 ->
+        dealType == 2 && propertyType == 1 && listingType == 1 ->
             advancedConfig?.quick_filters_2_1_1
 
-        searchViewModel.dealType.value == 2 && currentPropertyType?.id == 2 && currentListingType == 1 ->
+        dealType == 2 && propertyType == 2 && listingType == 1 ->
             advancedConfig?.quick_filters_2_1_2
 
-        searchViewModel.dealType.value == 1 && currentPropertyType?.id == 6 && currentListingType == 2 ->
+        dealType == 1 && propertyType == 6 && listingType == 2 ->
             advancedConfig?.quick_filters_1_2_6
 
         else ->
             advancedConfig?.quick_filters_2_2_6
     }?.split(",")?.map { it.trim() } ?: emptyList()
+
     val filterLabels = filters.map { filterProperty ->
-        when (filterProperty) {
-            TypeFilters.PROPERTY_TYPE.value -> currentPropertyType?.label_ru ?: "Тип недвижимости"
-            else -> propLabels?.find { it.property == filterProperty }?.label_ru ?: filterProperty
-        }
+        propLabels?.find { it.property == filterProperty }?.label_ru ?: filterProperty
     }
+
     FilterButtons(
         configViewModel = configViewModel,
         filterEng = filters,
-        searchViewModel = searchViewModel,
+        filtersViewModel = filtersViewModel,
+        searchResultsViewModel = searchResultViewModel,
         filters = filterLabels,
-        onFilterButtonClicked = onFilterButtonClicked,
-        onFilterSelected = { selectedFilter ->
-            println("Выбран фильтр: $selectedFilter")
-        },
-        currentFilters = currentFilters
+        onFilterButtonClicked = onFilterButtonClicked
     )
 }

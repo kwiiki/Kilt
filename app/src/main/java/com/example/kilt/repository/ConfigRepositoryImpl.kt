@@ -47,7 +47,9 @@ class ConfigRepositoryImpl @Inject constructor(
     }
 
     override fun getListingTops(dealType: Int, listingType: Int, propertyType: Int): List<String>? {
+
         Log.d("ConfigDownload", "getListingTops: $config")
+        Log.d("ConfigDownload", "getListingTops: $dealType, $listingType, $propertyType")
         return config.value?.listingStructures?.find { top ->
             top.deal_type == dealType &&
                     top.listing_type == listingType &&

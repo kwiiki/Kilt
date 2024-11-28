@@ -19,7 +19,10 @@ class SearchRepositoryImpl(
 
     override suspend fun performSearch(request: THomeSale): SearchResponse {
         Log.d("SearchRepository", "Starting performSearch")
+        Log.d("SearchRepository", "performSearch: $request")
         val response = apiService.search(request)
+        Log.d("SearchRepository", "performSearch: $response")
+
         return response
     }
 
@@ -64,7 +67,7 @@ class SearchRepositoryImpl(
 
 
     override suspend fun createSearchRequest(
-        filters: Filters,
+        filters: Map<String, FilterValue>,
         dealType: Int,
         propertyType: Int,
         listingType: Int,
@@ -73,25 +76,31 @@ class SearchRepositoryImpl(
     ): THomeSale {
         val config = configRepository.config
         val listingStructures = config.value?.listingStructures ?: emptyList()
-        val listOfPropLabels = config.value?.propLabels ?: emptyList()
+        val propLabels = config.value?.propLabels ?: emptyList()
+
         val dynamicConfig = configHelper.createDynamicTConfig(
             dealType = dealType,
             propertyType = propertyType,
             listingType = listingType,
             listingStructures = listingStructures,
-            propLabels = listOfPropLabels
+            propLabels = propLabels
         ).toMutableMap()
 
         dynamicConfig["kato_path"] = "like"
+        dynamicConfig["lat"] = "range"
+        dynamicConfig["lng"] = "range"
 
-        // Логируем динамическую конфигурацию
-        Log.d("createSearchRequest", "dynamicConfig: $dynamicConfig")
-
-        val formattedFilterMap = filters.filterMap.mapValues { (_, value) ->
+        // Форматирование фильтров
+        val formattedFilters = filters.mapValues { (_, value) ->
             when (value) {
                 is FilterValue.SingleValue -> value.value
                 is FilterValue.ListValue -> value.values.takeIf { it.isNotEmpty() }
                 is FilterValue.ListValue1 -> value.values.takeIf { it.isNotEmpty() }
+                is FilterValue.RangeValueForMap -> mapOf(
+                    "from" to value.from,
+                    "to" to value.to
+                ).filterValues { it != 0.0 }.takeIf { it.isNotEmpty() }
+
                 is FilterValue.RangeValue -> mapOf(
                     "from" to value.from,
                     "to" to value.to
@@ -103,28 +112,15 @@ class SearchRepositoryImpl(
                 is Map<*, *> -> value.isNotEmpty()
                 else -> value != null && value != 0
             }
-        }.mapValues { (_, value) ->
-            when (value) {
-                is List<*> -> value
-                is Map<*, *> -> value
-                else -> value as Any
-            }
         }
 
-        // Логируем отфильтрованные и форматированные фильтры
-        Log.d("createSearchRequest", "formattedFilterMap: $formattedFilterMap")
-
-        val result = THomeSale(
-            filters = formattedFilterMap,
+        // Формирование запроса
+        return THomeSale(
+            filters = formattedFilters,
             config = dynamicConfig,
             page = page,
             sorting = sorting
         )
-
-        // Логируем конечный объект THomeSale перед возвратом
-        Log.d("createSearchRequest", "THomeSale result: $result")
-
-        return result
     }
 }
 

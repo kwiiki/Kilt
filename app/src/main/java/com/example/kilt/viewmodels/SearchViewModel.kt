@@ -226,7 +226,7 @@ class SearchViewModel @Inject constructor(
                     (_filters.value.filterMap[TypeFilters.PROPERTY_TYPE.value] as? FilterValue.SingleValue)?.value
                         ?: 1
                 val request = searchRepository.createSearchRequest(
-                    filters = _filters.value,
+                    filters = _filters.value.filterMap,
                     dealType = dealType,
                     propertyType = propertyType,
                     listingType = listingType,
@@ -257,26 +257,26 @@ class SearchViewModel @Inject constructor(
                 val propertyType =
                     (_filters.value.filterMap[TypeFilters.PROPERTY_TYPE.value] as? FilterValue.SingleValue)?.value ?: 1
 
-                val pager = Pager(
-                    config = PagingConfig(
-                        pageSize = 10,
-                        enablePlaceholders = false,
-                        initialLoadSize = 10
-                    ),
-                    pagingSourceFactory = {
-                        SearchPagingSource(
-                            searchRepository,
-                            _filters.value,
-                            dealType,
-                            propertyType,
-                            listingType,
-                            _sort.value
-                        )
-                    }
-                )
-                pager.flow.cachedIn(viewModelScope).collect { pagingData ->
-                    _searchResultsFlow.value = pagingData
-                }
+//                val pager = Pager(
+//                    config = PagingConfig(
+//                        pageSize = 10,
+//                        enablePlaceholders = false,
+//                        initialLoadSize = 10
+//                    ),
+//                    pagingSourceFactory = {
+////                        SearchPagingSource(
+////                            searchRepository,
+////                            _filters.value,
+////                            dealType,
+////                            propertyType,
+////                            listingType,
+////                            _sort.value
+////                        )
+//                    }
+//                )
+//                pager.flow.cachedIn(viewModelScope).collect { pagingData ->
+//                    _searchResultsFlow.value = pagingData
+//                }
             } catch (e: Exception) {
                 Log.e("SearchViewModel", "Search error", e)
                 _error.value = e.message ?: "Unknown error occurred"

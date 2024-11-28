@@ -48,87 +48,81 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.kilt.models.config.FilterItem
+import com.example.kilt.presentation.search.FiltersViewModel
+import com.example.kilt.presentation.search.SearchResultsViewModel
 import com.example.kilt.screens.searchpage.homedetails.gradient
 import com.example.kilt.viewmodels.ChooseCityViewModel
 import com.example.kilt.viewmodels.ConfigViewModel
-import com.example.kilt.viewmodels.SearchViewModel
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun FilterPage(
+    searchViewModel: SearchResultsViewModel,
     chooseCityViewModel: ChooseCityViewModel,
     navController: NavHostController,
     configViewModel: ConfigViewModel,
-    searchViewModel: SearchViewModel,
+    filtersViewModel: FiltersViewModel,
     onCloseFilterBottomSheet: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         FilterContent(
             chooseCityViewModel = chooseCityViewModel,
-            navController,
+            navController = navController,
             configViewModel = configViewModel,
-            searchViewModel
+            filtersViewModel = filtersViewModel
         )
         ShowAnnouncementsButton(
-            searchViewModel,
-            Modifier
+            searchViewModel = searchViewModel,
+            filtersViewModel = filtersViewModel,
+            modifier = Modifier
                 .padding(horizontal = 16.dp)
                 .padding(bottom = 8.dp)
                 .align(alignment = Alignment.BottomCenter),
-            onCloseFilterBottomSheet
+            onButtonClick = onCloseFilterBottomSheet
         )
     }
 }
 
 @Composable
 fun ShowAnnouncementsButton(
-    searchViewModel: SearchViewModel,
+    searchViewModel: SearchResultsViewModel,
+    filtersViewModel: FiltersViewModel,
     modifier: Modifier,
     onButtonClick: () -> Unit
 ) {
-    val searchCount by searchViewModel.searchResultCount.collectAsState()
-    val loading = searchViewModel.isLoading
-    Row(modifier = modifier.fillMaxWidth()) {
-        OutlinedButton(
-            onClick = {
-                searchViewModel.performSearch()
-                onButtonClick()
-            },
-            contentPadding = PaddingValues(0.dp),
-            colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.Transparent),
-            shape = RoundedCornerShape(12.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-                .background(gradient, RoundedCornerShape(12.dp))
+    val filtersState by filtersViewModel.filtersState.collectAsState()
+    val sorting by filtersViewModel.sorting.collectAsState()
+    val isLoading by searchViewModel.isLoading.collectAsState()
+
+    OutlinedButton(
+        onClick = {
+            searchViewModel.updateFiltersAndPerformSearch(filtersState, sorting)
+            onButtonClick()
+        },
+        contentPadding = PaddingValues(0.dp),
+        colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.Transparent),
+        shape = RoundedCornerShape(12.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .height(50.dp)
+            .background(gradient, RoundedCornerShape(12.dp))
+    ) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                if (loading.value) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator(
-                            color = Color.Gray,
-                            modifier = Modifier.size(15.dp)
-                        )
-                    }
-                } else {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = "Показать ${searchCount.toString()} вариантов",
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = Color.White
-                        )
-                    }
-                }
+            if (isLoading) {
+                CircularProgressIndicator(
+                    color = Color.Gray,
+                    modifier = Modifier.size(15.dp)
+                )
+            } else {
+                Text(
+                    text = "Показать варианты",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = Color.White
+                )
             }
         }
     }
@@ -139,12 +133,11 @@ fun FilterContent(
     chooseCityViewModel: ChooseCityViewModel,
     navController: NavHostController,
     configViewModel: ConfigViewModel,
-    searchViewModel: SearchViewModel
+    filtersViewModel: FiltersViewModel
 ) {
     val config by configViewModel.config.collectAsState()
     val listingProps by configViewModel.listingProps.collectAsState()
     val scrollState = rememberScrollState()
-    var focusedFilter by remember { mutableStateOf<String?>(null) }
     val focusManager = LocalFocusManager.current
 
     LaunchedEffect(Unit) {
@@ -168,7 +161,7 @@ fun FilterContent(
             TypeOfHousing(
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
                 configViewModel = configViewModel,
-                searchViewModel = searchViewModel
+                filtersViewModel = filtersViewModel
             )
             CustomDivider()
             LocationSection(
@@ -179,73 +172,57 @@ fun FilterContent(
             CustomDivider()
             OnlyOwnersSection()
             CustomDivider()
+
+            Log.d("listingProps", "FilterContent: ${listingProps.toString()}")
             listingProps?.forEach { prop ->
                 val matchingLabel = config?.propLabels?.find { it.property == prop }
                 when (matchingLabel?.filter_type) {
-                    "list" -> ListFilter(
+                    "list", "list-multiple" -> ListFilter(
                         configViewModel,
                         prop,
                         matchingLabel.label_ru,
-                        searchViewModel
-                    )
-                    "list-multiple" -> ListFilter(
-                        configViewModel,
-                        prop,
-                        matchingLabel.label_ru,
-                        searchViewModel
+                        filtersViewModel
                     )
                     "range" -> RangeFilter(
                         prop = prop,
                         title = matchingLabel.label_ru,
-                        searchViewModel = searchViewModel,
-                        onFocusChanged = { isFocused ->
-                            focusedFilter = if (isFocused) prop else null
-                        },
+                        filtersViewModel = filtersViewModel,
+                        onFocusChanged = { isFocused -> /* handle focus */ },
                     )
                 }
             }
             Spacer(modifier = Modifier.height(50.dp))
         }
     }
-    CustomDivider()
-    LaunchedEffect(focusedFilter) {
-        focusedFilter?.let { prop ->
-            val index = listingProps?.indexOf(prop) ?: -1
-            if (index != -1) {
-                val scrollPosition = index * 400 // Примерная высота каждого фильтра
-                scrollState.animateScrollTo(scrollPosition)
-            }
-        }
-    }
 }
+
 @Composable
 fun ListFilter(
-    viewModel: ConfigViewModel,
+    configViewModel: ConfigViewModel,
     prop: String,
     title: String,
-    searchViewModel: SearchViewModel
+    filtersViewModel: FiltersViewModel
 ) {
-    val filters = viewModel.getFilterOptions(prop)
-    val selectedFilters = searchViewModel.getSelectedFilters(prop)
-    Log.d("selectedFilters", "ListFilter: $prop $selectedFilters")
+    val filterOptions by configViewModel.getFilterOptions(prop).collectAsState(initial = emptyList())
+    val selectedFilters by filtersViewModel.getSelectedFilters(prop).collectAsState(initial = emptyList())
+
     FilterButtons(
-        filters = filters,
+        filters = filterOptions,
         title = title,
         selectedFilters = selectedFilters,
         onFilterSelected = { newSelectedFilters ->
-            searchViewModel.updateListFilter(prop, newSelectedFilters)
+            filtersViewModel.updateListFilter(prop, newSelectedFilters)
         }
     )
 }
 
 @Composable
 fun FilterButtons(
-    filters: List<Any>?,
+    filters: List<FilterItem>,
     title: String,
     selectedFilters: List<Int>,
     onFilterSelected: (List<Int>) -> Unit
 ) {
-    val focusManager = LocalFocusManager.current
     Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
         Text(
             text = title,
@@ -259,33 +236,19 @@ fun FilterButtons(
             contentPadding = PaddingValues(vertical = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-//            item {
-//                FilterButton(
-//                    text = "Все",
-//                    isSelected = selectedFilters.isEmpty(),
-//                    onClick = {
-//                        onFilterSelected(emptyList())
-//                    }
-//                )
-//            }
-            items(filters ?: emptyList()) { filter ->
-                when (filter) {
-                    is FilterItem -> {
-                        FilterButton(
-                            text = filter.name,
-                            isSelected = selectedFilters.contains(filter.id),
-                            onClick = {
-                                focusManager.clearFocus()
-                                val newSelectedFilters = if (filter.id in selectedFilters) {
-                                    selectedFilters - filter.id
-                                } else {
-                                    selectedFilters + filter.id
-                                }
-                                onFilterSelected(newSelectedFilters)
-                            }
-                        )
+            items(filters) { filter ->
+                FilterButton(
+                    text = filter.name,
+                    isSelected = selectedFilters.contains(filter.id),
+                    onClick = {
+                        val newSelectedFilters = if (filter.id in selectedFilters) {
+                            selectedFilters - filter.id
+                        } else {
+                            selectedFilters + filter.id
+                        }
+                        onFilterSelected(newSelectedFilters)
                     }
-                }
+                )
             }
         }
     }

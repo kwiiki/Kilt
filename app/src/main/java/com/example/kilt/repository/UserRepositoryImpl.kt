@@ -7,6 +7,7 @@ import com.example.kilt.network.ApiService
 class UserRepositoryImpl(private val apiService: ApiService):UserRepository {
     override suspend fun getUserData(id: String): User {
         Log.d("checkCounter", "getUserData: Count")
+        Log.d("checkCounter", id)
         return apiService.getUsersData(id = id)
     }
 }

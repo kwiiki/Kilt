@@ -140,6 +140,7 @@ class AuthViewModel @Inject constructor(
                 _currentUser.value = _currentUser.value?.copy(user = user)
 
                 Log.d("token", "refreshUserData: ${_currentUser.value?.token}")
+                Log.d("token", "refreshUserData: ${_currentUser.value?.user?.user_type}")
 
                 userDataStoreManager.saveUserData(
                     user = user,

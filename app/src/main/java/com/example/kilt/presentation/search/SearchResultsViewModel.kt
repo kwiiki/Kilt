@@ -1,0 +1,120 @@
+@file:OptIn(ExperimentalCoroutinesApi::class)
+
+package com.example.kilt.presentation.search
+
+import android.util.Log
+import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import com.example.kilt.models.FilterValue
+import com.example.kilt.models.Filters
+import com.example.kilt.models.PropertyCoordinate
+import com.example.kilt.models.PropertyItem
+import com.example.kilt.repository.SearchRepository
+import com.example.kilt.viewmodels.SearchPagingSource
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+@HiltViewModel
+class SearchResultsViewModel @Inject constructor(
+    private val searchRepository: SearchRepository,
+    private val filtersStateFlow: StateFlow<FiltersState>,
+    private val sortingFlow: StateFlow<String>
+) : ViewModel() {
+
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
+
+    private val _error = MutableStateFlow<String?>(null)
+    val error: StateFlow<String?> = _error
+
+    private val _pointsFlow = MutableStateFlow<List<PropertyCoordinate>>(emptyList())
+    val pointsFlow: StateFlow<List<PropertyCoordinate>> = _pointsFlow
+
+    private val _searchResultsFlow = MutableStateFlow<PagingData<PropertyItem>>(PagingData.empty())
+    val searchResultsFlow: StateFlow<PagingData<PropertyItem>> = _searchResultsFlow
+
+    init {
+        observeFiltersAndSorting()
+    }
+
+    private fun observeFiltersAndSorting() {
+        viewModelScope.launch {
+            filtersStateFlow.combine(sortingFlow) { filtersState, sorting ->
+                filtersState to sorting
+            }.collect { (filtersState, sorting) ->
+                performSearch(filtersState, sorting)
+            }
+        }
+    }
+
+    private fun getDealType(filtersState: FiltersState): Int =
+        (filtersState.filters["deal_type"] as? FilterValue.SingleValue)?.value ?: 1
+
+    private fun getPropertyType(filtersState: FiltersState): Int =
+        (filtersState.filters["property_type"] as? FilterValue.SingleValue)?.value ?: 1
+
+    private fun getListingType(filtersState: FiltersState): Int =
+        (filtersState.filters["listing_type"] as? FilterValue.SingleValue)?.value ?: 1
+
+    fun performSearch(filtersState: FiltersState, sorting: String) {
+        Log.d("searchResultViewModel", "performSearch: ${filtersState.filters.toString()}")
+        viewModelScope.launch {
+            _isLoading.value = true
+            _error.value = null
+            try {
+                val dealType = getDealType(filtersState)
+                val listingType = getListingType(filtersState)
+                val propertyType = getPropertyType(filtersState)
+
+                val pager = Pager(
+                    config = PagingConfig(
+                        pageSize = 10,
+                        enablePlaceholders = false,
+                        prefetchDistance = 1
+                    ),
+                    pagingSourceFactory = {
+                        SearchPagingSource(
+                            searchRepository = searchRepository,
+                            filters = Filters(filtersState.filters),
+                            dealType = dealType,
+                            propertyType = propertyType,
+                            listingType = listingType,
+                            sort = sorting,
+                            onPointsUpdated = { points ->
+                                _pointsFlow.value = points
+                                Log.d("points", "Updated points: ${points.size}")
+                            }
+                        )
+                    }
+                )
+                pager.flow.cachedIn(viewModelScope).collect { pagingData ->
+                    _searchResultsFlow.value = pagingData
+                    _isLoading.value = false
+                }
+            } catch (e: Exception) {
+                Log.e("SearchResultsViewModel", "Search error", e)
+                _error.value = e.message ?: "Unknown error occurred"
+                _isLoading.value = false
+            }
+        }
+    }
+
+    fun updateFiltersAndPerformSearch(filtersState: FiltersState, sorting: String) {
+        performSearch(filtersState, sorting)
+    }
+}
+

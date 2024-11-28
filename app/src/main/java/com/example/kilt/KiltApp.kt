@@ -60,10 +60,13 @@ import com.example.kilt.screens.profile.login.LoginPage
 import com.example.kilt.screens.profile.registration.RegistrationForOwnerPage
 import com.example.kilt.presentation.profile.ProfileScreen
 import com.example.kilt.presentation.profile.viewmodel.ProfileViewModel
+import com.example.kilt.presentation.search.FiltersViewModel
 import com.example.kilt.screens.profile.myannouncement.MyAnnouncementScreen
 import com.example.kilt.screens.profile.notifications.NotificationsScreen
 import com.example.kilt.screens.profile.registration.RegistrationPage
 import com.example.kilt.presentation.search.SearchPage
+import com.example.kilt.presentation.search.SearchResultsViewModel
+import com.example.kilt.presentation.search.viewmodel.MapViewModel
 import com.example.kilt.screens.searchpage.chooseCity.ChooseCityPage
 import com.example.kilt.screens.searchpage.homedetails.HomeDetailsScreen
 import com.example.kilt.viewmodels.ChooseCityViewModel
@@ -92,6 +95,9 @@ fun KiltApp() {
     val addNewImageViewModel: AddNewImageViewModel = hiltViewModel()
     val userAboutViewModel:UserAboutViewModel = hiltViewModel()
     val profileViewModel:ProfileViewModel = hiltViewModel()
+    val filtersViewModel:FiltersViewModel = hiltViewModel()
+    val searchResultsViewModel:SearchResultsViewModel = hiltViewModel()
+    val mapViewModel:MapViewModel = hiltViewModel()
     val smsViewModel: SmsViewModel = hiltViewModel()
 
 
@@ -133,9 +139,11 @@ fun KiltApp() {
             composable(BottomNavigationScreen.SaleAndRent.route) {
                 SearchPage(
                     chooseCityViewModel = chooseCityViewModel,
-                    homeSaleViewModel = homeSaleViewModel,
                     configViewModel = configViewModel,
-                    searchViewModel = searchViewModel,
+                    filtersViewModel = filtersViewModel,
+                    searchResultsViewModel = searchResultsViewModel,
+                    homeSaleViewModel = homeSaleViewModel,
+                    mapViewModel = mapViewModel,
                     navController = navController
                 )
             }
