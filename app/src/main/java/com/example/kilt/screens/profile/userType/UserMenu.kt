@@ -18,10 +18,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -42,17 +40,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.kilt.R
-import com.example.kilt.data.editprofile.addnewphonenumberbottomsheet.dto.Phone
-import com.example.kilt.navigation.NavPath
-import com.example.kilt.presentation.editprofile.addnewimagebottomsheet.AddNewImage
+import com.example.kilt.core.navigation.NavPath
 import com.example.kilt.presentation.editprofile.components.CustomButtonForEdit
 import com.example.kilt.presentation.editprofile.components.SaveButton
 import com.example.kilt.presentation.editprofile.gradientBrush
 import com.example.kilt.presentation.editprofile.listColor
-import com.example.kilt.screens.profile.login.PhoneNumberTextField
 import com.example.kilt.presentation.theme.DefaultBlack
 import com.example.kilt.presentation.theme.DefaultGray
-import com.example.kilt.viewmodels.AuthViewModel
+import com.example.kilt.presentation.login.viewModel.AuthViewModel
 
 @Composable
 fun UserMenu(navController: NavHostController, authViewModel: AuthViewModel) {
@@ -63,7 +58,7 @@ fun UserMenu(navController: NavHostController, authViewModel: AuthViewModel) {
             icon = ImageVector.vectorResource(id = R.drawable.plus_icon),
             title = "Добавить объявление",
             url = "",
-            onClick = { navController.navigate(NavPath.ADDINGANNOUNCEMENTSCREEN.name) }
+            onClick = { navController.navigate(NavPath.ADDNEWLISTINGSCREEN.name) }
         )
         SettingItem(
             icon = ImageVector.vectorResource(id = R.drawable.document_icon),
@@ -89,7 +84,7 @@ fun UserMenu(navController: NavHostController, authViewModel: AuthViewModel) {
             icon = ImageVector.vectorResource(id = R.drawable.my_contracts_icon),
             title = "Мои договоры",
             url = "",
-            onClick = { navController.navigate(NavPath.ADDINGANNOUNCEMENTSCREEN.name) }
+            onClick = { navController.navigate(NavPath.ADDNEWLISTINGSCREEN.name) }
         )
         SettingItem(
             icon = ImageVector.vectorResource(id = R.drawable.my_booking_icon),

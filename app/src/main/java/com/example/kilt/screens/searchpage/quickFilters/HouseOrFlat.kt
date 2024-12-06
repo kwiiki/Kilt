@@ -33,7 +33,6 @@ import com.example.kilt.R
 import com.example.kilt.models.FilterValue
 import com.example.kilt.presentation.search.FiltersViewModel
 import com.example.kilt.presentation.search.SearchResultsViewModel
-import com.example.kilt.viewmodels.SearchViewModel
 
 @Composable
 fun HouseOrFlat(

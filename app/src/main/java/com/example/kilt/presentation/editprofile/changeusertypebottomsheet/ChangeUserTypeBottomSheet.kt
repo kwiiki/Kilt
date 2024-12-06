@@ -16,7 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.kilt.navigation.NavPath
+import com.example.kilt.core.navigation.NavPath
 import com.example.kilt.presentation.editprofile.components.CustomButtonForEdit
 import com.example.kilt.presentation.editprofile.components.SaveButton
 import com.example.kilt.presentation.editprofile.gradientBrush

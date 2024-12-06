@@ -1,6 +1,5 @@
 package com.example.kilt.screens.searchpage
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -13,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -29,6 +29,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -36,16 +37,18 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.kilt.R
 import com.example.kilt.models.PropertyItem
-import com.example.kilt.navigation.NavPath
-import com.example.kilt.screens.searchpage.homedetails.formatNumber
-import com.example.kilt.screens.searchpage.homedetails.gradient
+import com.example.kilt.core.navigation.NavPath
+import com.example.kilt.presentation.listing.formatNumber
+import com.example.kilt.presentation.listing.gradient
 import com.example.kilt.utills.imageCdnUrl
-import com.example.kilt.viewmodels.ConfigViewModel
-import com.example.kilt.viewmodels.HomeSaleViewModel
+import com.example.kilt.presentation.config.viewmodel.ConfigViewModel
+import com.example.kilt.presentation.listing.viewmodel.ListingViewModel
+import com.example.kilt.utills.imageKiltUrl
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
@@ -54,69 +57,100 @@ import com.google.accompanist.pager.rememberPagerState
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun HouseItem(
-    homeSaleViewModel: HomeSaleViewModel,
+    listingViewModel: ListingViewModel,
     search: PropertyItem,
     navController: NavHostController,
     configViewModel: ConfigViewModel,
 ) {
     val topListings by configViewModel.listingTop.collectAsState()
-
     LaunchedEffect(Unit) {
-        homeSaleViewModel.loadHomeSale()
-        homeSaleViewModel.loadConfig()
+        listingViewModel.loadHomeSale()
+        listingViewModel.loadConfig()
     }
-
-    Log.d("HouseItem", "Recomposing item with id: ${search.id}")
-
     val imageList = search.images
-
     Card(
         shape = RoundedCornerShape(16.dp),
         modifier = Modifier
             .padding(bottom = 8.dp)
             .fillMaxWidth()
-            .background(Color(0xffFFFFFF))
             .clickable {
                 navController.navigate("${NavPath.HOMEDETAILS.name}/${search.id}")
             },
-        elevation = CardDefaults.cardElevation(15.dp)
+        elevation = CardDefaults.cardElevation(15.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xffFFFFFF))
     ) {
-        Column(modifier = Modifier.background(Color(0xffFFFFFF))) {
-            if (search.first_image == null) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.image_empty),
+        Column(
+            modifier = Modifier
+                .clip(RoundedCornerShape(12.dp))
+        ) {
+            if (imageList.isEmpty()) {
+                if (search.first_image != null) {
+                    val photoUrl = "${imageCdnUrl}${search.first_image}"
+                    val secondUrl = "$imageKiltUrl${search.first_image}"
+                    val selectedUrl =
+                        if (search.first_image.startsWith("local", ignoreCase = true)) {
+                            secondUrl
+                        } else {
+                            photoUrl
+                        }
+                    AsyncImage(
+                        model = selectedUrl ?: "",
                         contentDescription = null,
-                        modifier = Modifier.height(150.dp),
-                        contentScale = ContentScale.Crop
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .height(170.dp)
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                            .clip(RoundedCornerShape(12.dp))
                     )
+                } else {
                     Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.BottomCenter
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        contentAlignment = Alignment.Center // Center the content both vertically and horizontally
                     ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.image_empty),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(8.dp)
+                                .clip(RoundedCornerShape(12.dp))
+                        )
                         Icon(
                             imageVector = ImageVector.vectorResource(id = R.drawable.camera_icon),
                             contentDescription = null,
-                            tint = Color.White
+                            tint = Color.White,
+                            modifier = Modifier.size(48.dp) // Adjust the size of the icon if needed
                         )
                     }
+
                 }
             } else {
                 val pagerState = rememberPagerState(initialPage = 0)
-                Box {
+                Box(
+                    modifier = Modifier
+                        .height(170.dp)
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                ) {
                     HorizontalPager(
                         count = if (imageList.size > 5) 5 else imageList.size,
                         state = pagerState,
                         modifier = Modifier
-                            .height(170.dp)
-                            .fillMaxWidth()
+                            .matchParentSize() // Занимает всё пространство внутри Box
                     ) { page ->
-                        Log.d("ImageList", "HouseItem:${imageCdnUrl}${imageList[page].link}")
+                        val photoUrl = "${imageCdnUrl}${imageList[page].link}"
+                        val secondUrl = "$imageKiltUrl${imageList[page].link}"
+                        val selectedUrl =
+                            if (imageList[page].link.startsWith("local", ignoreCase = true)) {
+                                secondUrl
+                            } else {
+                                photoUrl
+                            }
                         AsyncImage(
-                            model = "${imageCdnUrl}${imageList[page].link}",
+                            model = selectedUrl,
                             contentDescription = null,
                             contentScale = ContentScale.Crop,
                             modifier = Modifier.fillMaxSize()
@@ -126,14 +160,16 @@ fun HouseItem(
                         pagerState = pagerState,
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
-                            .padding(16.dp),
+                            .padding(24.dp),
                         pageCount = if (imageList.size > 5) 5 else imageList.size,
                         activeColor = Color(0xFFFFFFFF),
                         inactiveColor = Color(0xFFBBBBBB),
                     )
                     IconButton(
                         onClick = { /* TODO: Handle favorite click */ },
-                        modifier = Modifier.align(Alignment.TopEnd)
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .zIndex(1f) // Устанавливаем высокий z-индекс
                     ) {
                         Icon(
                             imageVector = Icons.Default.FavoriteBorder,
@@ -142,6 +178,7 @@ fun HouseItem(
                         )
                     }
                 }
+
             }
             Row(
                 modifier = Modifier
@@ -163,12 +200,15 @@ fun HouseItem(
                 topListings?.forEach { item ->
                     when (item.trim()) {
                         "num_rooms" -> {
-                            IconText(
-                                icon = ImageVector.vectorResource(id = R.drawable.group_icon),
-                                text = "${search.num_rooms} комн"
-                            )
-                            Spacer(modifier = Modifier.width(12.dp))
+                            if (search.num_rooms != 0) {
+                                IconText(
+                                    icon = ImageVector.vectorResource(id = R.drawable.group_icon),
+                                    text = "${search.num_rooms} комн"
+                                )
+                                Spacer(modifier = Modifier.width(12.dp))
+                            }
                         }
+
                         "area" -> {
                             val area = search.area
                             val formattedArea = if (area.rem(1) == 0.0) {
@@ -182,6 +222,7 @@ fun HouseItem(
                             )
                             Spacer(modifier = Modifier.width(10.dp))
                         }
+
                         "floor" -> {
                             if (search.floor != 0 && search.num_floors != null) {
                                 IconText(
@@ -226,13 +267,14 @@ fun HouseItem(
         }
     }
 }
+
 @Composable
 fun Chip(text: String) {
     Card(
         onClick = { /*TODO*/ },
         elevation = CardDefaults.cardElevation(4.dp),
         shape = RoundedCornerShape(8.dp),
-        ) {
+    ) {
         Row(
             modifier = Modifier
                 .background(Color(0xFFFFFFFF), shape = RoundedCornerShape(8.dp))
@@ -248,6 +290,7 @@ fun Chip(text: String) {
         }
     }
 }
+
 @Composable
 fun IconText(icon: ImageVector, text: String) {
     Row(verticalAlignment = Alignment.CenterVertically) {

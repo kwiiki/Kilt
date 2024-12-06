@@ -14,6 +14,7 @@ data class PropertyItem(
     val rent_period: Int,
     val living_area:Int,
     val price: String,
+    val built_year:Int,
     val address_string: String,
     val description: String? = null,
     val seller_whatsapp: String,
@@ -25,5 +26,11 @@ data class PropertyItem(
     val lat: Double,
     val lng: Double,
     val type: String,
-    val images: List<Image>
+    val images: List<Image>,
+    val designation: String,
+    val where_located: Int,
+    val line_of_houses: Int,
+    val ceiling_height: Double,
+    val furniture: Int,
+    val max_usage: String,
 )

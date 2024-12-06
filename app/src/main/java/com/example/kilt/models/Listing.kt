@@ -10,8 +10,8 @@ data class Listing(
     val num_rooms: Int,
     val price: String,
     val status:Int,
-//    val lat: Range = Range(from = 43.10124413065566, to = 43.452700157683296),
-//    val lng: Range = Range(from = 76.7887978084845, to = 77.05866487884856),
+    val lat: Range = Range(from = 43.10124413065566, to = 43.452700157683296),
+    val lng: Range = Range(from = 76.7887978084845, to = 77.05866487884856),
     val first_image: String,
     val num_floors: Int,
     val floor: Int,
@@ -25,8 +25,8 @@ data class Listing(
     val line_of_houses: Int,
     val ceiling_height: Double,
     val furniture: Int,
+    val type: String,
     val max_usage: String,
-//    val address_string: String,
 //    val balcony: Any,
 //    val balcony_glass: Any,
 //    val bathroom: Any,
@@ -123,3 +123,5 @@ data class Listing(
 //
 //    val windows: Any
 )
+
+data class Range(val from:Double,val to:Double)

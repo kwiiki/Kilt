@@ -47,9 +47,8 @@ import com.example.kilt.presentation.search.SearchResultsViewModel
 import com.example.kilt.screens.searchpage.filter.FilterPage
 import com.example.kilt.screens.searchpage.filter.PriorityBottomSheet
 import com.example.kilt.screens.searchpage.quickFilters.QuickFilters
-import com.example.kilt.viewmodels.ChooseCityViewModel
-import com.example.kilt.viewmodels.ConfigViewModel
-import com.example.kilt.viewmodels.SearchViewModel
+import com.example.kilt.presentation.choosecity.viewmodel.ChooseCityViewModel
+import com.example.kilt.presentation.config.viewmodel.ConfigViewModel
 
 @Composable
 fun SearchAndQuickFilters(

@@ -25,8 +25,8 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.kilt.navigation.NavPath
-import com.example.kilt.viewmodels.ChooseCityViewModel
+import com.example.kilt.core.navigation.NavPath
+import com.example.kilt.presentation.choosecity.viewmodel.ChooseCityViewModel
 
 
 @Composable

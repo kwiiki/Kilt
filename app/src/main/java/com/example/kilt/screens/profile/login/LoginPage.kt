@@ -60,11 +60,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.kilt.models.authentification.OtpResult
-import com.example.kilt.navigation.NavPath
+import com.example.kilt.core.navigation.NavPath
 import com.example.kilt.screens.profile.registration.RegistrationButton
 import com.example.kilt.screens.profile.registration.enabledGradient
-import com.example.kilt.screens.searchpage.homedetails.gradient
-import com.example.kilt.viewmodels.AuthViewModel
+import com.example.kilt.presentation.listing.gradient
+import com.example.kilt.presentation.login.viewModel.AuthViewModel
 
 @Composable
 fun LoginPage(navController: NavHostController, authViewModel: AuthViewModel) {

@@ -39,7 +39,6 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.kilt.presentation.search.FiltersViewModel
-import com.example.kilt.viewmodels.SearchViewModel
 
 @Composable
 fun RangeFilter(

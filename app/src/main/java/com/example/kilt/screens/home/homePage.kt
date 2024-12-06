@@ -11,7 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.kilt.viewmodels.SearchViewModel
+import com.example.kilt.presentation.story.StoryPreviews
+import com.example.kilt.presentation.search.viewmodel.SearchViewModel
 
 @Composable
 fun HomePage(

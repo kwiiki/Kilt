@@ -31,8 +31,8 @@ import com.example.kilt.R
 import com.example.kilt.domain.choosecity.model.MicroDistrict
 import com.example.kilt.models.kato.District
 import com.example.kilt.screens.searchpage.filter.CustomDivider
-import com.example.kilt.viewmodels.ChooseCityViewModel
-import com.example.kilt.viewmodels.SearchViewModel
+import com.example.kilt.presentation.choosecity.viewmodel.ChooseCityViewModel
+import com.example.kilt.presentation.search.viewmodel.SearchViewModel
 
 @Composable
 fun DistrictRow(

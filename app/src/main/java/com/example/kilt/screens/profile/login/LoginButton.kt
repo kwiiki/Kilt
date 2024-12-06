@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.kilt.navigation.NavPath
+import com.example.kilt.core.navigation.NavPath
 
 
 @Composable
@@ -73,5 +73,14 @@ fun LoginButton(
                 }
             }
         }
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun PreviewProfileScreen(){
+    Row(modifier = Modifier.fillMaxSize()) {
+
+        LoginButton(navController = rememberNavController(), modifier = Modifier)
     }
 }

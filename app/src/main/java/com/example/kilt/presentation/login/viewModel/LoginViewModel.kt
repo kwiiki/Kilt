@@ -11,7 +11,7 @@ import com.example.kilt.models.authentification.OtpResult
 import com.example.kilt.data.localstorage.dataStore.UserDataStoreManager
 import com.example.kilt.data.localstorage.sharedPreference.PreferencesHelper
 import com.example.kilt.presentation.login.LoginUiState
-import com.example.kilt.repository.LoginRepository
+import com.example.kilt.domain.login.repository.LoginRepository
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch

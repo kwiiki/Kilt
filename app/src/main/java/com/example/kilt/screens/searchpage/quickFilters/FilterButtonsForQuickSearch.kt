@@ -15,8 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.kilt.models.config.FilterItem
 import com.example.kilt.presentation.search.FiltersViewModel
-import com.example.kilt.viewmodels.ConfigViewModel
-import com.example.kilt.viewmodels.SearchViewModel
+import com.example.kilt.presentation.config.viewmodel.ConfigViewModel
 import com.example.kilt.screens.searchpage.filter.FilterButton
 
 

@@ -18,8 +18,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.kilt.R
-import com.example.kilt.viewmodels.ChooseCityViewModel
-import com.example.kilt.viewmodels.SearchViewModel
+import com.example.kilt.presentation.choosecity.viewmodel.ChooseCityViewModel
+import com.example.kilt.presentation.search.viewmodel.SearchViewModel
 
 @Composable
 fun ChooseAllCityRow(

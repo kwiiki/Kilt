@@ -23,8 +23,8 @@ import androidx.compose.ui.unit.sp
 import com.example.kilt.R
 import com.example.kilt.models.kato.ResidentialComplex
 import com.example.kilt.screens.searchpage.filter.CustomDivider
-import com.example.kilt.viewmodels.ChooseCityViewModel
-import com.example.kilt.viewmodels.SearchViewModel
+import com.example.kilt.presentation.choosecity.viewmodel.ChooseCityViewModel
+import com.example.kilt.presentation.search.viewmodel.SearchViewModel
 
 @Composable
 fun ResidentialComplexRow(

@@ -22,7 +22,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.BottomSheetDefaults
@@ -55,8 +54,8 @@ import androidx.navigation.NavHostController
 import com.example.kilt.R
 import com.example.kilt.screens.searchpage.GradientButton
 import com.example.kilt.screens.searchpage.IconText
-import com.example.kilt.screens.searchpage.homedetails.formatNumber
-import com.example.kilt.screens.searchpage.homedetails.gradient
+import com.example.kilt.presentation.listing.formatNumber
+import com.example.kilt.presentation.listing.gradient
 
 @Composable
 fun MyAnnouncementScreen(navController: NavHostController) {

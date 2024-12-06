@@ -8,7 +8,7 @@ import com.example.kilt.data.editprofile.addnewphonenumberbottomsheet.dto.Filter
 import com.example.kilt.data.editprofile.addnewphonenumberbottomsheet.dto.Phone
 import com.example.kilt.data.editprofile.addnewphonenumberbottomsheet.dto.Send
 import com.example.kilt.domain.editprofile.addnewphonenumberbottomsheet.repository.AddNewPhoneNumberRepository
-import com.example.kilt.network.ApiService
+import com.example.kilt.core.network.ApiService
 
 class AddNewPhoneNumberRepositoryImpl(private val apiService: ApiService): AddNewPhoneNumberRepository {
     override suspend fun addPhone(phone: Phone): Result<AddPhoneDTO> {

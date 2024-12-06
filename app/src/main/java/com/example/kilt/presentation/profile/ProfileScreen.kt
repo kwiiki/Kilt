@@ -33,7 +33,7 @@ import com.example.kilt.screens.profile.userType.AgencyScreen
 import com.example.kilt.screens.profile.userType.OwnerScreen
 import com.example.kilt.screens.profile.userType.SpecialistScreen
 import com.example.kilt.screens.profile.userType.UnAuthenticatedProfileScreen
-import com.example.kilt.viewmodels.AuthViewModel
+import com.example.kilt.presentation.login.viewModel.AuthViewModel
 
 @Composable
 fun ProfileScreen(
@@ -98,7 +98,6 @@ fun ProfileScreen(
                             profileViewModel = profileViewModel
                         )
                     }
-
                     UserType.OWNER.value -> {
                         OwnerScreen(
                             navController = navController,
@@ -108,7 +107,6 @@ fun ProfileScreen(
                             profileViewModel = profileViewModel
                         )
                     }
-
                     UserType.AGENT.value -> {
                         SpecialistScreen(
                             navController = navController,
@@ -118,7 +116,6 @@ fun ProfileScreen(
                             profileViewModel = profileViewModel
                         )
                     }
-
                     else -> {
                         UnAuthenticatedProfileScreen(navController = navController)
                     }

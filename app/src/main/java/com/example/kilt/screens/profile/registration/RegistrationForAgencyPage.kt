@@ -45,10 +45,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.kilt.models.authentification.OtpResult
-import com.example.kilt.navigation.NavPath
+import com.example.kilt.core.navigation.NavPath
 import com.example.kilt.screens.profile.login.PhoneNumberTextField
-import com.example.kilt.screens.searchpage.homedetails.gradient
-import com.example.kilt.viewmodels.AuthViewModel
+import com.example.kilt.presentation.listing.gradient
+import com.example.kilt.presentation.login.viewModel.AuthViewModel
 
 @Composable
 fun RegistrationForAgencyPage(navController: NavHostController, authViewModel: AuthViewModel) {

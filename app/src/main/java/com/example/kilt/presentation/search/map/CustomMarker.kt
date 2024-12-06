@@ -21,32 +21,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.kilt.R
 
-@Composable
-fun CustomMarker(text: String) {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier
-            .background(
-                color = Color.White,
-                shape = RoundedCornerShape(16.dp)
-            )
-            .border(
-                width = 1.dp,
-                color = Color.Blue,
-                shape = RoundedCornerShape(16.dp)
-            )
-            .padding(horizontal = 8.dp, vertical = 4.dp)
-    ) {
-        Text(
-            text = text,
-            color = Color.Blue,
-        )
-    }
-}
 
 fun createBitmapFromXml(context: Context, price: String): Bitmap {
     val formattedPrice = mapPriceFormat(price)
     val view = LayoutInflater.from(context).inflate(R.layout.custom_marker_with_pointer, null)
+
+    view.setOnClickListener { Log.d("price111", "createBitmapFromXml: $price") }
 
     val textView = view.findViewById<TextView>(R.id.marker_text)
     textView.text = formattedPrice

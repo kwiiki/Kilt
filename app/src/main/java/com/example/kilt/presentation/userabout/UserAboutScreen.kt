@@ -21,15 +21,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -61,17 +58,17 @@ import com.example.kilt.R
 import com.example.kilt.domain.userabout.model.Listing
 import com.example.kilt.models.authentification.User
 import com.example.kilt.utills.enums.UserType
-import com.example.kilt.navigation.NavPath
+import com.example.kilt.core.navigation.NavPath
 import com.example.kilt.presentation.userabout.viewmodel.UserAboutViewModel
-import com.example.kilt.screens.profile.DocumentRow
+import com.example.kilt.presentation.identification.DocumentRow
 import com.example.kilt.screens.profile.myannouncement.ChipForAnnouncement
 import com.example.kilt.screens.searchpage.GradientButton
 import com.example.kilt.screens.searchpage.IconText
 import com.example.kilt.screens.searchpage.filter.CustomDivider
 import com.example.kilt.screens.searchpage.filter.formatNumber
-import com.example.kilt.screens.searchpage.homedetails.gradient
+import com.example.kilt.presentation.listing.gradient
 import com.example.kilt.utills.imageKiltUrl
-import com.example.kilt.viewmodels.AuthViewModel
+import com.example.kilt.presentation.login.viewModel.AuthViewModel
 
 @Composable
 fun UserAboutScreen(

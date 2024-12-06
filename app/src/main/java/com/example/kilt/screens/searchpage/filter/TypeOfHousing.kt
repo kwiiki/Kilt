@@ -33,8 +33,7 @@ import com.example.kilt.R
 import com.example.kilt.models.FilterValue
 import com.example.kilt.presentation.custom.CustomToggleButton
 import com.example.kilt.presentation.search.FiltersViewModel
-import com.example.kilt.viewmodels.ConfigViewModel
-import com.example.kilt.viewmodels.SearchViewModel
+import com.example.kilt.presentation.config.viewmodel.ConfigViewModel
 
 @Composable
 fun TypeOfHousing(

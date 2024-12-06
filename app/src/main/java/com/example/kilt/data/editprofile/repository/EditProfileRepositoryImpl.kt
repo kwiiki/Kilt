@@ -5,7 +5,7 @@ import com.example.kilt.data.editprofile.dto.UniversalUserPhoneResult
 import com.example.kilt.data.editprofile.dto.UserPhone
 import com.example.kilt.domain.editprofile.model.UpdatedUser
 import com.example.kilt.domain.editprofile.repository.EditProfileRepository
-import com.example.kilt.network.ApiService
+import com.example.kilt.core.network.ApiService
 import okhttp3.MultipartBody
 import retrofit2.Response
 

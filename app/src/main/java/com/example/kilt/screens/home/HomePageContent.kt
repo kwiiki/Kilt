@@ -11,7 +11,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import com.example.kilt.data.localstorage.sharedPreference.PreferencesHelper
-import com.example.kilt.viewmodels.SearchViewModel
+import com.example.kilt.presentation.story.InstagramStory
+import com.example.kilt.presentation.search.viewmodel.SearchViewModel
 
 
 @Composable

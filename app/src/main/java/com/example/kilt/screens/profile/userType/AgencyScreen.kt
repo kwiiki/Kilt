@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -49,12 +48,12 @@ import com.example.kilt.models.authentification.User
 import com.example.kilt.models.authentification.UserWithMetadata
 import com.example.kilt.utills.enums.IdentificationTypes
 import com.example.kilt.utills.enums.UserType
-import com.example.kilt.navigation.NavPath
+import com.example.kilt.core.navigation.NavPath
 import com.example.kilt.presentation.editprofile.gradientBrush
 import com.example.kilt.presentation.editprofile.listColor
 import com.example.kilt.presentation.profile.viewmodel.ProfileViewModel
 import com.example.kilt.utills.imageKiltUrl
-import com.example.kilt.viewmodels.AuthViewModel
+import com.example.kilt.presentation.login.viewModel.AuthViewModel
 
 val listColor1 = listOf(Color(0xFF3244E4), Color(0xFF1B278F))
 @Composable

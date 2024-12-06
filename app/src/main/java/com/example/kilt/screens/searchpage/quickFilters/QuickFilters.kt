@@ -3,14 +3,11 @@
 package com.example.kilt.screens.searchpage.quickFilters
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -41,8 +38,7 @@ import com.example.kilt.R
 import com.example.kilt.models.FilterValue
 import com.example.kilt.presentation.search.FiltersViewModel
 import com.example.kilt.presentation.search.SearchResultsViewModel
-import com.example.kilt.viewmodels.ConfigViewModel
-import com.example.kilt.viewmodels.SearchViewModel
+import com.example.kilt.presentation.config.viewmodel.ConfigViewModel
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable

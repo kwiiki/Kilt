@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.kilt.R
-import com.example.kilt.navigation.NavPath
+import com.example.kilt.core.navigation.NavPath
 import com.example.kilt.screens.profile.login.LoginButton
 import com.example.kilt.screens.profile.registration.RegistrationButton
 
@@ -40,9 +40,11 @@ fun UnAuthenticatedProfileScreen(navController: NavHostController){
             fontWeight = FontWeight.W400
         )
         Spacer(modifier = Modifier.height(8.dp))
-        LoginButton(navController, Modifier.padding(horizontal = 8.dp), onClick = { navController.navigate(NavPath.LOGIN.name) })
+        LoginButton(navController, Modifier.padding(horizontal = 8.dp), onClick = { navController.navigate(
+            NavPath.LOGIN.name) })
         Spacer(modifier = Modifier.height(12.dp))
-        RegistrationButton(navController, Modifier.padding(horizontal = 8.dp),onClick = { navController.navigate(NavPath.REGISTRATIONPAGE.name)})
+        RegistrationButton(navController, Modifier.padding(horizontal = 8.dp),onClick = { navController.navigate(
+            NavPath.REGISTRATIONPAGE.name)})
     }
     Spacer(modifier = Modifier.height(24.dp))
     Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(16.dp)) {

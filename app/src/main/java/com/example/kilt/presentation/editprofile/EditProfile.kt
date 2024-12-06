@@ -58,7 +58,7 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.kilt.R
 import com.example.kilt.utills.enums.UserType
-import com.example.kilt.navigation.NavPath
+import com.example.kilt.core.navigation.NavPath
 import com.example.kilt.presentation.editprofile.addnewimagebottomsheet.AddNewImage
 import com.example.kilt.presentation.editprofile.addnewimagebottomsheet.viewmodel.AddNewImageViewModel
 import com.example.kilt.presentation.editprofile.addnewphonenumberbottomsheet.AddNewPhoneNumber
@@ -69,7 +69,7 @@ import com.example.kilt.presentation.editprofile.components.SaveButton
 import com.example.kilt.presentation.editprofile.viewmodel.EditProfileViewModel
 import com.example.kilt.presentation.theme.DefaultBlack
 import com.example.kilt.utills.imageKiltUrl
-import com.example.kilt.viewmodels.AuthViewModel
+import com.example.kilt.presentation.login.viewModel.AuthViewModel
 
 
 val gradientBrush = Brush.horizontalGradient(
